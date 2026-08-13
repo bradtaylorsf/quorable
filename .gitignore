@@ -17,6 +17,10 @@ wheels/
 venv/
 ENV/
 
+# Node / TypeScript
+node_modules/
+*.tsbuildinfo
+
 # Testing and coverage
 .pytest_cache/
 .coverage
