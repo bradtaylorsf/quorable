@@ -1,0 +1,36 @@
+name: screenplay
+description: Scripts and narrative drafts — story mechanics, character, dialogue.
+units: [act_one, act_two, act_three]
+dimensions:
+  causality:
+    weight: 2.0
+    scale: [1, 10]
+    description: Scenes force the next (therefore/but), not merely follow (and then).
+  character:
+    weight: 1.5
+    scale: [1, 10]
+    description: Motivated choices, consistent voices, canon fidelity.
+  dialogue:
+    weight: 1.0
+    scale: [1, 10]
+    description: Speech with subtext that survives a table read.
+  escalation:
+    weight: 1.0
+    scale: [1, 10]
+    description: Complications grow in kind, stakes turn irreversibly.
+verdict:
+  field: draft_readiness
+  categories: [ship, revise, rethink]
+gates: []
+ship:
+  composite_min: 7.0
+  dimension_min: 5
+  blocking: severity_1_findings
+  composite_exclude_personas: [red_team]
+unit_keyword_rules:
+  - [act one, act_one]
+  - [act two, act_two]
+  - [act three, act_three]
+  - [act 1, act_one]
+  - [act 2, act_two]
+  - [act 3, act_three]

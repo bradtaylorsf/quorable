@@ -1,0 +1,9 @@
+# The zero-config default council: four independent lenses on any document.
+name: general-doc
+description: General-purpose review — clarity, claims, shape, and the hostile reader.
+personas:
+  - clarity_editor
+  - skeptical_expert
+  - structural_editor
+  - red_team
+rubric: document

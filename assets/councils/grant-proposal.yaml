@@ -1,0 +1,8 @@
+name: grant-proposal
+description: Funding proposals — the first sort, the methods bench, and the skeptic.
+personas:
+  - program_officer
+  - methods_reviewer
+  - skeptical_expert
+  - red_team
+rubric: grant-proposal

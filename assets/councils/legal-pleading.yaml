@@ -1,0 +1,8 @@
+name: legal-pleading
+description: Briefs and pleadings — doctrine, procedure, the record, opposing counsel.
+personas:
+  - doctrinal_skeptic
+  - procedural_hawk
+  - evidence_auditor
+  - red_team
+rubric: legal-pleading

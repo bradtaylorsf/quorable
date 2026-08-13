@@ -1,0 +1,35 @@
+# Generic document rubric — the zero-config default. Works on any prose
+# document; council personas supply the critical lenses.
+name: document
+description: General-purpose review rubric for any prose document.
+units: [opening, body, close]
+dimensions:
+  clarity:
+    weight: 1.0
+    scale: [1, 10]
+    description: Can a first-time reader follow it without re-reading?
+  argument:
+    weight: 1.5
+    scale: [1, 10]
+    description: Are the claims supported and the logic sound?
+  structure:
+    weight: 1.0
+    scale: [1, 10]
+    description: Is the document the right shape — ordering, proportion, transitions?
+  engagement:
+    weight: 1.0
+    scale: [1, 10]
+    description: Does it earn and keep the reader's attention?
+verdict:
+  field: verdict
+  categories: [ship, revise, rethink]
+gates:
+  - banned_elements:
+      - "as an AI"
+      - "in today's fast-paced"
+      - "\\bdelve\\b"
+ship:
+  composite_min: 7.0
+  dimension_min: 5
+  blocking: severity_1_findings
+  composite_exclude_personas: [red_team]

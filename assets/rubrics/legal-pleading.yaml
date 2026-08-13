@@ -1,0 +1,29 @@
+name: legal-pleading
+description: Briefs and pleadings — elements, procedure, record fidelity.
+units: [statement_of_facts, argument, relief_requested]
+dimensions:
+  doctrinal_strength:
+    weight: 2.0
+    scale: [1, 10]
+    description: Elements matched to alleged facts under the governing standard.
+  procedural_compliance:
+    weight: 1.5
+    scale: [1, 10]
+    description: Posture, deadlines, recitals, formal requirements.
+  record_fidelity:
+    weight: 2.0
+    scale: [1, 10]
+    description: Every load-bearing fact supported and honestly characterized.
+  persuasion:
+    weight: 1.0
+    scale: [1, 10]
+    description: The strongest honest framing of the client's position.
+verdict:
+  field: filing_readiness
+  categories: [file, revise, rethink]
+gates: []
+ship:
+  composite_min: 7.5
+  dimension_min: 6
+  blocking: severity_1_findings
+  composite_exclude_personas: [red_team]

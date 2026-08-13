@@ -1,0 +1,8 @@
+name: screenplay
+description: Scripts — story mechanics, character/canon, dialogue, hostile audience.
+personas:
+  - structure_analyst
+  - character_guardian
+  - dialogue_critic
+  - red_team
+rubric: screenplay

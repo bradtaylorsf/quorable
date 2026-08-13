@@ -1,0 +1,34 @@
+name: blog-post
+description: Public-facing essays and posts — attention, voice, and evidence.
+units: [hook, argument, evidence, structure, close]
+dimensions:
+  clarity:
+    weight: 1.0
+    scale: [1, 10]
+  originality:
+    weight: 1.5
+    scale: [1, 10]
+    description: Does it say something the tenth-best post on the topic does not?
+  evidence:
+    weight: 2.0
+    scale: [1, 10]
+    description: Are the claims backed on the page?
+  voice:
+    weight: 1.0
+    scale: [1, 10]
+    description: Consistent, human, credible register throughout.
+verdict:
+  field: publish_readiness
+  categories: [ship, revise, rethink]
+gates:
+  - word_count: {max: 2500}
+  - banned_elements:
+      - "as an AI"
+      - "in today's fast-paced"
+      - "\\bdelve\\b"
+      - "it's important to note"
+ship:
+  composite_min: 7.0
+  dimension_min: 5
+  blocking: severity_1_findings
+  composite_exclude_personas: [red_team]

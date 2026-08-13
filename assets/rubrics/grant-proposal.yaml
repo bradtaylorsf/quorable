@@ -1,0 +1,31 @@
+name: grant-proposal
+description: Funding proposals — fit, rigor, feasibility, and the first-sort test.
+units: [need, approach, outcomes, capacity, budget_narrative]
+dimensions:
+  funder_fit:
+    weight: 2.0
+    scale: [1, 10]
+    description: Maps concretely to the solicitation's stated priorities.
+  rigor:
+    weight: 1.5
+    scale: [1, 10]
+    description: Activity-to-outcome chain with real measurement.
+  feasibility:
+    weight: 1.5
+    scale: [1, 10]
+    description: Executable by the named team on the stated timeline.
+  clarity:
+    weight: 1.0
+    scale: [1, 10]
+verdict:
+  field: fundability
+  categories: [fund, revise, rethink]
+gates:
+  - banned_elements:
+      - "transformative opportunity"
+      - "uniquely positioned"
+ship:
+  composite_min: 7.5
+  dimension_min: 6
+  blocking: severity_1_findings
+  composite_exclude_personas: [red_team]

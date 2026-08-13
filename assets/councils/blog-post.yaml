@@ -1,0 +1,8 @@
+name: blog-post
+description: Public writing — attention, voice, evidence, and the takedown reader.
+personas:
+  - hook_doctor
+  - voice_critic
+  - skeptical_expert
+  - red_team
+rubric: blog-post
