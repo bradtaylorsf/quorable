@@ -228,14 +228,30 @@ pricing table. The cost governor and every estimate depend on that number.
 
 ## 4. Build plan
 
-### M0 — Put quorable under version control *(blocking, minutes)*
+**Status (2026-08-12, TS build): M0 ✅ · M1 ✅ · M2 ✅ · M3 ✅ · M4 ✅ ·
+M5 ✅ · M6 ✅ (items 1–6; discrimination live-panel wiring is scaffolded,
+mechanical path complete) · M7 ✅ (5 councils, 14 personas, 5 rubrics
+shipped as packaged assets) · M8 ✅ (md/txt/yaml/pdf via mupdf WASM,
+minimal .docx, directory-as-primary with provenance markers; .fountain/.fdx
+deferred) · M9 ✅ (`quorable render`, declared-vs-loaded assertion;
+feedback auto-glob deferred to project-mode work) · M10 ⬜ (migrate the
+legal/grant/shorts forks — next).**
+
+The engine is TypeScript (`ts/src/`), per the §5 decision. The Python
+package in `src/quorable/` is retained as the executable spec;
+`fixtures/parity/*.json` pin κ/ICC/composites/gates numerically and
+`tests/test_parity_fixtures.py` + `ts/tests/parity.test.ts` keep the two
+engines from diverging. Parity gate: green (148 fixture tests, exact to
+>6 dp). Suites: 241 TS + 178 Python.
+
+### M0 — Put quorable under version control *(blocking, minutes)* ✅
 
 `git init`, commit, push. The engine has never been committed. Everything
 below is unreviewable until this is done. Also: the loop's
 `check_primary_committed` guard silently no-ops outside a git repo, so a core
 safety property is currently off.
 
-### M1 — Provider abstraction *(the largest single piece)*
+### M1 — Provider abstraction *(the largest single piece)* ✅
 
 - `Provider` protocol: `chat(model, messages, temperature, json_mode) ->
   NormalizedResponse{content, prompt_tokens, completion_tokens, cost_usd}`.
@@ -264,7 +280,7 @@ spots. The CLI should warn when a panel is single-vendor and refuse to report
 held-out validation as meaningful when the held-out model shares a vendor with
 a reviewer (the legal system already warns; make it louder).
 
-### M2 — Global home `~/.quorable/`
+### M2 — Global home `~/.quorable/` ✅
 
 ```
 ~/.quorable/
@@ -283,7 +299,7 @@ Plus config layering (defaults → home → project → env → flags) and
 *Decision needed:* keys in the OS keyring (safer, adds a dependency) versus
 `~/.quorable/.env` with 600 perms (simpler, matches today).
 
-### M3 — The generic pack *(the keystone)*
+### M3 — The generic pack *(the keystone)* ✅
 
 A rubric YAML becomes a working pack with no Python:
 
@@ -314,7 +330,7 @@ the Pack, not the schema.
 
 This is what turns quorable from a framework into a tool.
 
-### M4 — Zero-config invocation
+### M4 — Zero-config invocation ✅
 
 ```
 quorable review <file-or-dir> [--context <dir>] [--council <name>]
@@ -331,7 +347,7 @@ target — containing `raw_reviews/`, `synthesis.json`, `synthesis_report.md`,
 All of those artifacts are already produced; this milestone is routing and
 defaults, not new machinery.
 
-### M5 — Rigor tiers
+### M5 — Rigor tiers ✅
 
 | | quick | standard | rigorous |
 |---|---|---|---|
@@ -345,7 +361,7 @@ defaults, not new machinery.
 
 Implementation is a config-overlay preset, not new code paths.
 
-### M6 — Blind-spot integrity *(anti-Goodhart: make the eval audit itself)*
+### M6 — Blind-spot integrity *(anti-Goodhart: make the eval audit itself)* ✅
 
 The panel's raters can be independent by vendor and still be **correlated by
 prompt**: every reviewer receives the same system prompt, rubric, context
@@ -396,21 +412,21 @@ apparatus.
 a panel is single-vendor; refuse to present held-out validation as meaningful
 when the held-out model shares a vendor with a reviewer.
 
-### M7 — Council management
+### M7 — Council management ✅
 
 `quorable persona new|list|show|edit`, `quorable council new|list|add|remove`,
 `quorable council show <name>` (personas, default models, default rubric).
 Ship 3–4 starter councils built from the 12 personas that already exist:
 `legal-pleading`, `grant-proposal`, `screenplay`, `blog-post`.
 
-### M8 — Input formats
+### M8 — Input formats ✅ *(.fountain/.fdx deferred)*
 
 PDF, markdown, and YAML parse today. Add `.docx` (the shorts pack is blocked on
 exactly this — the world-bible is a docx), `.txt`, and `.fountain`/`.fdx` for
 scripts. Directory-as-primary (chapters, multi-file docs) needs a concatenation
 strategy with per-file provenance markers.
 
-### M9 — Port the good ideas the forks have and the engine does not
+### M9 — Port the good ideas the forks have and the engine does not ✅ *(render + manifest assertion; feedback auto-glob deferred)*
 
 - **Feedback auto-glob** (from the negotiation agent): `inputs/feedback/*.md`
   auto-loads as tier-1 and overrides older context. `UNIFICATION_PLAN.md` calls
@@ -422,7 +438,7 @@ strategy with per-file provenance markers.
   three critical documents in every committed run because a manifest section
   was never loaded. Fail loudly instead.
 
-### M10 — Migrate and retire
+### M10 — Migrate and retire ⬜ *(next: convert legal/grant/shorts to rubric packs on the TS engine)*
 
 Convert legal, grant, and shorts to packs on the unified engine; keep the legal
 code pack (cite-check, xref) as the proof that the escape hatch works. Retire
