@@ -1,0 +1,28 @@
+# Toy project manifest — free-form sections.
+system_prompt:
+  path: system_prompt.md
+  role: "Base system prompt for all reviewers"
+  tier: 1
+  send_to: [stage1, stage2, stage3]
+
+core:
+  script_draft:
+    path: core/script_draft.md
+    role: "Script under review"
+    tier: 1
+    critical: true
+    send_to: [stage1, stage2, stage3, draft]
+  canon:
+    path: core/canon.md
+    role: "Product-truth source"
+    tier: 1
+    send_to: [stage1, stage2, draft]
+
+context:
+  - path: context/00_context.md
+    role: "Context map"
+    tier: 2
+    send_to: [stage1_critic]
+  - path: context/01_missing.md
+    role: "Deliberately missing tier-3 doc"
+    tier: 3

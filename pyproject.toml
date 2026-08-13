@@ -1,0 +1,45 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "quorable"
+version = "0.1.0"
+description = "Multi-model adversarial review-and-revision harness for writing (engine/pack split)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+dependencies = [
+    "httpx>=0.27",
+    "pydantic>=2.0",
+    "pymupdf>=1.24",
+    "rich>=13.0",
+    "tenacity>=8.0",
+    "pyyaml>=6.0",
+    "typer>=0.12",
+    "numpy>=1.26",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "respx>=0.21",
+]
+
+[project.scripts]
+quorable = "quorable.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/quorable"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "respx>=0.21",
+]

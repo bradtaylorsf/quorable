@@ -1,0 +1,27 @@
+pack: ./pack.py
+
+models:
+  reviewers:
+    - id: test/reviewer-a
+      temperature: 0.2
+    - id: other/reviewer-b
+      temperature: 0.2
+  synthesizer:
+    id: test/synth-model
+    temperature: 0.1
+  held_out:
+    id: heldout/model-c
+    temperature: 0.2
+  drafter:
+    id: test/drafter-model
+    temperature: 0.7
+
+pipeline:
+  runs_per_persona: 1
+  max_concurrency: 2
+  timeout_seconds: 60
+  cost_threshold: 1.0
+  cost_abort_multiplier: 2.0
+  max_iterations: 2
+
+personas: [fan, red_team]

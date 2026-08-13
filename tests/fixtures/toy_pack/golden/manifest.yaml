@@ -1,0 +1,19 @@
+cases:
+  - id: seeded_defects
+    path: seeded_defects.md
+    defects:
+      - id: bad_alias
+        detector: term_lint
+        expect: "Show Kick"
+      - id: leftover_todo
+        detector: banned_elements
+        expect: "TODO"
+      - id: overlength
+        detector: word_count
+        expect: "words"
+      - id: canon_drift
+        detector: llm_canon_check
+        expect: "audio"
+  - id: clean_control
+    path: clean_control.md
+    negative_control: true
