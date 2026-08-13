@@ -1,0 +1,2001 @@
+[
+  {
+    "name": "gen_0",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ]
+    },
+    "reviews": [
+      {
+        "persona": "praiser",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 5,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 4,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 4,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 5,
+            "punch": 4,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-99",
+            "severity": 4
+          }
+        ]
+      },
+      {
+        "persona": "red_team",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 3,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 4,
+            "punch": 3,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "bad",
+        "findings": []
+      },
+      {
+        "persona": "critic",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 5,
+            "punch": 3,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 4,
+            "punch": 4,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-52",
+            "severity": 4
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 1,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 5,
+            "punch": 2,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-29",
+            "severity": 3
+          },
+          {
+            "description": "finding-64",
+            "severity": 4
+          }
+        ]
+      },
+      {
+        "persona": "critic",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 3,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 5,
+            "punch": 3,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-98",
+            "severity": 4
+          }
+        ]
+      }
+    ],
+    "expected": 0.04
+  },
+  {
+    "name": "gen_1",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ]
+    },
+    "reviews": [
+      {
+        "persona": "red_team",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 1,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 2,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 2,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 5,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-34",
+            "severity": 1
+          }
+        ]
+      },
+      {
+        "persona": "red_team",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 4,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 5,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-44",
+            "severity": 3
+          },
+          {
+            "description": "finding-83",
+            "severity": 5
+          }
+        ]
+      },
+      {
+        "persona": "critic",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 5,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 3,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "bad",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 4,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 5,
+            "punch": 1,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-86",
+            "severity": 4
+          },
+          {
+            "description": "finding-98",
+            "severity": 3
+          }
+        ]
+      },
+      {
+        "persona": "critic",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 1,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 2,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-25",
+            "severity": 4
+          },
+          {
+            "description": "finding-61",
+            "severity": 1
+          }
+        ]
+      }
+    ],
+    "expected": -0.1707
+  },
+  {
+    "name": "gen_2",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ]
+    },
+    "reviews": [
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 3,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 4,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 1,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 5,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-44",
+            "severity": 4
+          }
+        ]
+      }
+    ],
+    "expected": -1.0
+  },
+  {
+    "name": "gen_3",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ]
+    },
+    "reviews": [
+      {
+        "persona": "red_team",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 5,
+            "punch": 1,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 4,
+            "punch": 1,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "bad",
+        "findings": []
+      },
+      {
+        "persona": "critic",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 5,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 5,
+            "punch": 1,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-52",
+            "severity": 2
+          },
+          {
+            "description": "finding-80",
+            "severity": 2
+          }
+        ]
+      }
+    ],
+    "expected": -0.3333
+  },
+  {
+    "name": "gen_4",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ]
+    },
+    "reviews": [
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 1,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 3,
+            "punch": 4,
+            "verdict": "good"
+          },
+          {
+            "unit": "outro",
+            "clarity": 2,
+            "punch": 3,
+            "verdict": "bad"
+          },
+          {
+            "unit": "close",
+            "clarity": 5,
+            "punch": 3,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-18",
+            "severity": 4
+          },
+          {
+            "description": "finding-55",
+            "severity": 5
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 2,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 5,
+            "punch": 1,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "outro",
+            "clarity": 3,
+            "punch": 5,
+            "verdict": "bad"
+          },
+          {
+            "unit": "close",
+            "clarity": 5,
+            "punch": 2,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "bad",
+        "findings": []
+      },
+      {
+        "persona": "critic",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 1,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 4,
+            "punch": 5,
+            "verdict": "good"
+          },
+          {
+            "unit": "outro",
+            "clarity": 1,
+            "punch": 5,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "close",
+            "clarity": 4,
+            "punch": 1,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-96",
+            "severity": 5
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 3,
+            "punch": 1,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 3,
+            "verdict": "bad"
+          },
+          {
+            "unit": "outro",
+            "clarity": 4,
+            "punch": 3,
+            "verdict": "bad"
+          },
+          {
+            "unit": "close",
+            "clarity": 3,
+            "punch": 4,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-2",
+            "severity": 1
+          },
+          {
+            "description": "finding-21",
+            "severity": 1
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 5,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 5,
+            "punch": 5,
+            "verdict": "good"
+          },
+          {
+            "unit": "outro",
+            "clarity": 2,
+            "punch": 1,
+            "verdict": "bad"
+          },
+          {
+            "unit": "close",
+            "clarity": 2,
+            "punch": 3,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 5,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 5,
+            "punch": 4,
+            "verdict": "bad"
+          },
+          {
+            "unit": "outro",
+            "clarity": 4,
+            "punch": 5,
+            "verdict": "bad"
+          },
+          {
+            "unit": "close",
+            "clarity": 2,
+            "punch": 4,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-8",
+            "severity": 1
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 5,
+            "punch": 1,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 5,
+            "punch": 5,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "outro",
+            "clarity": 3,
+            "punch": 1,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "close",
+            "clarity": 4,
+            "punch": 5,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-80",
+            "severity": 4
+          },
+          {
+            "description": "finding-96",
+            "severity": 5
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 1,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 3,
+            "punch": 2,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "outro",
+            "clarity": 2,
+            "punch": 2,
+            "verdict": "bad"
+          },
+          {
+            "unit": "close",
+            "clarity": 4,
+            "punch": 5,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": []
+      }
+    ],
+    "expected": 0.075
+  },
+  {
+    "name": "gen_5",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ]
+    },
+    "reviews": [
+      {
+        "persona": "red_team",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 2,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 5,
+            "punch": 1,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-8",
+            "severity": 2
+          },
+          {
+            "description": "finding-88",
+            "severity": 5
+          }
+        ]
+      },
+      {
+        "persona": "critic",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 3,
+            "punch": 3,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 1,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-76",
+            "severity": 3
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 3,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 3,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-16",
+            "severity": 2
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 3,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 3,
+            "punch": 3,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "good",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 3,
+            "punch": 2,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 4,
+            "punch": 1,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-71",
+            "severity": 1
+          }
+        ]
+      },
+      {
+        "persona": "critic",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 4,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 3,
+            "punch": 4,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "good",
+        "findings": []
+      }
+    ],
+    "expected": -0.0213
+  },
+  {
+    "name": "gen_6",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ]
+    },
+    "reviews": [
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 1,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 3,
+            "punch": 4,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 1,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 4,
+            "punch": 4,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "bad",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 3,
+            "punch": 2,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 4,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 5,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 3,
+            "punch": 5,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "good",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 3,
+            "punch": 1,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 5,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 1,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 4,
+            "punch": 2,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-61",
+            "severity": 2
+          }
+        ]
+      }
+    ],
+    "expected": -0.1745
+  },
+  {
+    "name": "gen_7",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ]
+    },
+    "reviews": [
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 2,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 4,
+            "punch": 4,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-59",
+            "severity": 2
+          }
+        ]
+      },
+      {
+        "persona": "critic",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 5,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 5,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-11",
+            "severity": 3
+          },
+          {
+            "description": "finding-92",
+            "severity": 3
+          }
+        ]
+      },
+      {
+        "persona": "red_team",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 4,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 5,
+            "punch": 4,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 1,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 3,
+            "punch": 1,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "good",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 5,
+            "punch": 2,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 4,
+            "punch": 5,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-10",
+            "severity": 1
+          }
+        ]
+      },
+      {
+        "persona": "critic",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 5,
+            "punch": 4,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 4,
+            "punch": 4,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-12",
+            "severity": 3
+          }
+        ]
+      }
+    ],
+    "expected": -0.12
+  },
+  {
+    "name": "gen_8",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ]
+    },
+    "reviews": [
+      {
+        "persona": "red_team",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 5,
+            "punch": 1,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 3,
+            "punch": 5,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-81",
+            "severity": 4
+          }
+        ]
+      },
+      {
+        "persona": "red_team",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 3,
+            "punch": 5,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 3,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-87",
+            "severity": 2
+          },
+          {
+            "description": "finding-75",
+            "severity": 5
+          }
+        ]
+      },
+      {
+        "persona": "critic",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 1,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 3,
+            "punch": 1,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-6",
+            "severity": 4
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 1,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 2,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "good",
+        "findings": []
+      },
+      {
+        "persona": "critic",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 2,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 5,
+            "punch": 3,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-59",
+            "severity": 1
+          }
+        ]
+      },
+      {
+        "persona": "red_team",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 5,
+            "punch": 2,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 4,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-60",
+            "severity": 1
+          },
+          {
+            "description": "finding-48",
+            "severity": 3
+          }
+        ]
+      }
+    ],
+    "expected": -0.1707
+  },
+  {
+    "name": "gen_9",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ]
+    },
+    "reviews": [
+      {
+        "persona": "red_team",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 4,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 5,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-71",
+            "severity": 3
+          }
+        ]
+      },
+      {
+        "persona": "red_team",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 3,
+            "punch": 5,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 5,
+            "punch": 5,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "good",
+        "findings": []
+      }
+    ],
+    "expected": 0.2
+  },
+  {
+    "name": "gen_10",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ]
+    },
+    "reviews": [
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 3,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 4,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-59",
+            "severity": 5
+          }
+        ]
+      },
+      {
+        "persona": "red_team",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 2,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 5,
+            "punch": 3,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-92",
+            "severity": 2
+          }
+        ]
+      }
+    ],
+    "expected": 0.2
+  },
+  {
+    "name": "gen_11",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ]
+    },
+    "reviews": [
+      {
+        "persona": "red_team",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 2,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 3,
+            "verdict": "good"
+          },
+          {
+            "unit": "outro",
+            "clarity": 3,
+            "punch": 4,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "close",
+            "clarity": 2,
+            "punch": 4,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 4,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 5,
+            "punch": 3,
+            "verdict": "good"
+          },
+          {
+            "unit": "outro",
+            "clarity": 4,
+            "punch": 4,
+            "verdict": "good"
+          },
+          {
+            "unit": "close",
+            "clarity": 4,
+            "punch": 4,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "good",
+        "findings": []
+      },
+      {
+        "persona": "critic",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 2,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 4,
+            "punch": 5,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "outro",
+            "clarity": 2,
+            "punch": 5,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "close",
+            "clarity": 5,
+            "punch": 3,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-91",
+            "severity": 4
+          },
+          {
+            "description": "finding-63",
+            "severity": 3
+          }
+        ]
+      },
+      {
+        "persona": "red_team",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 2,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 5,
+            "punch": 5,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "outro",
+            "clarity": 5,
+            "punch": 1,
+            "verdict": "bad"
+          },
+          {
+            "unit": "close",
+            "clarity": 5,
+            "punch": 3,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-85",
+            "severity": 2
+          },
+          {
+            "description": "finding-9",
+            "severity": 3
+          }
+        ]
+      },
+      {
+        "persona": "red_team",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 4,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 5,
+            "punch": 3,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "outro",
+            "clarity": 5,
+            "punch": 5,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "close",
+            "clarity": 1,
+            "punch": 4,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "good",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 4,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 3,
+            "verdict": "good"
+          },
+          {
+            "unit": "outro",
+            "clarity": 3,
+            "punch": 1,
+            "verdict": "bad"
+          },
+          {
+            "unit": "close",
+            "clarity": 5,
+            "punch": 4,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 3,
+            "punch": 3,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 4,
+            "punch": 4,
+            "verdict": "bad"
+          },
+          {
+            "unit": "outro",
+            "clarity": 2,
+            "punch": 1,
+            "verdict": "bad"
+          },
+          {
+            "unit": "close",
+            "clarity": 2,
+            "punch": 5,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "good",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 3,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 5,
+            "punch": 4,
+            "verdict": "good"
+          },
+          {
+            "unit": "outro",
+            "clarity": 5,
+            "punch": 1,
+            "verdict": "good"
+          },
+          {
+            "unit": "close",
+            "clarity": 3,
+            "punch": 3,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-5",
+            "severity": 5
+          },
+          {
+            "description": "finding-87",
+            "severity": 3
+          }
+        ]
+      }
+    ],
+    "expected": 0.056
+  }
+]

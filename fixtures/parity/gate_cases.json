@@ -1,0 +1,220 @@
+[
+  {
+    "gate": {
+      "type": "word_count",
+      "max_words": 100
+    },
+    "text": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word ",
+    "expected": {
+      "name": "word_count",
+      "passed": false,
+      "findings": [
+        "document is 120 words (max 100)"
+      ]
+    }
+  },
+  {
+    "gate": {
+      "type": "word_count",
+      "max_words": 200
+    },
+    "text": "word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word word ",
+    "expected": {
+      "name": "word_count",
+      "passed": true,
+      "findings": []
+    }
+  },
+  {
+    "gate": {
+      "type": "word_count",
+      "max_words": 2,
+      "section": "Details"
+    },
+    "text": "# Intro\n\nalpha beta gamma\n\n## Details\n\nd d d d d d d d d d d d d d d d d d d d d d d d d d d d d d \n\n# Outro\n\nfinal words here\n",
+    "expected": {
+      "name": "word_count_details",
+      "passed": false,
+      "findings": [
+        "section 'Details' is 30 words (max 2)"
+      ]
+    }
+  },
+  {
+    "gate": {
+      "type": "word_count",
+      "max_words": 50,
+      "section": "Details"
+    },
+    "text": "# Intro\n\nalpha beta gamma\n\n## Details\n\nd d d d d d d d d d d d d d d d d d d d d d d d d d d d d d \n\n# Outro\n\nfinal words here\n",
+    "expected": {
+      "name": "word_count_details",
+      "passed": true,
+      "findings": []
+    }
+  },
+  {
+    "gate": {
+      "type": "word_count",
+      "max_words": 50,
+      "section": "Missing Section"
+    },
+    "text": "# Intro\n\nalpha beta gamma\n\n## Details\n\nd d d d d d d d d d d d d d d d d d d d d d d d d d d d d d \n\n# Outro\n\nfinal words here\n",
+    "expected": {
+      "name": "word_count_missing_section",
+      "passed": false,
+      "findings": [
+        "section 'Missing Section' not found — cannot verify its word count (missing section fails the gate)"
+      ]
+    }
+  },
+  {
+    "gate": {
+      "type": "word_count",
+      "max_words": 4,
+      "line_prefix": "VO:"
+    },
+    "text": "VO: one two three\nSHOT: wide angle\nVO: four five\nOVERLAY: title\n",
+    "expected": {
+      "name": "word_count",
+      "passed": false,
+      "findings": [
+        "5 VO words > 4 (max 4)"
+      ]
+    }
+  },
+  {
+    "gate": {
+      "type": "word_count",
+      "max_words": 10,
+      "line_prefix": "VO:"
+    },
+    "text": "VO: one two three\nSHOT: wide angle\nVO: four five\nOVERLAY: title\n",
+    "expected": {
+      "name": "word_count",
+      "passed": true,
+      "findings": []
+    }
+  },
+  {
+    "gate": {
+      "type": "word_count",
+      "max_words": 10,
+      "line_prefix": "NARRATOR:"
+    },
+    "text": "VO: one two three\nSHOT: wide angle\nVO: four five\nOVERLAY: title\n",
+    "expected": {
+      "name": "word_count",
+      "passed": false,
+      "findings": [
+        "no lines start with 'NARRATOR:' — cannot verify the NARRATOR word count (missing content fails the gate)"
+      ]
+    }
+  },
+  {
+    "gate": {
+      "type": "term_lint",
+      "canonical_terms": {
+        "Quorable": [
+          "quorable",
+          "Qorable"
+        ],
+        "GitHub": [
+          "Github",
+          "github"
+        ]
+      }
+    },
+    "text": "We use quorable and Github daily. Quorable is canonical. Qorable appears too.",
+    "expected": {
+      "name": "term_lint",
+      "passed": false,
+      "findings": [
+        "found 'quorable' ×1 — canonical spelling is 'Quorable'",
+        "found 'Qorable' ×1 — canonical spelling is 'Quorable'",
+        "found 'Github' ×1 — canonical spelling is 'GitHub'"
+      ]
+    }
+  },
+  {
+    "gate": {
+      "type": "term_lint",
+      "canonical_terms": {
+        "Quorable": [
+          "quorable"
+        ]
+      }
+    },
+    "text": "Only Quorable here, spelled right.",
+    "expected": {
+      "name": "term_lint",
+      "passed": true,
+      "findings": []
+    }
+  },
+  {
+    "gate": {
+      "type": "term_lint",
+      "canonical_terms": {
+        "X": [
+          "X"
+        ]
+      }
+    },
+    "text": "alias equals canonical X — must not flag",
+    "expected": {
+      "name": "term_lint",
+      "passed": true,
+      "findings": []
+    }
+  },
+  {
+    "gate": {
+      "type": "banned_elements",
+      "patterns": [
+        "as an AI",
+        "in today's fast-paced"
+      ]
+    },
+    "text": "This reads as an AI wrote it. Also fine text.",
+    "expected": {
+      "name": "banned_elements",
+      "passed": false,
+      "findings": [
+        "banned pattern 'as an AI' matched at char 11: 'as an AI wrote it. Also fine text.'"
+      ]
+    }
+  },
+  {
+    "gate": {
+      "type": "banned_elements",
+      "patterns": [
+        "as an AI"
+      ]
+    },
+    "text": "Clean document, nothing banned.",
+    "expected": {
+      "name": "banned_elements",
+      "passed": true,
+      "findings": []
+    }
+  },
+  {
+    "gate": {
+      "type": "banned_elements",
+      "patterns": [
+        "TODO",
+        "\\bFIXME\\b"
+      ]
+    },
+    "text": "line one\nTODO finish this\nFIXME: later\n",
+    "expected": {
+      "name": "banned_elements",
+      "passed": false,
+      "findings": [
+        "banned pattern 'TODO' matched at char 9: 'TODO finish this'",
+        "banned pattern '\\\\bFIXME\\\\b' matched at char 26: 'FIXME: later'"
+      ]
+    }
+  }
+]

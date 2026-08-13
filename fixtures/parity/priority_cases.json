@@ -1,0 +1,1052 @@
+[
+  {
+    "impact": 1,
+    "ease": 1,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 1,
+    "ease": 1,
+    "consensus": 0.25,
+    "expected": 0.125
+  },
+  {
+    "impact": 1,
+    "ease": 1,
+    "consensus": 0.33,
+    "expected": 0.165
+  },
+  {
+    "impact": 1,
+    "ease": 1,
+    "consensus": 0.5,
+    "expected": 0.25
+  },
+  {
+    "impact": 1,
+    "ease": 1,
+    "consensus": 0.6666666666666666,
+    "expected": 0.3333
+  },
+  {
+    "impact": 1,
+    "ease": 1,
+    "consensus": 0.75,
+    "expected": 0.375
+  },
+  {
+    "impact": 1,
+    "ease": 1,
+    "consensus": 1.0,
+    "expected": 0.5
+  },
+  {
+    "impact": 1,
+    "ease": 2,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 1,
+    "ease": 2,
+    "consensus": 0.25,
+    "expected": 0.0833
+  },
+  {
+    "impact": 1,
+    "ease": 2,
+    "consensus": 0.33,
+    "expected": 0.11
+  },
+  {
+    "impact": 1,
+    "ease": 2,
+    "consensus": 0.5,
+    "expected": 0.1667
+  },
+  {
+    "impact": 1,
+    "ease": 2,
+    "consensus": 0.6666666666666666,
+    "expected": 0.2222
+  },
+  {
+    "impact": 1,
+    "ease": 2,
+    "consensus": 0.75,
+    "expected": 0.25
+  },
+  {
+    "impact": 1,
+    "ease": 2,
+    "consensus": 1.0,
+    "expected": 0.3333
+  },
+  {
+    "impact": 1,
+    "ease": 3,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 1,
+    "ease": 3,
+    "consensus": 0.25,
+    "expected": 0.0625
+  },
+  {
+    "impact": 1,
+    "ease": 3,
+    "consensus": 0.33,
+    "expected": 0.0825
+  },
+  {
+    "impact": 1,
+    "ease": 3,
+    "consensus": 0.5,
+    "expected": 0.125
+  },
+  {
+    "impact": 1,
+    "ease": 3,
+    "consensus": 0.6666666666666666,
+    "expected": 0.1667
+  },
+  {
+    "impact": 1,
+    "ease": 3,
+    "consensus": 0.75,
+    "expected": 0.1875
+  },
+  {
+    "impact": 1,
+    "ease": 3,
+    "consensus": 1.0,
+    "expected": 0.25
+  },
+  {
+    "impact": 1,
+    "ease": 4,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 1,
+    "ease": 4,
+    "consensus": 0.25,
+    "expected": 0.05
+  },
+  {
+    "impact": 1,
+    "ease": 4,
+    "consensus": 0.33,
+    "expected": 0.066
+  },
+  {
+    "impact": 1,
+    "ease": 4,
+    "consensus": 0.5,
+    "expected": 0.1
+  },
+  {
+    "impact": 1,
+    "ease": 4,
+    "consensus": 0.6666666666666666,
+    "expected": 0.1333
+  },
+  {
+    "impact": 1,
+    "ease": 4,
+    "consensus": 0.75,
+    "expected": 0.15
+  },
+  {
+    "impact": 1,
+    "ease": 4,
+    "consensus": 1.0,
+    "expected": 0.2
+  },
+  {
+    "impact": 1,
+    "ease": 5,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 1,
+    "ease": 5,
+    "consensus": 0.25,
+    "expected": 0.0417
+  },
+  {
+    "impact": 1,
+    "ease": 5,
+    "consensus": 0.33,
+    "expected": 0.055
+  },
+  {
+    "impact": 1,
+    "ease": 5,
+    "consensus": 0.5,
+    "expected": 0.0833
+  },
+  {
+    "impact": 1,
+    "ease": 5,
+    "consensus": 0.6666666666666666,
+    "expected": 0.1111
+  },
+  {
+    "impact": 1,
+    "ease": 5,
+    "consensus": 0.75,
+    "expected": 0.125
+  },
+  {
+    "impact": 1,
+    "ease": 5,
+    "consensus": 1.0,
+    "expected": 0.1667
+  },
+  {
+    "impact": 2,
+    "ease": 1,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 2,
+    "ease": 1,
+    "consensus": 0.25,
+    "expected": 0.5
+  },
+  {
+    "impact": 2,
+    "ease": 1,
+    "consensus": 0.33,
+    "expected": 0.66
+  },
+  {
+    "impact": 2,
+    "ease": 1,
+    "consensus": 0.5,
+    "expected": 1.0
+  },
+  {
+    "impact": 2,
+    "ease": 1,
+    "consensus": 0.6666666666666666,
+    "expected": 1.3333
+  },
+  {
+    "impact": 2,
+    "ease": 1,
+    "consensus": 0.75,
+    "expected": 1.5
+  },
+  {
+    "impact": 2,
+    "ease": 1,
+    "consensus": 1.0,
+    "expected": 2.0
+  },
+  {
+    "impact": 2,
+    "ease": 2,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 2,
+    "ease": 2,
+    "consensus": 0.25,
+    "expected": 0.3333
+  },
+  {
+    "impact": 2,
+    "ease": 2,
+    "consensus": 0.33,
+    "expected": 0.44
+  },
+  {
+    "impact": 2,
+    "ease": 2,
+    "consensus": 0.5,
+    "expected": 0.6667
+  },
+  {
+    "impact": 2,
+    "ease": 2,
+    "consensus": 0.6666666666666666,
+    "expected": 0.8889
+  },
+  {
+    "impact": 2,
+    "ease": 2,
+    "consensus": 0.75,
+    "expected": 1.0
+  },
+  {
+    "impact": 2,
+    "ease": 2,
+    "consensus": 1.0,
+    "expected": 1.3333
+  },
+  {
+    "impact": 2,
+    "ease": 3,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 2,
+    "ease": 3,
+    "consensus": 0.25,
+    "expected": 0.25
+  },
+  {
+    "impact": 2,
+    "ease": 3,
+    "consensus": 0.33,
+    "expected": 0.33
+  },
+  {
+    "impact": 2,
+    "ease": 3,
+    "consensus": 0.5,
+    "expected": 0.5
+  },
+  {
+    "impact": 2,
+    "ease": 3,
+    "consensus": 0.6666666666666666,
+    "expected": 0.6667
+  },
+  {
+    "impact": 2,
+    "ease": 3,
+    "consensus": 0.75,
+    "expected": 0.75
+  },
+  {
+    "impact": 2,
+    "ease": 3,
+    "consensus": 1.0,
+    "expected": 1.0
+  },
+  {
+    "impact": 2,
+    "ease": 4,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 2,
+    "ease": 4,
+    "consensus": 0.25,
+    "expected": 0.2
+  },
+  {
+    "impact": 2,
+    "ease": 4,
+    "consensus": 0.33,
+    "expected": 0.264
+  },
+  {
+    "impact": 2,
+    "ease": 4,
+    "consensus": 0.5,
+    "expected": 0.4
+  },
+  {
+    "impact": 2,
+    "ease": 4,
+    "consensus": 0.6666666666666666,
+    "expected": 0.5333
+  },
+  {
+    "impact": 2,
+    "ease": 4,
+    "consensus": 0.75,
+    "expected": 0.6
+  },
+  {
+    "impact": 2,
+    "ease": 4,
+    "consensus": 1.0,
+    "expected": 0.8
+  },
+  {
+    "impact": 2,
+    "ease": 5,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 2,
+    "ease": 5,
+    "consensus": 0.25,
+    "expected": 0.1667
+  },
+  {
+    "impact": 2,
+    "ease": 5,
+    "consensus": 0.33,
+    "expected": 0.22
+  },
+  {
+    "impact": 2,
+    "ease": 5,
+    "consensus": 0.5,
+    "expected": 0.3333
+  },
+  {
+    "impact": 2,
+    "ease": 5,
+    "consensus": 0.6666666666666666,
+    "expected": 0.4444
+  },
+  {
+    "impact": 2,
+    "ease": 5,
+    "consensus": 0.75,
+    "expected": 0.5
+  },
+  {
+    "impact": 2,
+    "ease": 5,
+    "consensus": 1.0,
+    "expected": 0.6667
+  },
+  {
+    "impact": 3,
+    "ease": 1,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 3,
+    "ease": 1,
+    "consensus": 0.25,
+    "expected": 1.125
+  },
+  {
+    "impact": 3,
+    "ease": 1,
+    "consensus": 0.33,
+    "expected": 1.485
+  },
+  {
+    "impact": 3,
+    "ease": 1,
+    "consensus": 0.5,
+    "expected": 2.25
+  },
+  {
+    "impact": 3,
+    "ease": 1,
+    "consensus": 0.6666666666666666,
+    "expected": 3.0
+  },
+  {
+    "impact": 3,
+    "ease": 1,
+    "consensus": 0.75,
+    "expected": 3.375
+  },
+  {
+    "impact": 3,
+    "ease": 1,
+    "consensus": 1.0,
+    "expected": 4.5
+  },
+  {
+    "impact": 3,
+    "ease": 2,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 3,
+    "ease": 2,
+    "consensus": 0.25,
+    "expected": 0.75
+  },
+  {
+    "impact": 3,
+    "ease": 2,
+    "consensus": 0.33,
+    "expected": 0.99
+  },
+  {
+    "impact": 3,
+    "ease": 2,
+    "consensus": 0.5,
+    "expected": 1.5
+  },
+  {
+    "impact": 3,
+    "ease": 2,
+    "consensus": 0.6666666666666666,
+    "expected": 2.0
+  },
+  {
+    "impact": 3,
+    "ease": 2,
+    "consensus": 0.75,
+    "expected": 2.25
+  },
+  {
+    "impact": 3,
+    "ease": 2,
+    "consensus": 1.0,
+    "expected": 3.0
+  },
+  {
+    "impact": 3,
+    "ease": 3,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 3,
+    "ease": 3,
+    "consensus": 0.25,
+    "expected": 0.5625
+  },
+  {
+    "impact": 3,
+    "ease": 3,
+    "consensus": 0.33,
+    "expected": 0.7425
+  },
+  {
+    "impact": 3,
+    "ease": 3,
+    "consensus": 0.5,
+    "expected": 1.125
+  },
+  {
+    "impact": 3,
+    "ease": 3,
+    "consensus": 0.6666666666666666,
+    "expected": 1.5
+  },
+  {
+    "impact": 3,
+    "ease": 3,
+    "consensus": 0.75,
+    "expected": 1.6875
+  },
+  {
+    "impact": 3,
+    "ease": 3,
+    "consensus": 1.0,
+    "expected": 2.25
+  },
+  {
+    "impact": 3,
+    "ease": 4,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 3,
+    "ease": 4,
+    "consensus": 0.25,
+    "expected": 0.45
+  },
+  {
+    "impact": 3,
+    "ease": 4,
+    "consensus": 0.33,
+    "expected": 0.594
+  },
+  {
+    "impact": 3,
+    "ease": 4,
+    "consensus": 0.5,
+    "expected": 0.9
+  },
+  {
+    "impact": 3,
+    "ease": 4,
+    "consensus": 0.6666666666666666,
+    "expected": 1.2
+  },
+  {
+    "impact": 3,
+    "ease": 4,
+    "consensus": 0.75,
+    "expected": 1.35
+  },
+  {
+    "impact": 3,
+    "ease": 4,
+    "consensus": 1.0,
+    "expected": 1.8
+  },
+  {
+    "impact": 3,
+    "ease": 5,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 3,
+    "ease": 5,
+    "consensus": 0.25,
+    "expected": 0.375
+  },
+  {
+    "impact": 3,
+    "ease": 5,
+    "consensus": 0.33,
+    "expected": 0.495
+  },
+  {
+    "impact": 3,
+    "ease": 5,
+    "consensus": 0.5,
+    "expected": 0.75
+  },
+  {
+    "impact": 3,
+    "ease": 5,
+    "consensus": 0.6666666666666666,
+    "expected": 1.0
+  },
+  {
+    "impact": 3,
+    "ease": 5,
+    "consensus": 0.75,
+    "expected": 1.125
+  },
+  {
+    "impact": 3,
+    "ease": 5,
+    "consensus": 1.0,
+    "expected": 1.5
+  },
+  {
+    "impact": 4,
+    "ease": 1,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 4,
+    "ease": 1,
+    "consensus": 0.25,
+    "expected": 2.0
+  },
+  {
+    "impact": 4,
+    "ease": 1,
+    "consensus": 0.33,
+    "expected": 2.64
+  },
+  {
+    "impact": 4,
+    "ease": 1,
+    "consensus": 0.5,
+    "expected": 4.0
+  },
+  {
+    "impact": 4,
+    "ease": 1,
+    "consensus": 0.6666666666666666,
+    "expected": 5.3333
+  },
+  {
+    "impact": 4,
+    "ease": 1,
+    "consensus": 0.75,
+    "expected": 6.0
+  },
+  {
+    "impact": 4,
+    "ease": 1,
+    "consensus": 1.0,
+    "expected": 8.0
+  },
+  {
+    "impact": 4,
+    "ease": 2,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 4,
+    "ease": 2,
+    "consensus": 0.25,
+    "expected": 1.3333
+  },
+  {
+    "impact": 4,
+    "ease": 2,
+    "consensus": 0.33,
+    "expected": 1.76
+  },
+  {
+    "impact": 4,
+    "ease": 2,
+    "consensus": 0.5,
+    "expected": 2.6667
+  },
+  {
+    "impact": 4,
+    "ease": 2,
+    "consensus": 0.6666666666666666,
+    "expected": 3.5556
+  },
+  {
+    "impact": 4,
+    "ease": 2,
+    "consensus": 0.75,
+    "expected": 4.0
+  },
+  {
+    "impact": 4,
+    "ease": 2,
+    "consensus": 1.0,
+    "expected": 5.3333
+  },
+  {
+    "impact": 4,
+    "ease": 3,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 4,
+    "ease": 3,
+    "consensus": 0.25,
+    "expected": 1.0
+  },
+  {
+    "impact": 4,
+    "ease": 3,
+    "consensus": 0.33,
+    "expected": 1.32
+  },
+  {
+    "impact": 4,
+    "ease": 3,
+    "consensus": 0.5,
+    "expected": 2.0
+  },
+  {
+    "impact": 4,
+    "ease": 3,
+    "consensus": 0.6666666666666666,
+    "expected": 2.6667
+  },
+  {
+    "impact": 4,
+    "ease": 3,
+    "consensus": 0.75,
+    "expected": 3.0
+  },
+  {
+    "impact": 4,
+    "ease": 3,
+    "consensus": 1.0,
+    "expected": 4.0
+  },
+  {
+    "impact": 4,
+    "ease": 4,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 4,
+    "ease": 4,
+    "consensus": 0.25,
+    "expected": 0.8
+  },
+  {
+    "impact": 4,
+    "ease": 4,
+    "consensus": 0.33,
+    "expected": 1.056
+  },
+  {
+    "impact": 4,
+    "ease": 4,
+    "consensus": 0.5,
+    "expected": 1.6
+  },
+  {
+    "impact": 4,
+    "ease": 4,
+    "consensus": 0.6666666666666666,
+    "expected": 2.1333
+  },
+  {
+    "impact": 4,
+    "ease": 4,
+    "consensus": 0.75,
+    "expected": 2.4
+  },
+  {
+    "impact": 4,
+    "ease": 4,
+    "consensus": 1.0,
+    "expected": 3.2
+  },
+  {
+    "impact": 4,
+    "ease": 5,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 4,
+    "ease": 5,
+    "consensus": 0.25,
+    "expected": 0.6667
+  },
+  {
+    "impact": 4,
+    "ease": 5,
+    "consensus": 0.33,
+    "expected": 0.88
+  },
+  {
+    "impact": 4,
+    "ease": 5,
+    "consensus": 0.5,
+    "expected": 1.3333
+  },
+  {
+    "impact": 4,
+    "ease": 5,
+    "consensus": 0.6666666666666666,
+    "expected": 1.7778
+  },
+  {
+    "impact": 4,
+    "ease": 5,
+    "consensus": 0.75,
+    "expected": 2.0
+  },
+  {
+    "impact": 4,
+    "ease": 5,
+    "consensus": 1.0,
+    "expected": 2.6667
+  },
+  {
+    "impact": 5,
+    "ease": 1,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 5,
+    "ease": 1,
+    "consensus": 0.25,
+    "expected": 3.125
+  },
+  {
+    "impact": 5,
+    "ease": 1,
+    "consensus": 0.33,
+    "expected": 4.125
+  },
+  {
+    "impact": 5,
+    "ease": 1,
+    "consensus": 0.5,
+    "expected": 6.25
+  },
+  {
+    "impact": 5,
+    "ease": 1,
+    "consensus": 0.6666666666666666,
+    "expected": 8.3333
+  },
+  {
+    "impact": 5,
+    "ease": 1,
+    "consensus": 0.75,
+    "expected": 9.375
+  },
+  {
+    "impact": 5,
+    "ease": 1,
+    "consensus": 1.0,
+    "expected": 12.5
+  },
+  {
+    "impact": 5,
+    "ease": 2,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 5,
+    "ease": 2,
+    "consensus": 0.25,
+    "expected": 2.0833
+  },
+  {
+    "impact": 5,
+    "ease": 2,
+    "consensus": 0.33,
+    "expected": 2.75
+  },
+  {
+    "impact": 5,
+    "ease": 2,
+    "consensus": 0.5,
+    "expected": 4.1667
+  },
+  {
+    "impact": 5,
+    "ease": 2,
+    "consensus": 0.6666666666666666,
+    "expected": 5.5556
+  },
+  {
+    "impact": 5,
+    "ease": 2,
+    "consensus": 0.75,
+    "expected": 6.25
+  },
+  {
+    "impact": 5,
+    "ease": 2,
+    "consensus": 1.0,
+    "expected": 8.3333
+  },
+  {
+    "impact": 5,
+    "ease": 3,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 5,
+    "ease": 3,
+    "consensus": 0.25,
+    "expected": 1.5625
+  },
+  {
+    "impact": 5,
+    "ease": 3,
+    "consensus": 0.33,
+    "expected": 2.0625
+  },
+  {
+    "impact": 5,
+    "ease": 3,
+    "consensus": 0.5,
+    "expected": 3.125
+  },
+  {
+    "impact": 5,
+    "ease": 3,
+    "consensus": 0.6666666666666666,
+    "expected": 4.1667
+  },
+  {
+    "impact": 5,
+    "ease": 3,
+    "consensus": 0.75,
+    "expected": 4.6875
+  },
+  {
+    "impact": 5,
+    "ease": 3,
+    "consensus": 1.0,
+    "expected": 6.25
+  },
+  {
+    "impact": 5,
+    "ease": 4,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 5,
+    "ease": 4,
+    "consensus": 0.25,
+    "expected": 1.25
+  },
+  {
+    "impact": 5,
+    "ease": 4,
+    "consensus": 0.33,
+    "expected": 1.65
+  },
+  {
+    "impact": 5,
+    "ease": 4,
+    "consensus": 0.5,
+    "expected": 2.5
+  },
+  {
+    "impact": 5,
+    "ease": 4,
+    "consensus": 0.6666666666666666,
+    "expected": 3.3333
+  },
+  {
+    "impact": 5,
+    "ease": 4,
+    "consensus": 0.75,
+    "expected": 3.75
+  },
+  {
+    "impact": 5,
+    "ease": 4,
+    "consensus": 1.0,
+    "expected": 5.0
+  },
+  {
+    "impact": 5,
+    "ease": 5,
+    "consensus": 0.0,
+    "expected": 0.0
+  },
+  {
+    "impact": 5,
+    "ease": 5,
+    "consensus": 0.25,
+    "expected": 1.0417
+  },
+  {
+    "impact": 5,
+    "ease": 5,
+    "consensus": 0.33,
+    "expected": 1.375
+  },
+  {
+    "impact": 5,
+    "ease": 5,
+    "consensus": 0.5,
+    "expected": 2.0833
+  },
+  {
+    "impact": 5,
+    "ease": 5,
+    "consensus": 0.6666666666666666,
+    "expected": 2.7778
+  },
+  {
+    "impact": 5,
+    "ease": 5,
+    "consensus": 0.75,
+    "expected": 3.125
+  },
+  {
+    "impact": 5,
+    "ease": 5,
+    "consensus": 1.0,
+    "expected": 4.1667
+  }
+]

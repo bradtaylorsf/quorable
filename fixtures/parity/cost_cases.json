@@ -1,0 +1,179 @@
+[
+  {
+    "name": "two_reviewers_with_drafter",
+    "config": {
+      "models": {
+        "reviewers": [
+          {
+            "id": "anthropic/claude-sonnet-5",
+            "temperature": 0.2
+          },
+          {
+            "id": "openai/gpt-5.5",
+            "temperature": 0.2
+          }
+        ],
+        "synthesizer": {
+          "id": "anthropic/claude-sonnet-5",
+          "temperature": 0.1
+        },
+        "held_out": {
+          "id": "x-ai/grok-4.3",
+          "temperature": 0.2
+        },
+        "drafter": {
+          "id": "anthropic/claude-sonnet-5",
+          "temperature": 0.7
+        }
+      },
+      "pipeline": {
+        "runs_per_persona": 2
+      },
+      "personas": [
+        "praiser",
+        "critic"
+      ]
+    },
+    "entries": [
+      {
+        "name": "primary",
+        "tier": 1,
+        "send_to": [
+          "stage1",
+          "stage2",
+          "draft"
+        ]
+      },
+      {
+        "name": "canon",
+        "tier": 2,
+        "send_to": [
+          "stage1_critic",
+          "draft"
+        ]
+      },
+      {
+        "name": "notes",
+        "tier": 3,
+        "send_to": []
+      }
+    ],
+    "documents": {
+      "primary": 8000,
+      "canon": 24000,
+      "notes": 500
+    },
+    "system_prompt_chars": 3000,
+    "persona_overlay_chars": {
+      "praiser": 1200,
+      "critic": 1600
+    },
+    "include_drafter": true,
+    "iterations": 3,
+    "expected": {
+      "model_estimates": [
+        {
+          "model_id": "anthropic/claude-sonnet-5",
+          "num_calls": 4,
+          "input_tokens_per_call": 6600,
+          "output_tokens_per_call": 4000,
+          "input_cost_usd": 0.0528,
+          "output_cost_usd": 0.16
+        },
+        {
+          "model_id": "openai/gpt-5.5",
+          "num_calls": 4,
+          "input_tokens_per_call": 6600,
+          "output_tokens_per_call": 4000,
+          "input_cost_usd": 0.132,
+          "output_cost_usd": 0.48
+        },
+        {
+          "model_id": "anthropic/claude-sonnet-5",
+          "num_calls": 1,
+          "input_tokens_per_call": 34000,
+          "output_tokens_per_call": 5000,
+          "input_cost_usd": 0.068,
+          "output_cost_usd": 0.05
+        },
+        {
+          "model_id": "anthropic/claude-sonnet-5",
+          "num_calls": 1,
+          "input_tokens_per_call": 10125,
+          "output_tokens_per_call": 4000,
+          "input_cost_usd": 0.0203,
+          "output_cost_usd": 0.04
+        }
+      ],
+      "total_usd": 1.0030999999999999,
+      "per_loop_usd": 3.0092999999999996,
+      "iterations": 3
+    }
+  },
+  {
+    "name": "unknown_model_default_pricing",
+    "config": {
+      "models": {
+        "reviewers": [
+          {
+            "id": "someone/unknown-model",
+            "temperature": 0.2
+          }
+        ],
+        "synthesizer": {
+          "id": "someone/unknown-model",
+          "temperature": 0.1
+        },
+        "held_out": {
+          "id": "x-ai/grok-4.3",
+          "temperature": 0.2
+        }
+      },
+      "pipeline": {
+        "runs_per_persona": 1
+      },
+      "personas": [
+        "praiser"
+      ]
+    },
+    "entries": [
+      {
+        "name": "primary",
+        "tier": 1,
+        "send_to": [
+          "stage1"
+        ]
+      }
+    ],
+    "documents": {
+      "primary": 4000
+    },
+    "system_prompt_chars": 1000,
+    "persona_overlay_chars": {},
+    "include_drafter": false,
+    "iterations": 1,
+    "expected": {
+      "model_estimates": [
+        {
+          "model_id": "someone/unknown-model",
+          "num_calls": 1,
+          "input_tokens_per_call": 2000,
+          "output_tokens_per_call": 4000,
+          "input_cost_usd": 0.002,
+          "output_cost_usd": 0.02
+        },
+        {
+          "model_id": "someone/unknown-model",
+          "num_calls": 1,
+          "input_tokens_per_call": 5500,
+          "output_tokens_per_call": 5000,
+          "input_cost_usd": 0.0055,
+          "output_cost_usd": 0.025
+        }
+      ],
+      "total_usd": 0.0525,
+      "per_loop_usd": 0.0525,
+      "iterations": 1
+    }
+  }
+]

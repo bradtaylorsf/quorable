@@ -1,0 +1,85 @@
+[
+  {
+    "input": "1. Hook (cold open)",
+    "rules": [],
+    "expected": "hook"
+  },
+  {
+    "input": "1. Hook (cold open)",
+    "rules": [
+      [
+        "cold open",
+        "hook"
+      ]
+    ],
+    "expected": "hook"
+  },
+  {
+    "input": "The Cold Open bit",
+    "rules": [
+      [
+        "cold open",
+        "hook"
+      ],
+      [
+        "cta",
+        "outro"
+      ]
+    ],
+    "expected": "hook"
+  },
+  {
+    "input": "CTA section",
+    "rules": [
+      [
+        "cold open",
+        "hook"
+      ],
+      [
+        "cta",
+        "outro"
+      ]
+    ],
+    "expected": "outro"
+  },
+  {
+    "input": "  BODY  ",
+    "rules": [],
+    "expected": "body"
+  },
+  {
+    "input": "2) Second Act — the middle",
+    "rules": [],
+    "expected": "second act the middle"
+  },
+  {
+    "input": "3.Payoff!!!",
+    "rules": [],
+    "expected": "payoff"
+  },
+  {
+    "input": "Unit #4: The Close",
+    "rules": [],
+    "expected": "unit 4 the close"
+  },
+  {
+    "input": "12. (misc) Trailing (extra) Parens",
+    "rules": [],
+    "expected": "trailing parens"
+  },
+  {
+    "input": "MiXeD CaSe   spacing",
+    "rules": [],
+    "expected": "mixed case spacing"
+  },
+  {
+    "input": "",
+    "rules": [],
+    "expected": ""
+  },
+  {
+    "input": "42",
+    "rules": [],
+    "expected": ""
+  }
+]

@@ -1,0 +1,76 @@
+[
+  {
+    "fences": [
+      {
+        "input": "```json\n{\"a\": 1}\n```",
+        "expected_stripped": "{\"a\": 1}"
+      },
+      {
+        "input": "```\n{\"a\": 1}\n```",
+        "expected_stripped": "{\"a\": 1}"
+      },
+      {
+        "input": "{\"a\": 1}",
+        "expected_stripped": "{\"a\": 1}"
+      },
+      {
+        "input": "  ```json\n{\"a\": [1, 2]}\n```  ",
+        "expected_stripped": "{\"a\": [1, 2]}"
+      },
+      {
+        "input": "",
+        "expected_stripped": ""
+      },
+      {
+        "input": null,
+        "expected_stripped": ""
+      },
+      {
+        "input": "no fences at all",
+        "expected_stripped": "no fences at all"
+      },
+      {
+        "input": "```json\n{\"nested\": \"```code```\"}\n```",
+        "expected_stripped": "{\"nested\": \"```code```\"}"
+      }
+    ],
+    "control_chars": [
+      {
+        "input": "clean text",
+        "expected": "clean text"
+      },
+      {
+        "input": "null\u0000byte",
+        "expected": "nullbyte"
+      },
+      {
+        "input": "back\bspace",
+        "expected": "backspace"
+      },
+      {
+        "input": "vertical\u000btab",
+        "expected": "vertical\\ntab"
+      },
+      {
+        "input": "form\ffeed",
+        "expected": "form\\nfeed"
+      },
+      {
+        "input": "shift\u000eout\u000fin",
+        "expected": "shiftoutin"
+      },
+      {
+        "input": "bell\u0007char and esc\u001b[0m",
+        "expected": "bell\\u0007char and esc\\u001b[0m"
+      },
+      {
+        "input": "",
+        "expected": ""
+      },
+      {
+        "input": null,
+        "expected": ""
+      }
+    ]
+  }
+]

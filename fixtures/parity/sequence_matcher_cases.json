@@ -1,0 +1,82 @@
+[
+  {
+    "a": "the hook lands weakly",
+    "b": "the hook lands weakly",
+    "expected": 1.0
+  },
+  {
+    "a": "the hook lands weakly",
+    "b": "the hook is weak",
+    "expected": 0.8108108108108109
+  },
+  {
+    "a": "canon drift in act two",
+    "b": "act two drifts from canon",
+    "expected": 0.2978723404255319
+  },
+  {
+    "a": "",
+    "b": "",
+    "expected": 1.0
+  },
+  {
+    "a": "abc",
+    "b": "",
+    "expected": 0.0
+  },
+  {
+    "a": "short",
+    "b": "entirely different words",
+    "expected": 0.13793103448275862
+  },
+  {
+    "a": "sags buried because pacing is contradicts under pacing two drift under setup is buried the pacing is contradicts under setup is buried in act canon midway bible hook is buried because act canon buried bible pacing is buried the premise canon buried because pacing two weakly in pacing canon weakly bible hook two buried the act lands drift bible hook",
+    "b": "sags buried because pacing is contradicts under pacing two drift under setup is buried the pacing is contradicts under setup is buried in act canon midway bible opening is buried because act canon buried bible pacing is buried the premise canon buried because pacing two weakly in pacing canon weakly bible opening two buried the act lands drift bible opening",
+    "expected": 0.5557122708039492
+  },
+  {
+    "a": "sags contradicts the pacing canon contradicts in setup lands buried in premise canon weakly the setup sags buried bible act canon buried the hook is drift the act lands contradicts the premise lands midway in hook canon buried under hook is contradicts the setup sags weakly under pacing canon contradicts under setup two weakly in pacing is midway the act is drift in act canon midway because setup lands contradicts in pacing sags midway bible act canon contradicts bible hook",
+    "b": "two drift bible pacing sags weakly bible act lands buried under act sags weakly bible pacing sags weakly because pacing is midway bible hook two contradicts because pacing lands midway under pacing two buried under pacing is drift bible pacing is midway the act sags midway in hook canon midway under hook canon midway because act is buried bible setup canon buried under pacing canon weakly under hook canon midway the premise sags drift bible pacing is midway in setup",
+    "expected": 0.035864978902953586
+  },
+  {
+    "a": "contradicts in act is weakly because hook sags buried because setup two midway the pacing",
+    "b": "contradicts in act is wea",
+    "expected": 0.43859649122807015
+  },
+  {
+    "a": "setup lands buried in setup two weakly the setup sags buried in premise lands weakly in premise sags buried under act two buried the setup is contradicts in hook sags buried because setup",
+    "b": "setup lands buried in setup two weakly the setup sags buried in premise lands weakly in premise sags buried under act two buried the setup is contradicts in ho",
+    "expected": 0.9190751445086706
+  },
+  {
+    "a": "premise canon buried the premise is drift bible setup sags buried because act",
+    "b": "premise canon buried the premi",
+    "expected": 0.5607476635514018
+  },
+  {
+    "a": "hook two buried because act sags midway the premise sags midway in hook",
+    "b": "hook two buried because act sags midway the premise s",
+    "expected": 0.8548387096774194
+  },
+  {
+    "a": "act two drift in pacing canon drift in act is weakly the hook",
+    "b": "act two drift in pacing canon drift in ",
+    "expected": 0.78
+  },
+  {
+    "a": "premise is contradicts the act sags drift because setup is contradicts the hook sags contradicts bible setup sags weakly because act sags weakly bible hook sags drift under setup",
+    "b": "premise is contradicts the act s",
+    "expected": 0.3047619047619048
+  },
+  {
+    "a": "premise two midway bible act two buried because hook",
+    "b": "premise two midway b",
+    "expected": 0.5555555555555556
+  },
+  {
+    "a": "setup is drift the act is drift under setup two weakly the act canon buried in hook",
+    "b": "setup is drift the act ",
+    "expected": 0.4339622641509434
+  }
+]

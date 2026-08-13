@@ -1,0 +1,3912 @@
+[
+  {
+    "name": "attr_0",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ],
+      "ship_gates": {
+        "composite_min": 3.0,
+        "dimension_min": 2.0,
+        "weights": null,
+        "composite_exclude_personas": [],
+        "blocking": null
+      }
+    },
+    "reviews": [
+      {
+        "persona": "critic",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 1,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "good",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 3,
+            "punch": 1,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-65",
+            "severity": 5
+          }
+        ]
+      },
+      {
+        "persona": "critic",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 1,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-59",
+            "severity": 1
+          },
+          {
+            "description": "finding-68",
+            "severity": 2
+          }
+        ]
+      },
+      {
+        "persona": "critic",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 2,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-28",
+            "severity": 1
+          }
+        ]
+      },
+      {
+        "persona": "critic",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 1,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 5,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-44",
+            "severity": 5
+          },
+          {
+            "description": "finding-75",
+            "severity": 4
+          }
+        ]
+      }
+    ],
+    "personas": [
+      "critic",
+      "praiser",
+      "critic",
+      "critic",
+      "critic",
+      "red_team"
+    ],
+    "synthesis": {
+      "consensus_weaknesses": [
+        {
+          "description": "canon drift in hook",
+          "unit": "hook",
+          "severity": "major",
+          "reviewer_count": 2,
+          "suggested_fix": "fix it"
+        }
+      ],
+      "ranked_fixes": []
+    },
+    "gate_results": {
+      "word_count": {
+        "passed": true,
+        "findings": []
+      }
+    },
+    "expected": {
+      "composite": 2.3333,
+      "per_dimension": {
+        "clarity": 2.8333,
+        "punch": 1.8333
+      },
+      "ship_ok": false,
+      "reasons": [
+        "composite 2.33 < min 3.00",
+        "dimensions below min 2.00: punch=1.83"
+      ]
+    }
+  },
+  {
+    "name": "attr_1",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ],
+      "ship_gates": {
+        "composite_min": 3.5,
+        "dimension_min": 2.5,
+        "weights": {
+          "clarity": 1.0,
+          "punch": 2.0
+        },
+        "composite_exclude_personas": [],
+        "blocking": null
+      }
+    },
+    "reviews": [
+      {
+        "persona": "critic",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 1,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 3,
+            "punch": 4,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-21",
+            "severity": 5
+          }
+        ]
+      },
+      {
+        "persona": "red_team",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 5,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 1,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-36",
+            "severity": 1
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 4,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 5,
+            "punch": 1,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-11",
+            "severity": 1
+          },
+          {
+            "description": "finding-10",
+            "severity": 4
+          }
+        ]
+      },
+      {
+        "persona": "red_team",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 2,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 4,
+            "punch": 2,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-76",
+            "severity": 5
+          },
+          {
+            "description": "finding-4",
+            "severity": 2
+          }
+        ]
+      },
+      {
+        "persona": "red_team",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 5,
+            "punch": 4,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 4,
+            "punch": 5,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-81",
+            "severity": 2
+          }
+        ]
+      },
+      {
+        "persona": "critic",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 3,
+            "punch": 3,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 3,
+            "punch": 3,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": []
+      }
+    ],
+    "personas": [
+      "critic",
+      "red_team",
+      "praiser",
+      "red_team",
+      "red_team",
+      "critic"
+    ],
+    "synthesis": null,
+    "gate_results": {
+      "word_count": {
+        "passed": false,
+        "findings": [
+          "document is 999 words (max 500)"
+        ]
+      }
+    },
+    "expected": {
+      "composite": 3.0278,
+      "per_dimension": {
+        "clarity": 3.25,
+        "punch": 2.9167
+      },
+      "ship_ok": false,
+      "reasons": [
+        "no synthesis output",
+        "mechanical gates failed: word_count",
+        "composite 3.03 < min 3.50"
+      ]
+    }
+  },
+  {
+    "name": "attr_2",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ],
+      "ship_gates": {
+        "composite_min": 3.0,
+        "dimension_min": 2.0,
+        "weights": null,
+        "composite_exclude_personas": [
+          "red_team"
+        ],
+        "blocking": "severity_1_findings"
+      }
+    },
+    "reviews": [
+      {
+        "persona": "red_team",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 2,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-60",
+            "severity": 4
+          },
+          {
+            "description": "finding-65",
+            "severity": 3
+          }
+        ]
+      },
+      {
+        "persona": "critic",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 5,
+            "punch": 4,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "bad",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 2,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-23",
+            "severity": 4
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 1,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-55",
+            "severity": 2
+          }
+        ]
+      }
+    ],
+    "personas": [
+      "red_team",
+      "critic",
+      "praiser",
+      "praiser"
+    ],
+    "synthesis": null,
+    "gate_results": {
+      "word_count": {
+        "passed": true,
+        "findings": []
+      }
+    },
+    "expected": {
+      "composite": 3.0,
+      "per_dimension": {
+        "clarity": 3.6667,
+        "punch": 2.3333
+      },
+      "ship_ok": false,
+      "reasons": [
+        "no synthesis output"
+      ]
+    }
+  },
+  {
+    "name": "attr_3",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ],
+      "ship_gates": {
+        "composite_min": 4.9,
+        "dimension_min": 4.5,
+        "weights": {
+          "clarity": 1.5
+        },
+        "composite_exclude_personas": [
+          "critic",
+          "red_team"
+        ],
+        "blocking": "severity_1_findings"
+      }
+    },
+    "reviews": [
+      {
+        "persona": "critic",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 3,
+            "punch": 5,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 3,
+            "verdict": "good"
+          },
+          {
+            "unit": "outro",
+            "clarity": 2,
+            "punch": 1,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "good",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 5,
+            "punch": 4,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 4,
+            "punch": 4,
+            "verdict": "good"
+          },
+          {
+            "unit": "outro",
+            "clarity": 4,
+            "punch": 3,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-27",
+            "severity": 4
+          }
+        ]
+      },
+      {
+        "persona": "critic",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 5,
+            "punch": 1,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 3,
+            "punch": 2,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "outro",
+            "clarity": 2,
+            "punch": 4,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "good",
+        "findings": []
+      }
+    ],
+    "personas": [
+      "critic",
+      "praiser",
+      "critic"
+    ],
+    "synthesis": {
+      "consensus_weaknesses": [
+        {
+          "description": "canon drift in hook",
+          "unit": "hook",
+          "severity": "major",
+          "reviewer_count": 2,
+          "suggested_fix": "fix it"
+        }
+      ],
+      "ranked_fixes": []
+    },
+    "gate_results": {
+      "word_count": {
+        "passed": true,
+        "findings": []
+      }
+    },
+    "expected": {
+      "composite": 4.3333,
+      "per_dimension": {
+        "clarity": 4.3333,
+        "punch": 3.6667
+      },
+      "ship_ok": false,
+      "reasons": [
+        "composite 4.33 < min 4.90",
+        "dimensions below min 4.50: clarity=4.33, punch=3.67"
+      ]
+    }
+  },
+  {
+    "name": "attr_4",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ],
+      "ship_gates": {
+        "composite_min": 3.0,
+        "dimension_min": 2.0,
+        "weights": null,
+        "composite_exclude_personas": [],
+        "blocking": null
+      }
+    },
+    "reviews": [
+      {
+        "persona": "red_team",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 5,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 1,
+            "verdict": "good"
+          },
+          {
+            "unit": "outro",
+            "clarity": 1,
+            "punch": 5,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 5,
+            "punch": 1,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 5,
+            "verdict": "good"
+          },
+          {
+            "unit": "outro",
+            "clarity": 2,
+            "punch": 3,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-75",
+            "severity": 4
+          }
+        ]
+      },
+      {
+        "persona": "critic",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 2,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 4,
+            "punch": 1,
+            "verdict": "bad"
+          },
+          {
+            "unit": "outro",
+            "clarity": 2,
+            "punch": 2,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "bad",
+        "findings": []
+      }
+    ],
+    "personas": [
+      "red_team",
+      "red_team",
+      "critic"
+    ],
+    "synthesis": null,
+    "gate_results": {
+      "word_count": {
+        "passed": true,
+        "findings": []
+      }
+    },
+    "expected": {
+      "composite": 2.6111,
+      "per_dimension": {
+        "clarity": 2.4444,
+        "punch": 2.7778
+      },
+      "ship_ok": false,
+      "reasons": [
+        "no synthesis output",
+        "composite 2.61 < min 3.00"
+      ]
+    }
+  },
+  {
+    "name": "attr_5",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ],
+      "ship_gates": {
+        "composite_min": 3.5,
+        "dimension_min": 2.5,
+        "weights": {
+          "clarity": 1.0,
+          "punch": 2.0
+        },
+        "composite_exclude_personas": [],
+        "blocking": null
+      }
+    },
+    "reviews": [
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 2,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 5,
+            "punch": 5,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-56",
+            "severity": 4
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 1,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 1,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-78",
+            "severity": 2
+          }
+        ]
+      },
+      {
+        "persona": "red_team",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 1,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 2,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "bad",
+        "findings": []
+      },
+      {
+        "persona": "critic",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 5,
+            "punch": 5,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 3,
+            "punch": 5,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "good",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 1,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 4,
+            "punch": 1,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-14",
+            "severity": 5
+          }
+        ]
+      }
+    ],
+    "personas": [
+      "praiser",
+      "praiser",
+      "red_team",
+      "critic",
+      "red_team"
+    ],
+    "synthesis": null,
+    "gate_results": {
+      "word_count": {
+        "passed": false,
+        "findings": [
+          "document is 999 words (max 500)"
+        ]
+      }
+    },
+    "expected": {
+      "composite": 2.7667,
+      "per_dimension": {
+        "clarity": 3.5,
+        "punch": 2.4
+      },
+      "ship_ok": false,
+      "reasons": [
+        "no synthesis output",
+        "mechanical gates failed: word_count",
+        "composite 2.77 < min 3.50",
+        "dimensions below min 2.50: punch=2.40"
+      ]
+    }
+  },
+  {
+    "name": "attr_6",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ],
+      "ship_gates": {
+        "composite_min": 3.0,
+        "dimension_min": 2.0,
+        "weights": null,
+        "composite_exclude_personas": [
+          "red_team"
+        ],
+        "blocking": "severity_1_findings"
+      }
+    },
+    "reviews": [
+      {
+        "persona": "critic",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 2,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 4,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-43",
+            "severity": 1
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 4,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 2,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "good",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 3,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 1,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": []
+      },
+      {
+        "persona": "critic",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 3,
+            "punch": 1,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 1,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-13",
+            "severity": 2
+          }
+        ]
+      }
+    ],
+    "personas": [
+      "critic",
+      "praiser",
+      "praiser",
+      "critic"
+    ],
+    "synthesis": {
+      "consensus_weaknesses": [
+        {
+          "description": "canon drift in hook",
+          "unit": "hook",
+          "severity": "critical",
+          "reviewer_count": 2,
+          "suggested_fix": "fix it"
+        }
+      ],
+      "ranked_fixes": []
+    },
+    "gate_results": {
+      "word_count": {
+        "passed": true,
+        "findings": []
+      }
+    },
+    "expected": {
+      "composite": 1.9375,
+      "per_dimension": {
+        "clarity": 1.625,
+        "punch": 2.25
+      },
+      "ship_ok": false,
+      "reasons": [
+        "composite 1.94 < min 3.00",
+        "dimensions below min 2.00: clarity=1.62",
+        "blocking findings: finding-43; canon drift in hook"
+      ]
+    }
+  },
+  {
+    "name": "attr_7",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ],
+      "ship_gates": {
+        "composite_min": 4.9,
+        "dimension_min": 4.5,
+        "weights": {
+          "clarity": 1.5
+        },
+        "composite_exclude_personas": [
+          "critic",
+          "red_team"
+        ],
+        "blocking": "severity_1_findings"
+      }
+    },
+    "reviews": [
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 1,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 4,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "outro",
+            "clarity": 3,
+            "punch": 2,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-65",
+            "severity": 3
+          }
+        ]
+      },
+      {
+        "persona": "critic",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 1,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 3,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "outro",
+            "clarity": 2,
+            "punch": 2,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "good",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 3,
+            "punch": 3,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 5,
+            "punch": 1,
+            "verdict": "good"
+          },
+          {
+            "unit": "outro",
+            "clarity": 3,
+            "punch": 4,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-80",
+            "severity": 5
+          }
+        ]
+      },
+      {
+        "persona": "critic",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 5,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 3,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "outro",
+            "clarity": 3,
+            "punch": 2,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-26",
+            "severity": 3
+          },
+          {
+            "description": "finding-53",
+            "severity": 5
+          }
+        ]
+      }
+    ],
+    "personas": [
+      "praiser",
+      "critic",
+      "red_team",
+      "critic"
+    ],
+    "synthesis": null,
+    "gate_results": {
+      "word_count": {
+        "passed": true,
+        "findings": []
+      }
+    },
+    "expected": {
+      "composite": 1.6667,
+      "per_dimension": {
+        "clarity": 1.6667,
+        "punch": 2.3333
+      },
+      "ship_ok": false,
+      "reasons": [
+        "no synthesis output",
+        "composite 1.67 < min 4.90",
+        "dimensions below min 4.50: clarity=1.67, punch=2.33"
+      ]
+    }
+  },
+  {
+    "name": "attr_8",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ],
+      "ship_gates": {
+        "composite_min": 3.0,
+        "dimension_min": 2.0,
+        "weights": null,
+        "composite_exclude_personas": [],
+        "blocking": null
+      }
+    },
+    "reviews": [
+      {
+        "persona": "critic",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 2,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 3,
+            "punch": 4,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-16",
+            "severity": 2
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 5,
+            "punch": 5,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 3,
+            "punch": 4,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-92",
+            "severity": 3
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 2,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 1,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-57",
+            "severity": 1
+          },
+          {
+            "description": "finding-79",
+            "severity": 4
+          }
+        ]
+      },
+      {
+        "persona": "critic",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 5,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 2,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": []
+      }
+    ],
+    "personas": [
+      "critic",
+      "praiser",
+      "praiser",
+      "critic"
+    ],
+    "synthesis": null,
+    "gate_results": {
+      "word_count": {
+        "passed": true,
+        "findings": []
+      }
+    },
+    "expected": {
+      "composite": 2.625,
+      "per_dimension": {
+        "clarity": 2.125,
+        "punch": 3.125
+      },
+      "ship_ok": false,
+      "reasons": [
+        "no synthesis output",
+        "composite 2.62 < min 3.00"
+      ]
+    }
+  },
+  {
+    "name": "attr_9",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ],
+      "ship_gates": {
+        "composite_min": 3.5,
+        "dimension_min": 2.5,
+        "weights": {
+          "clarity": 1.0,
+          "punch": 2.0
+        },
+        "composite_exclude_personas": [],
+        "blocking": null
+      }
+    },
+    "reviews": [
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 5,
+            "punch": 2,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-53",
+            "severity": 3
+          },
+          {
+            "description": "finding-60",
+            "severity": 1
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 5,
+            "punch": 2,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-14",
+            "severity": 3
+          }
+        ]
+      },
+      {
+        "persona": "red_team",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 3,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-53",
+            "severity": 4
+          },
+          {
+            "description": "finding-64",
+            "severity": 3
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 5,
+            "punch": 2,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-41",
+            "severity": 1
+          }
+        ]
+      },
+      {
+        "persona": "red_team",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 2,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-45",
+            "severity": 4
+          }
+        ]
+      },
+      {
+        "persona": "critic",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 5,
+            "punch": 4,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-7",
+            "severity": 2
+          },
+          {
+            "description": "finding-48",
+            "severity": 4
+          }
+        ]
+      }
+    ],
+    "personas": [
+      "praiser",
+      "praiser",
+      "red_team",
+      "praiser",
+      "red_team",
+      "critic"
+    ],
+    "synthesis": {
+      "consensus_weaknesses": [
+        {
+          "description": "canon drift in hook",
+          "unit": "hook",
+          "severity": "critical",
+          "reviewer_count": 2,
+          "suggested_fix": "fix it"
+        }
+      ],
+      "ranked_fixes": []
+    },
+    "gate_results": {
+      "word_count": {
+        "passed": false,
+        "findings": [
+          "document is 999 words (max 500)"
+        ]
+      }
+    },
+    "expected": {
+      "composite": 2.8889,
+      "per_dimension": {
+        "clarity": 3.6667,
+        "punch": 2.5
+      },
+      "ship_ok": false,
+      "reasons": [
+        "mechanical gates failed: word_count",
+        "composite 2.89 < min 3.50"
+      ]
+    }
+  },
+  {
+    "name": "attr_10",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ],
+      "ship_gates": {
+        "composite_min": 3.0,
+        "dimension_min": 2.0,
+        "weights": null,
+        "composite_exclude_personas": [
+          "red_team"
+        ],
+        "blocking": "severity_1_findings"
+      }
+    },
+    "reviews": [
+      {
+        "persona": "red_team",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 4,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 5,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-33",
+            "severity": 2
+          },
+          {
+            "description": "finding-67",
+            "severity": 1
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 5,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 4,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "good",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 4,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 3,
+            "punch": 1,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "bad",
+        "findings": []
+      },
+      {
+        "persona": "critic",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 1,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 4,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-70",
+            "severity": 5
+          },
+          {
+            "description": "finding-31",
+            "severity": 2
+          }
+        ]
+      }
+    ],
+    "personas": [
+      "red_team",
+      "praiser",
+      "praiser",
+      "critic"
+    ],
+    "synthesis": null,
+    "gate_results": {
+      "word_count": {
+        "passed": true,
+        "findings": []
+      }
+    },
+    "expected": {
+      "composite": 2.4167,
+      "per_dimension": {
+        "clarity": 1.6667,
+        "punch": 3.1667
+      },
+      "ship_ok": false,
+      "reasons": [
+        "no synthesis output",
+        "composite 2.42 < min 3.00",
+        "dimensions below min 2.00: clarity=1.67",
+        "blocking findings: finding-67"
+      ]
+    }
+  },
+  {
+    "name": "attr_11",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ],
+      "ship_gates": {
+        "composite_min": 4.9,
+        "dimension_min": 4.5,
+        "weights": {
+          "clarity": 1.5
+        },
+        "composite_exclude_personas": [
+          "critic",
+          "red_team"
+        ],
+        "blocking": "severity_1_findings"
+      }
+    },
+    "reviews": [
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 3,
+            "punch": 4,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-9",
+            "severity": 1
+          },
+          {
+            "description": "finding-20",
+            "severity": 2
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 5,
+            "punch": 5,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 5,
+            "punch": 1,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-64",
+            "severity": 5
+          }
+        ]
+      },
+      {
+        "persona": "red_team",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 3,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-48",
+            "severity": 3
+          },
+          {
+            "description": "finding-97",
+            "severity": 3
+          }
+        ]
+      }
+    ],
+    "personas": [
+      "praiser",
+      "praiser",
+      "praiser",
+      "red_team"
+    ],
+    "synthesis": null,
+    "gate_results": {
+      "word_count": {
+        "passed": true,
+        "findings": []
+      }
+    },
+    "expected": {
+      "composite": 4.3333,
+      "per_dimension": {
+        "clarity": 4.3333,
+        "punch": 3.3333
+      },
+      "ship_ok": false,
+      "reasons": [
+        "no synthesis output",
+        "composite 4.33 < min 4.90",
+        "dimensions below min 4.50: clarity=4.33, punch=3.33",
+        "blocking findings: finding-9"
+      ]
+    }
+  },
+  {
+    "name": "attr_12",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ],
+      "ship_gates": {
+        "composite_min": 3.0,
+        "dimension_min": 2.0,
+        "weights": null,
+        "composite_exclude_personas": [],
+        "blocking": null
+      }
+    },
+    "reviews": [
+      {
+        "persona": "red_team",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 1,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "good",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 5,
+            "punch": 2,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-61",
+            "severity": 4
+          }
+        ]
+      },
+      {
+        "persona": "red_team",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 2,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "good",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 3,
+            "punch": 1,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-11",
+            "severity": 2
+          },
+          {
+            "description": "finding-77",
+            "severity": 5
+          }
+        ]
+      }
+    ],
+    "personas": [
+      "red_team",
+      "praiser",
+      "red_team",
+      "red_team"
+    ],
+    "synthesis": {
+      "consensus_weaknesses": [
+        {
+          "description": "canon drift in hook",
+          "unit": "hook",
+          "severity": "major",
+          "reviewer_count": 2,
+          "suggested_fix": "fix it"
+        }
+      ],
+      "ranked_fixes": []
+    },
+    "gate_results": {
+      "word_count": {
+        "passed": true,
+        "findings": []
+      }
+    },
+    "expected": {
+      "composite": 2.375,
+      "per_dimension": {
+        "clarity": 3.25,
+        "punch": 1.5
+      },
+      "ship_ok": false,
+      "reasons": [
+        "composite 2.38 < min 3.00",
+        "dimensions below min 2.00: punch=1.50"
+      ]
+    }
+  },
+  {
+    "name": "attr_13",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ],
+      "ship_gates": {
+        "composite_min": 3.5,
+        "dimension_min": 2.5,
+        "weights": {
+          "clarity": 1.0,
+          "punch": 2.0
+        },
+        "composite_exclude_personas": [],
+        "blocking": null
+      }
+    },
+    "reviews": [
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 3,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 4,
+            "verdict": "good"
+          },
+          {
+            "unit": "outro",
+            "clarity": 4,
+            "punch": 1,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "good",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 3,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 4,
+            "punch": 3,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "outro",
+            "clarity": 3,
+            "punch": 5,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-39",
+            "severity": 1
+          },
+          {
+            "description": "finding-44",
+            "severity": 4
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 4,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 3,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "outro",
+            "clarity": 1,
+            "punch": 4,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 5,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 2,
+            "verdict": "good"
+          },
+          {
+            "unit": "outro",
+            "clarity": 5,
+            "punch": 4,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-80",
+            "severity": 5
+          }
+        ]
+      }
+    ],
+    "personas": [
+      "praiser",
+      "red_team",
+      "praiser",
+      "red_team"
+    ],
+    "synthesis": null,
+    "gate_results": {
+      "word_count": {
+        "passed": false,
+        "findings": [
+          "document is 999 words (max 500)"
+        ]
+      }
+    },
+    "expected": {
+      "composite": 3.1111,
+      "per_dimension": {
+        "clarity": 2.5,
+        "punch": 3.4167
+      },
+      "ship_ok": false,
+      "reasons": [
+        "no synthesis output",
+        "mechanical gates failed: word_count",
+        "composite 3.11 < min 3.50"
+      ]
+    }
+  },
+  {
+    "name": "attr_14",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ],
+      "ship_gates": {
+        "composite_min": 3.0,
+        "dimension_min": 2.0,
+        "weights": null,
+        "composite_exclude_personas": [
+          "red_team"
+        ],
+        "blocking": "severity_1_findings"
+      }
+    },
+    "reviews": [
+      {
+        "persona": "red_team",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 3,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-67",
+            "severity": 3
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 3,
+            "punch": 2,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-73",
+            "severity": 4
+          }
+        ]
+      },
+      {
+        "persona": "red_team",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 4,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": []
+      }
+    ],
+    "personas": [
+      "red_team",
+      "praiser",
+      "red_team"
+    ],
+    "synthesis": null,
+    "gate_results": {
+      "word_count": {
+        "passed": true,
+        "findings": []
+      }
+    },
+    "expected": {
+      "composite": 2.5,
+      "per_dimension": {
+        "clarity": 3.0,
+        "punch": 2.0
+      },
+      "ship_ok": false,
+      "reasons": [
+        "no synthesis output",
+        "composite 2.50 < min 3.00"
+      ]
+    }
+  },
+  {
+    "name": "attr_15",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ],
+      "ship_gates": {
+        "composite_min": 4.9,
+        "dimension_min": 4.5,
+        "weights": {
+          "clarity": 1.5
+        },
+        "composite_exclude_personas": [
+          "critic",
+          "red_team"
+        ],
+        "blocking": "severity_1_findings"
+      }
+    },
+    "reviews": [
+      {
+        "persona": "critic",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 2,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 3,
+            "punch": 4,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "good",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 1,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 2,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "mixed",
+        "findings": [
+          {
+            "description": "finding-78",
+            "severity": 1
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 3,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 2,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-10",
+            "severity": 2
+          }
+        ]
+      }
+    ],
+    "personas": [
+      "critic",
+      "praiser",
+      "praiser"
+    ],
+    "synthesis": {
+      "consensus_weaknesses": [
+        {
+          "description": "canon drift in hook",
+          "unit": "hook",
+          "severity": "critical",
+          "reviewer_count": 2,
+          "suggested_fix": "fix it"
+        }
+      ],
+      "ranked_fixes": []
+    },
+    "gate_results": {
+      "word_count": {
+        "passed": true,
+        "findings": []
+      }
+    },
+    "expected": {
+      "composite": 1.5,
+      "per_dimension": {
+        "clarity": 1.5,
+        "punch": 2.0
+      },
+      "ship_ok": false,
+      "reasons": [
+        "composite 1.50 < min 4.90",
+        "dimensions below min 4.50: clarity=1.50, punch=2.00",
+        "blocking findings: finding-78; canon drift in hook"
+      ]
+    }
+  },
+  {
+    "name": "um_0",
+    "pack": {
+      "score_dimensions": [
+        "hook_strength",
+        "pacing",
+        "payoff"
+      ],
+      "verdict_field": "predicted_shape",
+      "verdict_categories": [
+        "cliff",
+        "hold",
+        "hook_and_hold"
+      ],
+      "unit_field": "dimension",
+      "unit_list_field": "dimension_scores",
+      "unit_score_field": "score",
+      "unit_keyword_rules": [],
+      "ship_gates": {
+        "composite_min": 6.0,
+        "dimension_min": 4.0,
+        "weights": null,
+        "composite_exclude_personas": [
+          "red_team"
+        ],
+        "blocking": null
+      }
+    },
+    "reviews": [
+      {
+        "persona": "red_team",
+        "model_id": "a/m1",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 5,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 6,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 7,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "hook_and_hold",
+        "findings": []
+      },
+      {
+        "persona": "critic",
+        "model_id": "b/m2",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 9,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 8,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 9,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "cliff",
+        "findings": []
+      },
+      {
+        "persona": "critic",
+        "model_id": "b/m2",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 5,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 2,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 1,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "cliff",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "b/m2",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 3,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 4,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 7,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "hold",
+        "findings": []
+      }
+    ],
+    "personas": [
+      "red_team",
+      "critic",
+      "critic",
+      "praiser"
+    ],
+    "synthesis": null,
+    "gate_results": {},
+    "expected": {
+      "composite": 5.3334,
+      "per_dimension": {
+        "hook_strength": 5.6667,
+        "pacing": 4.6667,
+        "payoff": 5.6667
+      },
+      "ship_ok": false,
+      "reasons": [
+        "no synthesis output",
+        "composite 5.33 < min 6.00"
+      ]
+    }
+  },
+  {
+    "name": "um_1",
+    "pack": {
+      "score_dimensions": [
+        "hook_strength",
+        "pacing",
+        "payoff"
+      ],
+      "verdict_field": "predicted_shape",
+      "verdict_categories": [
+        "cliff",
+        "hold",
+        "hook_and_hold"
+      ],
+      "unit_field": "dimension",
+      "unit_list_field": "dimension_scores",
+      "unit_score_field": "score",
+      "unit_keyword_rules": [],
+      "ship_gates": {
+        "composite_min": 6.0,
+        "dimension_min": 4.0,
+        "weights": null,
+        "composite_exclude_personas": [
+          "red_team"
+        ],
+        "blocking": null
+      }
+    },
+    "reviews": [
+      {
+        "persona": "critic",
+        "model_id": "c/m3",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 8,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 1,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 4,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "hold",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "a/m1",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 4,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 5,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 6,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "hook_and_hold",
+        "findings": []
+      },
+      {
+        "persona": "critic",
+        "model_id": "c/m3",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 10,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 7,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 4,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "hold",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "a/m1",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 8,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 5,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 2,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "cliff",
+        "findings": []
+      },
+      {
+        "persona": "critic",
+        "model_id": "b/m2",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 4,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 5,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 8,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "hook_and_hold",
+        "findings": []
+      }
+    ],
+    "personas": [
+      "critic",
+      "red_team",
+      "critic",
+      "red_team",
+      "critic"
+    ],
+    "synthesis": null,
+    "gate_results": {},
+    "expected": {
+      "composite": 5.6666,
+      "per_dimension": {
+        "hook_strength": 7.3333,
+        "pacing": 4.3333,
+        "payoff": 5.3333
+      },
+      "ship_ok": false,
+      "reasons": [
+        "no synthesis output",
+        "composite 5.67 < min 6.00"
+      ]
+    }
+  },
+  {
+    "name": "um_2",
+    "pack": {
+      "score_dimensions": [
+        "hook_strength",
+        "pacing",
+        "payoff"
+      ],
+      "verdict_field": "predicted_shape",
+      "verdict_categories": [
+        "cliff",
+        "hold",
+        "hook_and_hold"
+      ],
+      "unit_field": "dimension",
+      "unit_list_field": "dimension_scores",
+      "unit_score_field": "score",
+      "unit_keyword_rules": [],
+      "ship_gates": {
+        "composite_min": 6.0,
+        "dimension_min": 4.0,
+        "weights": null,
+        "composite_exclude_personas": [
+          "red_team"
+        ],
+        "blocking": null
+      }
+    },
+    "reviews": [
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 7,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 6,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 3,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "hook_and_hold",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "a/m1",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 7,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 10,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 3,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "hold",
+        "findings": []
+      },
+      {
+        "persona": "critic",
+        "model_id": "b/m2",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 3,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 10,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 7,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "hook_and_hold",
+        "findings": []
+      },
+      {
+        "persona": "critic",
+        "model_id": "b/m2",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 5,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 8,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 9,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "hook_and_hold",
+        "findings": []
+      }
+    ],
+    "personas": [
+      "praiser",
+      "praiser",
+      "critic",
+      "critic"
+    ],
+    "synthesis": null,
+    "gate_results": {},
+    "expected": {
+      "composite": 6.5,
+      "per_dimension": {
+        "hook_strength": 5.5,
+        "pacing": 8.5,
+        "payoff": 5.5
+      },
+      "ship_ok": false,
+      "reasons": [
+        "no synthesis output"
+      ]
+    }
+  },
+  {
+    "name": "um_3",
+    "pack": {
+      "score_dimensions": [
+        "hook_strength",
+        "pacing",
+        "payoff"
+      ],
+      "verdict_field": "predicted_shape",
+      "verdict_categories": [
+        "cliff",
+        "hold",
+        "hook_and_hold"
+      ],
+      "unit_field": "dimension",
+      "unit_list_field": "dimension_scores",
+      "unit_score_field": "score",
+      "unit_keyword_rules": [],
+      "ship_gates": {
+        "composite_min": 6.0,
+        "dimension_min": 4.0,
+        "weights": null,
+        "composite_exclude_personas": [
+          "red_team"
+        ],
+        "blocking": null
+      }
+    },
+    "reviews": [
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 10,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 7,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 2,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "hold",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "a/m1",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 8,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 9,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 2,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "hook_and_hold",
+        "findings": []
+      },
+      {
+        "persona": "critic",
+        "model_id": "c/m3",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 2,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 9,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 6,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "cliff",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "c/m3",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 6,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 9,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 2,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "cliff",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "a/m1",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 2,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 5,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 2,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "cliff",
+        "findings": []
+      }
+    ],
+    "personas": [
+      "praiser",
+      "red_team",
+      "critic",
+      "red_team",
+      "red_team"
+    ],
+    "synthesis": null,
+    "gate_results": {},
+    "expected": {
+      "composite": 6.0,
+      "per_dimension": {
+        "hook_strength": 6.0,
+        "pacing": 8.0,
+        "payoff": 4.0
+      },
+      "ship_ok": false,
+      "reasons": [
+        "no synthesis output"
+      ]
+    }
+  },
+  {
+    "name": "um_4",
+    "pack": {
+      "score_dimensions": [
+        "hook_strength",
+        "pacing",
+        "payoff"
+      ],
+      "verdict_field": "predicted_shape",
+      "verdict_categories": [
+        "cliff",
+        "hold",
+        "hook_and_hold"
+      ],
+      "unit_field": "dimension",
+      "unit_list_field": "dimension_scores",
+      "unit_score_field": "score",
+      "unit_keyword_rules": [],
+      "ship_gates": {
+        "composite_min": 6.0,
+        "dimension_min": 4.0,
+        "weights": null,
+        "composite_exclude_personas": [
+          "red_team"
+        ],
+        "blocking": null
+      }
+    },
+    "reviews": [
+      {
+        "persona": "critic",
+        "model_id": "a/m1",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 1,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 10,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 7,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "cliff",
+        "findings": []
+      },
+      {
+        "persona": "critic",
+        "model_id": "b/m2",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 5,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 10,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 5,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "hook_and_hold",
+        "findings": []
+      },
+      {
+        "persona": "critic",
+        "model_id": "a/m1",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 1,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 8,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 3,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "hook_and_hold",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "b/m2",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 7,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 8,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 9,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "hold",
+        "findings": []
+      }
+    ],
+    "personas": [
+      "critic",
+      "critic",
+      "critic",
+      "praiser"
+    ],
+    "synthesis": null,
+    "gate_results": {},
+    "expected": {
+      "composite": 6.1667,
+      "per_dimension": {
+        "hook_strength": 3.5,
+        "pacing": 9.0,
+        "payoff": 6.0
+      },
+      "ship_ok": false,
+      "reasons": [
+        "no synthesis output",
+        "dimensions below min 4.00: hook_strength=3.50"
+      ]
+    }
+  },
+  {
+    "name": "um_5",
+    "pack": {
+      "score_dimensions": [
+        "hook_strength",
+        "pacing",
+        "payoff"
+      ],
+      "verdict_field": "predicted_shape",
+      "verdict_categories": [
+        "cliff",
+        "hold",
+        "hook_and_hold"
+      ],
+      "unit_field": "dimension",
+      "unit_list_field": "dimension_scores",
+      "unit_score_field": "score",
+      "unit_keyword_rules": [],
+      "ship_gates": {
+        "composite_min": 6.0,
+        "dimension_min": 4.0,
+        "weights": null,
+        "composite_exclude_personas": [
+          "red_team"
+        ],
+        "blocking": null
+      }
+    },
+    "reviews": [
+      {
+        "persona": "critic",
+        "model_id": "c/m3",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 8,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 1,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 10,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "cliff",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 6,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 7,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 10,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "cliff",
+        "findings": []
+      },
+      {
+        "persona": "critic",
+        "model_id": "c/m3",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 4,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 5,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 10,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "hook_and_hold",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "c/m3",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 10,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 3,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 8,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "cliff",
+        "findings": []
+      },
+      {
+        "persona": "praiser",
+        "model_id": "b/m2",
+        "dimension_scores": [
+          {
+            "dimension": "hook_strength",
+            "score": 10,
+            "rationale": "r"
+          },
+          {
+            "dimension": "pacing",
+            "score": 3,
+            "rationale": "r"
+          },
+          {
+            "dimension": "payoff",
+            "score": 6,
+            "rationale": "r"
+          }
+        ],
+        "predicted_shape": "hook_and_hold",
+        "findings": []
+      }
+    ],
+    "personas": [
+      "critic",
+      "praiser",
+      "critic",
+      "red_team",
+      "praiser"
+    ],
+    "synthesis": null,
+    "gate_results": {},
+    "expected": {
+      "composite": 6.6667,
+      "per_dimension": {
+        "hook_strength": 7.0,
+        "pacing": 4.0,
+        "payoff": 9.0
+      },
+      "ship_ok": false,
+      "reasons": [
+        "no synthesis output"
+      ]
+    }
+  },
+  {
+    "name": "no_reviews",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ],
+      "ship_gates": {
+        "composite_min": 3.0,
+        "dimension_min": 2.0,
+        "weights": null,
+        "composite_exclude_personas": [],
+        "blocking": null
+      }
+    },
+    "reviews": [],
+    "personas": [],
+    "synthesis": null,
+    "gate_results": {},
+    "expected": {
+      "composite": null,
+      "per_dimension": {},
+      "ship_ok": false,
+      "reasons": [
+        "no synthesis output",
+        "no scores extracted from reviews"
+      ]
+    }
+  },
+  {
+    "name": "all_excluded",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ],
+      "ship_gates": {
+        "composite_min": 3.0,
+        "dimension_min": 2.0,
+        "weights": null,
+        "composite_exclude_personas": [
+          "praiser",
+          "critic",
+          "red_team"
+        ],
+        "blocking": null
+      }
+    },
+    "reviews": [
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 2,
+            "verdict": "good"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 2,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-95",
+            "severity": 4
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "b/m2",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 4,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 4,
+            "punch": 1,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-52",
+            "severity": 2
+          }
+        ]
+      },
+      {
+        "persona": "praiser",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 1,
+            "punch": 3,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 4,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "good",
+        "findings": [
+          {
+            "description": "finding-66",
+            "severity": 5
+          }
+        ]
+      }
+    ],
+    "personas": [
+      "praiser",
+      "praiser",
+      "praiser"
+    ],
+    "synthesis": null,
+    "gate_results": {},
+    "expected": {
+      "composite": null,
+      "per_dimension": {},
+      "ship_ok": false,
+      "reasons": [
+        "no synthesis output",
+        "no scores extracted from reviews"
+      ]
+    }
+  },
+  {
+    "name": "zero_weight_total",
+    "pack": {
+      "score_dimensions": [
+        "clarity",
+        "punch"
+      ],
+      "verdict_field": "verdict",
+      "verdict_categories": [
+        "good",
+        "mixed",
+        "bad"
+      ],
+      "unit_field": "unit",
+      "unit_list_field": "unit_reviews",
+      "unit_score_field": null,
+      "unit_keyword_rules": [
+        [
+          "cold open",
+          "hook"
+        ],
+        [
+          "cta",
+          "outro"
+        ]
+      ],
+      "ship_gates": {
+        "composite_min": 3.0,
+        "dimension_min": 2.0,
+        "weights": {
+          "nonexistent": 1.0
+        },
+        "composite_exclude_personas": [],
+        "blocking": null
+      }
+    },
+    "reviews": [
+      {
+        "persona": "red_team",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 4,
+            "punch": 3,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 2,
+            "punch": 1,
+            "verdict": "bad"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-22",
+            "severity": 2
+          },
+          {
+            "description": "finding-13",
+            "severity": 3
+          }
+        ]
+      },
+      {
+        "persona": "red_team",
+        "model_id": "c/m3",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 3,
+            "verdict": "bad"
+          },
+          {
+            "unit": "body",
+            "clarity": 4,
+            "punch": 1,
+            "verdict": "mixed"
+          }
+        ],
+        "verdict": "good",
+        "findings": []
+      },
+      {
+        "persona": "red_team",
+        "model_id": "a/m1",
+        "unit_reviews": [
+          {
+            "unit": "hook",
+            "clarity": 2,
+            "punch": 2,
+            "verdict": "mixed"
+          },
+          {
+            "unit": "body",
+            "clarity": 1,
+            "punch": 3,
+            "verdict": "good"
+          }
+        ],
+        "verdict": "bad",
+        "findings": [
+          {
+            "description": "finding-69",
+            "severity": 1
+          }
+        ]
+      }
+    ],
+    "personas": [
+      "red_team",
+      "red_team",
+      "red_team"
+    ],
+    "synthesis": null,
+    "gate_results": {},
+    "expected": {
+      "composite": null,
+      "per_dimension": {
+        "clarity": 2.5,
+        "punch": 2.1667
+      },
+      "ship_ok": false,
+      "reasons": [
+        "no synthesis output",
+        "no scores extracted from reviews"
+      ]
+    }
+  }
+]
