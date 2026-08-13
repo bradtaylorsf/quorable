@@ -14,6 +14,22 @@ Decisions taken as given (2026-08-12):
 - v1 supports **OpenRouter + Anthropic direct + OpenAI direct + local models**.
 - Runs are **tiered**: `quick` / `standard` / `rigorous`.
 
+Round-2 decisions (2026-08-12, later the same day — see §6 for design detail):
+
+- **The product is a TypeScript CLI published to npm.** The Python codebase in
+  this repo becomes the *executable spec*: the TS engine is built directly in
+  generalized form (do not port writekick-as-is first), with the Python test
+  suite and fixtures ported as parity fixtures. Same repo (`package.json`
+  beside `pyproject.toml`); Python retires to `reference/` at parity.
+- **Key storage: `~/.quorable/.env`**, chmod 600, first-run wizard +
+  `quorable keys set/list`. Process env always wins. No OS keyring.
+- **Long documents: runtime unit discovery** (map pass → unit-scoped review),
+  not chunk-and-summarize. See §6.2.
+- **Context corpora: index + two-pass retrieval**, plus first-class
+  **validation tasks** emitted for a human or calling agent. See §6.3.
+- **Models stay purely a config concern.** The interactive picker is sugar
+  that writes config, never a parallel system. See §6.4.
+
 ---
 
 ## 1. What actually exists today
@@ -427,7 +443,81 @@ job and the generic pack is the bigger risk — de-risk the unknown first.
 
 ---
 
-## 5. Open questions
+## 5. TypeScript rewrite + design addenda (decided 2026-08-12)
+
+### 5.1 Why TS, and how
+
+npm distribution is a hard requirement and the interactive CLI experience
+(clack/ink) is far stronger in the TS ecosystem. The engine is ~5,300 LOC and
+maps cleanly: pydantic → zod, typer → commander + @clack/prompts,
+httpx/tenacity → fetch + p-retry, numpy → ~300 lines of hand arithmetic (the
+κ/ICC math is sums and means), pymupdf → the official **MuPDF WASM npm
+package** (same underlying library, identical extraction).
+
+**Do not port then generalize.** Build the generalized CLI (generic packs,
+councils, zero-config review) in TS directly; the generalization was going to
+rewrite half the Python surface anyway. The Python repo's enduring value is
+its 176 tests and golden fixtures — port those as **parity fixtures** so the
+TS engine provably computes the same κ, ICC, composites, and gate results on
+identical inputs. Milestones M1–M10 carry over unchanged in intent; they are
+now TS work items.
+
+### 5.2 Long documents: runtime unit discovery
+
+Naive chunk-and-summarize destroys the cross-references reviewers need. The
+engine already thinks in units — long documents get their units discovered at
+runtime:
+
+1. **Map pass** (cheap model, one call): structural map — acts / sequences /
+   chapters with boundaries, a one-paragraph synopsis per unit, and a
+   whole-document summary.
+2. **Unit-scoped review**: each persona reviews one unit at a time with the
+   unit's full text + global summary + neighboring synopses. Scores land
+   per-unit exactly as today; composite, agreement stats, ship gates, and
+   regressions are unchanged because they are already unit-keyed.
+3. **One global pass** for structure personas, over the map + synopses.
+
+This also fixes the revise loop for long work: revise the *failing unit* with
+the map as context; never regenerate a 115-page document in one completion.
+
+### 5.3 Context corpora + validation tasks
+
+- **Context index**: auto-manifest builds a per-doc summary + metadata index;
+  every persona receives the index. Personas needing depth get a **two-pass
+  flow**: pass 1 reads the index and names the docs it needs; pass 2 includes
+  them. Map-reduce, no embeddings in v1.
+- **Validation tasks (first-class output)**: when a persona makes a claim it
+  could not ground ("the contract says X", "contradicts canon doc Y"), the run
+  emits `validation_tasks.json` — claim, source doc, what would confirm or
+  refute it. A human or a **calling agent** (quorable is already invoked from
+  Claude Code via a skill; an agent *can* read a 500-page corpus with tool
+  calls) resolves them and the results feed back into the run. At `rigorous`
+  tier, unresolved validation tasks block the ship gate. The system must
+  distinguish "checked" from "asserted" rather than laundering the difference.
+
+### 5.4 Interactive picker over pure-config models
+
+Councils reference **persona names only**. Model resolution stays
+`flags → project config → council defaults → global config`. The interactive
+flow (`quorable review draft.md` on a TTY with no flags): pick council or
+cherry-pick personas → per-persona model assignment pre-filled with suggested
+defaults → cost estimate → confirm. Every choice echoes its equivalent flags;
+`--save` writes the result back as a named council or project config. One code
+path — the picker produces config, it is not a second system.
+
+**Suggested defaults data source, in order of maturity**: (1) curated defaults
+file shipped with releases, refreshed against OpenRouter's live catalog for
+pricing/availability; (2) once `quorable outcome` has data, the user's own
+calibration ledger overrides — measured-on-your-documents beats any public
+leaderboard.
+
+**Statistical guardrail**: today every persona runs on every reviewer model;
+that cross-product is what gives κ/ICC enough raters. Per-persona model
+binding shrinks the rater pool, so the picker defaults to **≥2 models per
+persona, cross-vendor**, and visibly warns below that — a persona with one
+model has no agreement statistics, just an opinion.
+
+## 6. Open questions
 
 1. **Name.** ~~Rename now or keep quorable?~~ *Decided 2026-08-12: rename to
    a quorum-family name (a body of independent voices + a threshold that must
@@ -435,14 +525,19 @@ job and the generic pack is the bigger risk — de-risk the unknown first.
    registry availability; council stays the word for a persona set. Code
    rename happens once the name clears PyPI (primary — this is a Python
    package) and npm (defensive).*
-2. **Key storage** — OS keyring vs. `~/.quorable/.env`.
+2. ~~**Key storage**~~ *Decided: `~/.quorable/.env` (600) + first-run wizard +
+   `quorable keys set/list`; process env wins. No keyring.*
 3. **Calibration.** `predictions.yaml` exists to join predicted quality against
    real outcomes and has never been used. Is closing that loop in scope, or is
    the CLI's job to produce good reviews and leave calibration manual?
-4. **Long documents.** The 200k-char cap holds a 115-page screenplay (~120k),
-   but the revise stage cannot regenerate one in a single completion. Does the
-   loop need unit-scoped revision (revise one act, keep the rest as context),
-   or is review-only the answer for long work?
-5. **Council-level model defaults.** Should a council pin its own models (a
-   legal council always uses cross-vendor frontier models; a blog council uses
-   cheap ones), or do models stay purely a config concern?
+   (Partially answered: the outcome ledger is also the long-term data source
+   for suggested model defaults, §5.4 — which argues for in-scope.)
+4. ~~**Long documents.**~~ *Decided: runtime unit discovery + unit-scoped
+   review and revision, §5.2.*
+5. ~~**Council-level model defaults.**~~ *Decided: models stay purely config;
+   councils name personas only; interactive picker with suggested defaults
+   writes config, §5.4.*
+6. **TS parity gate.** Which fixtures constitute "parity" — full 176-test
+   port, or the numeric core (agreement math, composites, gates) plus e2e
+   goldens? Recommend the latter first: κ/ICC/composite outputs bit-compared
+   against Python on identical JSON inputs, then broaden.
