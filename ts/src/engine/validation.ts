@@ -14,12 +14,21 @@ import { ProviderError } from "../providers/types.js";
 import type { ChatMessage } from "../providers/types.js";
 import { sanitizeControlChars, stripFences } from "./sanitize.js";
 
+/**
+ * Why a validatedCall returned null: "provider" means the API/network call
+ * itself failed after retries (the model never answered — worth re-queueing);
+ * "validation" means the model answered but never produced schema-valid JSON.
+ */
+export type CallFailureKind = "provider" | "validation";
+
 export interface ValidatedCallOptions {
   temperature?: number;
   persona?: string;
   /** Attempts including the first (2 = parent behavior; 3 for local models). */
   maxAttempts?: number;
   onWarning?: (message: string) => void;
+  /** Called exactly once, with the failure kind, when null is returned. */
+  onFailure?: (kind: CallFailureKind, message: string) => void;
 }
 
 function formatZodError(error: z.ZodError): string {
@@ -83,6 +92,7 @@ export async function validatedCall<T>(
     } catch (exc) {
       if (exc instanceof ProviderError) {
         warn(`API call failed (attempt ${attempt}) | ${label} | ${exc.message}`);
+        opts.onFailure?.("provider", exc.message);
         return null;
       }
       throw exc;
@@ -110,5 +120,6 @@ export async function validatedCall<T>(
   }
 
   warn(`Validation failed after ${maxAttempts} attempts (skipping) | ${label} | ${lastError}`);
+  opts.onFailure?.("validation", lastError);
   return null;
 }

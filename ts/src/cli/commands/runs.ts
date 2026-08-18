@@ -36,7 +36,7 @@ import {
   recordOutcome,
 } from "../../engine/ledger.js";
 import { allGatesPassed, type GateResult } from "../../engine/gates.js";
-import { loadRawReviews } from "../../engine/ledger.js";
+import { loadRawReviews, metadataPersonas } from "../../engine/ledger.js";
 import { checkShipGates } from "../../engine/scoring.js";
 import { readValidationTasks, validationTaskShipReasons } from "../../engine/validationTasks.js";
 import { generateSynthesisReport } from "../../engine/reports.js";
@@ -198,6 +198,7 @@ export function registerRunCommands(program: Command): void {
         runDir,
         pack: ctx.pack,
         hypothesis: opts.hypothesis,
+        onWarning: (m) => console.error(m),
       });
       const ledgerPath = path.join(homePaths().home, PREDICTIONS_FILENAME);
       try {
@@ -241,16 +242,22 @@ export function registerRunCommands(program: Command): void {
       const synthesisPath = path.join(runDir, "synthesis.json");
       if (!fs.existsSync(synthesisPath)) fail(`No synthesis.json in ${runDir}.`);
       const synthesis = JSON.parse(fs.readFileSync(synthesisPath, "utf-8")) as Record<string, unknown>;
-      const { reviews, personas } = loadRawReviews(path.join(runDir, "raw_reviews"), ctx.pack);
+      const meta = parseYaml(
+        fs.readFileSync(path.join(runDir, "run_metadata.yaml"), "utf-8"),
+      ) as Record<string, unknown>;
+      const rigorName = String(meta["rigor"] ?? "standard");
+      // Identity comes from the harness (filenames/stamps + the metadata
+      // persona list), never from what a model claimed to be.
+      const { reviews, personas } = loadRawReviews(path.join(runDir, "raw_reviews"), ctx.pack, {
+        knownPersonas: metadataPersonas(meta),
+        expectedRunId: typeof meta["run_id"] === "string" ? meta["run_id"] : null,
+        onWarning: (m) => console.error(m),
+      });
       const gatesPath = path.join(runDir, "gates.json");
       const gateResults: Record<string, GateResult> = fs.existsSync(gatesPath)
         ? (JSON.parse(fs.readFileSync(gatesPath, "utf-8")) as Record<string, GateResult>)
         : {};
       const tasks = readValidationTasks(runDir);
-      const meta = parseYaml(
-        fs.readFileSync(path.join(runDir, "run_metadata.yaml"), "utf-8"),
-      ) as Record<string, unknown>;
-      const rigorName = String(meta["rigor"] ?? "standard");
 
       const shipCheck = checkShipGates({
         synthesis,

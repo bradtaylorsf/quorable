@@ -636,3 +636,216 @@ describe("runReview — Stage 2 markdown fallback", () => {
     expect(outcome.shipCheck.reasons).toContain("no synthesis output");
   });
 });
+
+// ---------------------------------------------------------------------------
+// Panel composition honesty (issue #4): held_out overlapping a reviewer must
+// shrink the panel LOUDLY, and an empty panel must abort, not run 0 calls.
+// ---------------------------------------------------------------------------
+
+describe("runReview — held-out panel shrink (issue #4)", () => {
+  it("warns, in the log and panelWarnings, when held_out names a reviewer", async () => {
+    const events: string[] = [];
+    const config = ConfigSchema.parse({
+      models: {
+        reviewers: [
+          { id: "a/model-one", temperature: 0.2 },
+          { id: "b/model-two", temperature: 0.2 },
+          { id: "c/model-three", temperature: 0.2 },
+        ],
+        synthesizer: { id: "a/model-one", temperature: 0.1 },
+        held_out: { id: "c/model-three", temperature: 0.2 },
+      },
+    });
+    const outcome = await runReview(baseArgs({ config, onEvent: (m) => events.push(m) }));
+    expect(outcome.aborted).toBe(false);
+    const warning = outcome.panelWarnings.find((w) =>
+      w.includes("also configured as a reviewer"),
+    );
+    expect(warning).toBeDefined();
+    expect(warning).toContain("c/model-three");
+    expect(warning).toContain("2 of 3");
+    expect(events.join("\n")).toContain("also configured as a reviewer");
+    // The two survivors still ran: 2 models × 3 personas × 2 runs.
+    expect(outcome.results).toHaveLength(12);
+  });
+
+  it("aborts when held_out consumes the only reviewer (empty panel)", async () => {
+    const config = ConfigSchema.parse({
+      models: {
+        reviewers: [{ id: "c/model-three", temperature: 0.2 }],
+        synthesizer: { id: "a/model-one", temperature: 0.1 },
+        held_out: { id: "c/model-three", temperature: 0.2 },
+      },
+    });
+    const outcome = await runReview(baseArgs({ config }));
+    expect(outcome.aborted).toBe(true);
+    expect(outcome.abortReason).toContain("panel is empty");
+    expect(outcome.abortReason).toContain("c/model-three");
+  });
+
+  it("no warning when held_out is disjoint from the panel", async () => {
+    const outcome = await runReview(baseArgs());
+    expect(
+      outcome.panelWarnings.some((w) => w.includes("also configured as a reviewer")),
+    ).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Provider-failure recovery (issue #5): a provider-failed call is re-queued
+// once, and a persona lost entirely to provider errors is called out as such.
+// ---------------------------------------------------------------------------
+
+describe("runReview — provider-failure recovery (issue #5)", () => {
+  it("re-queues provider-failed calls once; transient failures fully recover", async () => {
+    const events: string[] = [];
+    const attempts = new Map<string, number>();
+    const outcome = await runReview(
+      baseArgs({
+        onEvent: (m) => events.push(m),
+        injected: {
+          ...baseArgs().injected,
+          stage1CallFn: async (job, _messages, call) => {
+            const key = `${job.model.id}|${job.persona}|${job.runNumber}`;
+            const n = (attempts.get(key) ?? 0) + 1;
+            attempts.set(key, n);
+            if (n === 1) {
+              call?.reportFailure("provider", "fetch failed");
+              return null;
+            }
+            return mkReview(job.persona, 8, "ship");
+          },
+        },
+      }),
+    );
+    expect(outcome.aborted).toBe(false);
+    // Every job failed once at the provider, was re-queued, and recovered.
+    expect(outcome.results.filter((r) => r.validationOk)).toHaveLength(12);
+    expect([...attempts.values()].every((n) => n === 2)).toBe(true);
+    expect(events.join("\n")).toContain("Re-queueing 12 provider-failed review call(s)");
+    expect(events.join("\n")).not.toContain("PERSONA DROPOUT");
+  });
+
+  it("validation failures are NOT re-queued", async () => {
+    const events: string[] = [];
+    let calls = 0;
+    const outcome = await runReview(
+      baseArgs({
+        onEvent: (m) => events.push(m),
+        injected: {
+          ...baseArgs().injected,
+          stage1CallFn: async (job, _messages, call) => {
+            calls += 1;
+            if (job.persona === "critic") {
+              call?.reportFailure("validation", "never produced valid JSON");
+              return null;
+            }
+            return mkReview(job.persona, 8, "ship");
+          },
+        },
+      }),
+    );
+    expect(calls).toBe(12); // no second pass for validation failures
+    expect(events.join("\n")).not.toContain("Re-queueing");
+    // Validation-caused dropout keeps the plain warning, not the provider one.
+    expect(events.join("\n")).toContain("PERSONA DROPOUT:");
+    expect(events.join("\n")).not.toContain("PERSONA DROPOUT (provider errors)");
+    expect(outcome.results.filter((r) => !r.validationOk)).toHaveLength(4);
+  });
+
+  it("a persona lost entirely to provider errors gets the distinct loud warning", async () => {
+    const events: string[] = [];
+    const outcome = await runReview(
+      baseArgs({
+        onEvent: (m) => events.push(m),
+        injected: {
+          ...baseArgs().injected,
+          stage1CallFn: async (job, _messages, call) => {
+            if (job.persona === "critic") {
+              call?.reportFailure("provider", "fetch failed");
+              return null;
+            }
+            return mkReview(job.persona, 8, "ship");
+          },
+        },
+      }),
+    );
+    expect(outcome.aborted).toBe(false);
+    const log = events.join("\n");
+    expect(log).toContain("PERSONA DROPOUT (provider errors)");
+    expect(log).toContain("critic");
+    // The re-queue was attempted before giving up: 4 rows, retried once each.
+    expect(log).toContain("Re-queueing 4 provider-failed review call(s)");
+    // Failed rows carry the provider kind for downstream tooling.
+    const failed = outcome.results.filter((r) => !r.validationOk);
+    expect(failed).toHaveLength(4);
+    expect(failed.every((r) => r.failureKind === "provider")).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Trace hygiene (issues #6/#7): traces are written as reviews complete, the
+// directory is run-scoped, and every trace carries harness-stamped identity.
+// ---------------------------------------------------------------------------
+
+describe("runReview — raw review traces (issues #6/#7)", () => {
+  it("writes each trace as its review completes, not in one batch (#6)", async () => {
+    const rawDir = path.join(defaultOutDir(targetPath), "raw_reviews");
+    const seen: number[] = [];
+    const base = baseArgs();
+    base.config.pipeline.max_concurrency = 1; // deterministic sequencing
+    await runReview({
+      ...base,
+      injected: {
+        ...base.injected,
+        stage1CallFn: async (job) => {
+          seen.push(fs.readdirSync(rawDir).length);
+          return mkReview(job.persona, 8, "ship");
+        },
+      },
+    });
+    // With batch-at-end writes every call would have seen 0 files.
+    expect(seen).toHaveLength(12);
+    expect(seen[seen.length - 1]).toBe(11);
+    expect([...seen]).toEqual([...seen].sort((a, b) => a - b));
+  });
+
+  it("clears traces left by a previous run before starting (#7)", async () => {
+    const rawDir = path.join(defaultOutDir(targetPath), "raw_reviews");
+    fs.mkdirSync(rawDir, { recursive: true });
+    // Orphan from an 8-persona council reviewing a different document.
+    fs.writeFileSync(
+      path.join(rawDir, "old_model_ghost_persona_run1.json"),
+      JSON.stringify({ persona: "ghost_persona" }),
+    );
+    const events: string[] = [];
+    await runReview(baseArgs({ onEvent: (m) => events.push(m) }));
+    const files = fs.readdirSync(rawDir);
+    expect(files).toHaveLength(12);
+    expect(files).not.toContain("old_model_ghost_persona_run1.json");
+    expect(events.join("\n")).toContain("Cleared 1 raw review trace(s)");
+  });
+
+  it("stamps traces with harness identity, overwriting model claims (#2/#7)", async () => {
+    const outcome = await runReview(
+      baseArgs({
+        injected: {
+          ...baseArgs().injected,
+          // The model claims to be someone else entirely.
+          stage1CallFn: async (job) =>
+            mkReview(job.persona, 8, "ship", {
+              persona: "Historical Auditor",
+              model_id: "gpt-4o",
+            }),
+        },
+      }),
+    );
+    const rawDir = path.join(outcome.outDir, "raw_reviews");
+    const trace = JSON.parse(
+      fs.readFileSync(path.join(rawDir, "a_model-one_praiser_run1.json"), "utf-8"),
+    );
+    expect(trace.persona).toBe("praiser");
+    expect(trace.model_id).toBe("a/model-one");
+    expect(trace.run_id).toBe(outcome.runId);
+  });
+});

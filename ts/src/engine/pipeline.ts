@@ -12,7 +12,7 @@ import type { z } from "zod";
 
 import { CostAbortError, CostTracker } from "./costs.js";
 import { buildMessages, estimatePromptTokens } from "./prompts.js";
-import { validatedCall } from "./validation.js";
+import { validatedCall, type CallFailureKind } from "./validation.js";
 import type { DocumentModel } from "./manifest.js";
 import { ModelClient, type ProviderSettings } from "../providers/registry.js";
 
@@ -36,6 +36,12 @@ export interface ReviewResult {
   promptTokensEstimate: number;
   validationOk: boolean;
   error: string | null;
+  /**
+   * Why the review is null: "provider" = the API call itself failed after
+   * retries (the model never answered), "validation" = the model answered
+   * but never produced schema-valid JSON. null when successful or unknown.
+   */
+  failureKind: CallFailureKind | null;
 }
 
 /** Simple counting semaphore. */
@@ -92,6 +98,14 @@ export function buildJobList(args: {
   return jobs;
 }
 
+/** Per-call context handed to a custom callFn. */
+export interface Stage1CallContext {
+  /** Index into Stage1Args.jobs — stable across the recovery pass. */
+  jobIndex: number;
+  /** Report WHY a null is about to be returned (enables targeted re-queue). */
+  reportFailure: (kind: CallFailureKind, message: string) => void;
+}
+
 export interface Stage1Args {
   jobs: ReviewJob[];
   personaOverlays: Record<string, string>;
@@ -105,8 +119,14 @@ export interface Stage1Args {
   costTracker: CostTracker;
   abortThreshold: number;
   onWarning?: (msg: string) => void;
+  /** Called as each result row is produced — enables incremental trace writes. */
+  onResult?: (result: ReviewResult) => void;
   /** Injectable for tests: runs one review call. */
-  callFn?: (job: ReviewJob, messages: ReturnType<typeof buildMessages>) => Promise<Record<string, unknown> | null>;
+  callFn?: (
+    job: ReviewJob,
+    messages: ReturnType<typeof buildMessages>,
+    call: Stage1CallContext,
+  ) => Promise<Record<string, unknown> | null>;
 }
 
 /**
@@ -129,7 +149,7 @@ export async function runStage1(args: Stage1Args): Promise<ReviewResult[]> {
 
   const overBudget = (): boolean => args.costTracker.totalUsd > args.abortThreshold;
 
-  const runJob = async (job: ReviewJob): Promise<ReviewResult> => {
+  const runJob = async (job: ReviewJob, jobIndex: number): Promise<ReviewResult> => {
     if (overBudget()) {
       throw new CostAbortError(
         `Running cost $${args.costTracker.totalUsd.toFixed(2)} exceeds ` +
@@ -156,15 +176,23 @@ export async function runStage1(args: Stage1Args): Promise<ReviewResult[]> {
             `abort threshold $${args.abortThreshold.toFixed(2)}`,
         );
       }
+      const failureRef: { current: { kind: CallFailureKind; message: string } | null } = {
+        current: null,
+      };
+      const reportFailure = (kind: CallFailureKind, message: string): void => {
+        failureRef.current = { kind, message };
+      };
       const review = args.callFn
-        ? await args.callFn(job, messages)
+        ? await args.callFn(job, messages, { jobIndex, reportFailure })
         : await validatedCall(clientFor(job.model.id), messages, args.reviewSchema, {
             temperature: job.model.temperature,
             persona: job.persona,
             onWarning: warn,
+            onFailure: reportFailure,
           });
       const latency = (performance.now() - start) / 1000;
-      return {
+      const failure = failureRef.current;
+      const result: ReviewResult = {
         model: job.model.id,
         persona: job.persona,
         runNumber: job.runNumber,
@@ -172,14 +200,22 @@ export async function runStage1(args: Stage1Args): Promise<ReviewResult[]> {
         latencySeconds: Math.round(latency * 1000) / 1000,
         promptTokensEstimate: tokenEstimate,
         validationOk: review !== null,
-        error: review === null ? "validation or API failure" : null,
+        error:
+          review === null
+            ? failure
+              ? `${failure.kind} failure: ${failure.message}`
+              : "validation or API failure"
+            : null,
+        failureKind: review === null ? (failure?.kind ?? null) : null,
       };
+      args.onResult?.(result);
+      return result;
     } finally {
       release();
     }
   };
 
-  const settled = await Promise.allSettled(args.jobs.map((job) => runJob(job)));
+  const settled = await Promise.allSettled(args.jobs.map((job, i) => runJob(job, i)));
 
   const results: ReviewResult[] = [];
   for (let i = 0; i < settled.length; i++) {
@@ -195,7 +231,7 @@ export async function runStage1(args: Stage1Args): Promise<ReviewResult[]> {
       `Review failed | model=${job.model.id} persona=${job.persona} ` +
         `run=${job.runNumber} error=${outcome.reason}`,
     );
-    results.push({
+    const result: ReviewResult = {
       model: job.model.id,
       persona: job.persona,
       runNumber: job.runNumber,
@@ -204,7 +240,36 @@ export async function runStage1(args: Stage1Args): Promise<ReviewResult[]> {
       promptTokensEstimate: 0,
       validationOk: false,
       error: String(outcome.reason),
-    });
+      failureKind: null,
+    };
+    args.onResult?.(result);
+    results.push(result);
+  }
+
+  // Recovery pass: provider failures mean the model never answered — the
+  // call is worth exactly one re-queue before the persona silently thins.
+  // Validation failures are NOT re-queued (the model already had its
+  // in-conversation repair attempts inside validatedCall).
+  const requeue = results
+    .map((r, i) => ({ r, i }))
+    .filter(({ r }) => r.review === null && r.failureKind === "provider");
+  if (requeue.length > 0) {
+    warn(
+      `Re-queueing ${requeue.length} provider-failed review call(s) for one ` +
+        `recovery pass (the provider errored after retries — the model never answered)`,
+    );
+    const retried = await Promise.allSettled(
+      requeue.map(({ i }) => runJob(args.jobs[i]!, i)),
+    );
+    for (let k = 0; k < retried.length; k++) {
+      const outcome = retried[k]!;
+      if (outcome.status === "fulfilled") {
+        results[requeue[k]!.i] = outcome.value;
+        continue;
+      }
+      if (outcome.reason instanceof CostAbortError) throw outcome.reason;
+      // Keep the original failure row; the retry crashing changes nothing.
+    }
   }
   return results;
 }

@@ -23,7 +23,7 @@ import { CostAbortError, CostTracker, estimatePipelineCost, estimatePerLoopUsd, 
 import { allGatesPassed, runGates, type GateResult } from "./gates.js";
 import { autoManifest, assertManifestLoaded, type DocumentModel, type ManifestEntry } from "./manifest.js";
 import { documentFromText, prepareDocuments, sha256Text } from "./parsers.js";
-import { buildJobList, personaCoverage, runStage1, type ReviewJob, type ReviewResult } from "./pipeline.js";
+import { buildJobList, personaCoverage, runStage1, type ReviewJob, type ReviewResult, type Stage1CallContext } from "./pipeline.js";
 import { runStage2 } from "./synthesis.js";
 import { checkShipGates, type ShipCheckResult } from "./scoring.js";
 import { mapReactionsToDimensions, rubricGaps, runColdRead, type ColdRead } from "./coldReader.js";
@@ -40,8 +40,16 @@ import type { QuorableConfig, RigorSettings } from "../config/schema.js";
 import { activeReviewers, localBackendWarnings } from "../config/schema.js";
 
 export interface ReviewInjected {
-  /** Stage-1: (job, messages) → validated review object or null. */
-  stage1CallFn?: (job: ReviewJob, messages: ChatMessage[]) => Promise<Record<string, unknown> | null>;
+  /**
+   * Stage-1: (job, messages) → validated review object or null. The optional
+   * call context carries the job index and a failure-kind reporter (report
+   * "provider" to exercise the recovery pass).
+   */
+  stage1CallFn?: (
+    job: ReviewJob,
+    messages: ChatMessage[],
+    call?: Stage1CallContext,
+  ) => Promise<Record<string, unknown> | null>;
   synthesisCallFn?: (messages: ChatMessage[]) => Promise<Record<string, unknown> | null>;
   /** Stage-2 unstructured fallback: messages → prose markdown or null. */
   synthesisFallbackFn?: (messages: ChatMessage[]) => Promise<string | null>;
@@ -115,9 +123,40 @@ export async function runReview(args: ReviewArgs): Promise<ReviewOutcome> {
     emit(msg);
   };
 
-  fs.mkdirSync(path.join(outDir, "raw_reviews"), { recursive: true });
+  const rawReviewsDir = path.join(outDir, "raw_reviews");
+  fs.mkdirSync(rawReviewsDir, { recursive: true });
+  // Re-runs over the same output directory must not inherit the previous
+  // run's traces: same-named files would be overwritten anyway, but a
+  // council change orphans the rest and `render` would score them into a
+  // later verdict.
+  const staleTraces = fs.readdirSync(rawReviewsDir).filter((f) => f.endsWith(".json"));
+  for (const f of staleTraces) fs.rmSync(path.join(rawReviewsDir, f));
+  if (staleTraces.length > 0) {
+    log(`Cleared ${staleTraces.length} raw review trace(s) left by a previous run`);
+  }
   const statusPath = path.join(outDir, "run_status.txt");
   fs.writeFileSync(statusPath, "running\n", "utf-8");
+
+  // Written INCREMENTALLY as each review completes — a crash mid-run keeps
+  // every finished review, and `ls raw_reviews` shows live progress. The
+  // harness-tracked persona/model_id overwrite whatever the model claimed
+  // to be (local models hallucinate both), and the run_id stamp lets
+  // loadRawReviews reject traces that leak in from another run.
+  const writeTrace = (r: {
+    model: string;
+    persona: string;
+    runNumber: number;
+    review: Record<string, unknown> | null;
+  }): void => {
+    if (r.review === null) return;
+    const safeModel = r.model.replace(/[/:]/g, "_");
+    const stamped = { ...r.review, persona: r.persona, model_id: r.model, run_id: runId };
+    fs.writeFileSync(
+      path.join(rawReviewsDir, `${safeModel}_${r.persona}_run${r.runNumber}.json`),
+      JSON.stringify(stamped, null, 2),
+      "utf-8",
+    );
+  };
 
   const tracker = new CostTracker();
   // Clients are constructed lazily so injected (no-network) stage functions
@@ -197,10 +236,30 @@ export async function runReview(args: ReviewArgs): Promise<ReviewOutcome> {
   }
 
   // --- Panel composition warnings (statistical honesty) ---------------------
-  const reviewers = activeReviewers(args.config).filter(
+  const configuredReviewers = activeReviewers(args.config);
+  const reviewers = configuredReviewers.filter(
     (r) => r.id !== args.config.models.held_out.id,
   );
+  if (reviewers.length === 0) {
+    return abortedOutcome(
+      `held-out model ${args.config.models.held_out.id} is the only configured ` +
+        `reviewer — the Stage-1 panel is empty (a validator must not sit on the ` +
+        `panel it validates). Configure at least one reviewer distinct from held_out.`,
+    );
+  }
   const panelWarnings = [
+    // The exclusion is correct by design, but it must never be silent: a
+    // held_out that names a reviewer quietly shrinks the panel (and the
+    // whole run, if the survivors then fail).
+    ...(reviewers.length < configuredReviewers.length
+      ? [
+          `held-out model ${args.config.models.held_out.id} is also configured as a ` +
+            `reviewer — it is EXCLUDED from the Stage-1 panel (a validator must not ` +
+            `sit on the panel it validates). Panel is ${reviewers.length} of ` +
+            `${configuredReviewers.length} configured reviewer(s): ` +
+            reviewers.map((r) => r.id).join(", "),
+        ]
+      : []),
     ...panelVendorWarnings(
       reviewers.map((r) => r.id),
       args.rigor.heldOut ? args.config.models.held_out.id : null,
@@ -327,15 +386,25 @@ export async function runReview(args: ReviewArgs): Promise<ReviewOutcome> {
           unitJobMeta.push({ jobKey, unitIndex: u });
         }
       }
-      let cursor = 0;
+      const mergeJob = (jobKey: string): Record<string, unknown> | null =>
+        mergeUnitReviews(
+          (perJobReviews.get(jobKey) ?? []).filter(
+            (r): r is Record<string, unknown> => r !== null,
+          ),
+          {
+            unitListField: pack.unitListField,
+            verdictField: pack.verdictField,
+            verdictCategories: pack.verdictCategories,
+          },
+        );
       const unitResults = await runStage1({
         ...stage1Args,
         jobs: unitJobs,
         personaDocuments: {}, // overridden per call below
         canonicalUnits: null,
-        callFn: async (job, messages) => {
+        callFn: async (job, messages, call) => {
           void messages;
-          const meta = unitJobMeta[cursor++]!;
+          const meta = unitJobMeta[call.jobIndex]!;
           const docs = [
             ...(personaDocs[job.persona] ?? []).filter(
               (d) => d.name !== pack.primaryDocName,
@@ -352,32 +421,35 @@ export async function runReview(args: ReviewArgs): Promise<ReviewOutcome> {
             unitField: pack.unitField,
           });
           const review = injected.stage1CallFn
-            ? await injected.stage1CallFn(job, unitMessages)
+            ? await injected.stage1CallFn(job, unitMessages, call)
             : await (async () => {
                 const { validatedCall } = await import("./validation.js");
                 return validatedCall(getClient(job.model.id), unitMessages, pack.reviewSchema, {
                   temperature: job.model.temperature,
                   persona: job.persona,
                   onWarning: log,
+                  onFailure: call.reportFailure,
                 });
               })();
-          perJobReviews.get(meta.jobKey)!.push(review);
+          const jobReviews = perJobReviews.get(meta.jobKey)!;
+          jobReviews.push(review);
+          // Last expected unit (or a recovery-pass retry): the merged trace
+          // for this job is complete enough to persist now.
+          if (jobReviews.length >= units.length) {
+            writeTrace({
+              model: job.model.id,
+              persona: job.persona,
+              runNumber: job.runNumber,
+              review: mergeJob(meta.jobKey),
+            });
+          }
           return review;
         },
       });
       void unitResults;
       results = jobs.map((job) => {
         const jobKey = `${job.model.id}|${job.persona}|${job.runNumber}`;
-        const merged = mergeUnitReviews(
-          (perJobReviews.get(jobKey) ?? []).filter(
-            (r): r is Record<string, unknown> => r !== null,
-          ),
-          {
-            unitListField: pack.unitListField,
-            verdictField: pack.verdictField,
-            verdictCategories: pack.verdictCategories,
-          },
-        );
+        const merged = mergeJob(jobKey);
         return {
           model: job.model.id,
           persona: job.persona,
@@ -387,6 +459,7 @@ export async function runReview(args: ReviewArgs): Promise<ReviewOutcome> {
           promptTokensEstimate: 0,
           validationOk: merged !== null,
           error: merged === null ? "all unit reviews failed" : null,
+          failureKind: null,
         };
       });
     } else {
@@ -395,6 +468,7 @@ export async function runReview(args: ReviewArgs): Promise<ReviewOutcome> {
         jobs,
         personaDocuments: personaDocs,
         canonicalUnits: pack.canonicalUnits.length > 0 ? pack.canonicalUnits : null,
+        onResult: writeTrace,
       });
     }
 
@@ -407,26 +481,38 @@ export async function runReview(args: ReviewArgs): Promise<ReviewOutcome> {
     throw exc;
   }
 
-  // Save raw reviews (traces).
-  for (const r of results) {
-    if (r.review === null) continue;
-    const safeModel = r.model.replace(/[/:]/g, "_");
-    fs.writeFileSync(
-      path.join(outDir, "raw_reviews", `${safeModel}_${r.persona}_run${r.runNumber}.json`),
-      JSON.stringify(r.review, null, 2),
-      "utf-8",
-    );
-  }
+  // Traces were written incrementally as reviews completed; this idempotent
+  // sweep guarantees completeness for rows recovered from rejections.
+  for (const r of results) writeTrace(r);
 
   const coverage = personaCoverage(results, personas);
   const missingPersonas = Object.entries(coverage)
     .filter(([, n]) => n === 0)
     .map(([p]) => p);
   if (missingPersonas.length > 0) {
-    log(
-      `PERSONA DROPOUT: no successful reviews for persona(s): ` +
-        `${missingPersonas.join(", ")} — the synthesis will be missing these lenses.`,
-    );
+    // A lens lost to PROVIDER errors is a quieter, worse failure than one
+    // lost to validation: the reviews were never produced at all, and the
+    // run otherwise "succeeds". Say which one happened.
+    const providerLost = missingPersonas.filter((p) => {
+      const rows = results.filter((r) => r.persona === p);
+      return rows.length > 0 && rows.every((r) => r.failureKind === "provider");
+    });
+    const otherLost = missingPersonas.filter((p) => !providerLost.includes(p));
+    if (otherLost.length > 0) {
+      log(
+        `PERSONA DROPOUT: no successful reviews for persona(s): ` +
+          `${otherLost.join(", ")} — the synthesis will be missing these lenses.`,
+      );
+    }
+    if (providerLost.length > 0) {
+      log(
+        `PERSONA DROPOUT (provider errors): every call for persona(s) ` +
+          `${providerLost.join(", ")} failed at the PROVIDER even after the ` +
+          `recovery pass — the model(s) never answered (network/API failure, ` +
+          `not validation). The synthesis will be missing these lenses; check ` +
+          `the backend is up and re-run.`,
+      );
+    }
   }
 
   // --- Cold-read dimension mapping (rubric gaps) ----------------------------

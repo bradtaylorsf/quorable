@@ -31,6 +31,8 @@ import {
   LedgerFrozenError,
   buildPredictionRow,
   freezePrediction,
+  loadRawReviews,
+  metadataPersonas,
   perPersonaVerdicts,
   recordOutcome,
 } from "../src/engine/ledger.js";
@@ -359,6 +361,134 @@ describe("prediction ledger", () => {
       { verdict: "revise" },
     ] as Record<string, unknown>[];
     expect(perPersonaVerdicts(reviews, ["a", "a", "a"], PACK)).toEqual({ a: "ship" });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Raw-review identity (issues #2/#3/#7): never trust a model to say what it
+// is — persona comes from the filename, matched against the run's persona
+// list, and foreign-run traces are rejected.
+// ---------------------------------------------------------------------------
+
+describe("loadRawReviews identity", () => {
+  const KNOWN = ["historical_auditor", "narrative_architect", "critic"];
+
+  function mkRaw(extras: Record<string, unknown> = {}): Record<string, unknown> {
+    return {
+      persona: "",
+      model_id: "",
+      verdict: "ship",
+      confidence: 0.5,
+      findings: [],
+      suspected_prompt_injection: [],
+      validation_requests: [],
+      unit_reviews: [
+        { unit: "opening", clarity: 8, verdict: "ship", weaknesses: [], rationale: "" },
+      ],
+      ...extras,
+    };
+  }
+
+  function rawDir(): string {
+    const dir = path.join(tmpDir, "raw_reviews");
+    fs.mkdirSync(dir, { recursive: true });
+    return dir;
+  }
+
+  it("ignores a hallucinated persona — the filename is authoritative (#2)", () => {
+    const dir = rawDir();
+    // Qwen labelled a narrative_architect review as "Historical Auditor".
+    fs.writeFileSync(
+      path.join(dir, "lmstudio_qwen3.5-9b_narrative_architect_run1.json"),
+      JSON.stringify(mkRaw({ persona: "Historical Auditor", model_id: "gpt-4o" })),
+    );
+    const { reviews, personas } = loadRawReviews(dir, PACK, { knownPersonas: KNOWN });
+    expect(personas).toEqual(["narrative_architect"]);
+    // The loaded review can no longer carry the hallucinated identity.
+    expect(reviews[0]!["persona"]).toBe("narrative_architect");
+  });
+
+  it("multi-word personas are not truncated by the filename fallback (#3)", () => {
+    const dir = rawDir();
+    // Old code split on "_" and produced the phantom persona "auditor".
+    fs.writeFileSync(
+      path.join(dir, "lmstudio_openai_gpt-oss-20b_historical_auditor_run1.json"),
+      JSON.stringify(mkRaw()),
+    );
+    const { personas } = loadRawReviews(dir, PACK, { knownPersonas: KNOWN });
+    expect(personas).toEqual(["historical_auditor"]);
+  });
+
+  it("a file matching no known persona is skipped loudly, never mis-grouped", () => {
+    const dir = rawDir();
+    fs.writeFileSync(
+      path.join(dir, "m_stray_persona_run1.json"),
+      JSON.stringify(mkRaw()),
+    );
+    const warnings: string[] = [];
+    const { reviews, personas } = loadRawReviews(dir, PACK, {
+      knownPersonas: KNOWN,
+      onWarning: (m) => warnings.push(m),
+    });
+    expect(reviews).toHaveLength(0);
+    expect(personas).toHaveLength(0);
+    expect(warnings.join(" ")).toContain("UNKNOWN PERSONA");
+  });
+
+  it("rejects traces stamped with a foreign run_id (#7)", () => {
+    const dir = rawDir();
+    fs.writeFileSync(
+      path.join(dir, "m_critic_run1.json"),
+      JSON.stringify(mkRaw({ run_id: "20260816_010101" })),
+    );
+    fs.writeFileSync(
+      path.join(dir, "m_critic_run2.json"),
+      JSON.stringify(mkRaw({ run_id: "20260817_020202" })),
+    );
+    const warnings: string[] = [];
+    const { reviews } = loadRawReviews(dir, PACK, {
+      knownPersonas: KNOWN,
+      expectedRunId: "20260817_020202",
+      onWarning: (m) => warnings.push(m),
+    });
+    expect(reviews).toHaveLength(1);
+    expect(warnings.join(" ")).toContain("FOREIGN TRACE");
+  });
+
+  it("buildPredictionRow groups by metadata personas, not model claims", () => {
+    const runDir = path.join(tmpDir, "doc-reviewed");
+    const dir = path.join(runDir, "raw_reviews");
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(
+      path.join(runDir, "run_metadata.yaml"),
+      [
+        "run_id: 20260817_010101",
+        "target: /tmp/doc.md",
+        "config:",
+        "  personas: [historical_auditor, critic]",
+        `hashes:\n  primary_document: ${"a".repeat(64)}`,
+      ].join("\n"),
+    );
+    // Hallucinated persona says "critic"; the filename says historical_auditor.
+    fs.writeFileSync(
+      path.join(dir, "m_historical_auditor_run1.json"),
+      JSON.stringify(mkRaw({ persona: "critic", verdict: "revise" })),
+    );
+    fs.writeFileSync(
+      path.join(dir, "m_critic_run1.json"),
+      JSON.stringify(mkRaw({ verdict: "ship" })),
+    );
+    const row = buildPredictionRow({ runDir, pack: PACK });
+    expect(row.per_persona_verdict).toEqual({
+      historical_auditor: "revise",
+      critic: "ship",
+    });
+  });
+
+  it("metadataPersonas reads config.personas and tolerates absence", () => {
+    expect(metadataPersonas({ config: { personas: ["a", "b"] } })).toEqual(["a", "b"]);
+    expect(metadataPersonas({ config: {} })).toBeUndefined();
+    expect(metadataPersonas({})).toBeUndefined();
   });
 });
 

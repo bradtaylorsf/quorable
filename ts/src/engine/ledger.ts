@@ -35,30 +35,108 @@ export interface PredictionRow {
   outcome?: { result: string; recorded_at: string }[];
 }
 
-/** Load validated raw reviews + personas from a run's raw_reviews dir. */
+export interface LoadRawReviewsOptions {
+  /**
+   * The run's configured persona names (run_metadata.yaml `config.personas`).
+   * When provided, identity is derived from the FILENAME by longest-first
+   * tail match against this list, and files that match no known persona are
+   * skipped with a loud warning instead of being scored under a phantom.
+   */
+  knownPersonas?: string[];
+  /** Reject traces stamped with a different run_id (orphans of prior runs). */
+  expectedRunId?: string | null;
+  onWarning?: (msg: string) => void;
+}
+
+/**
+ * Filename stem (minus `_runN`) → persona, matched longest-first against the
+ * known persona list. Splitting on `_` is NOT safe: model ids contain
+ * underscores and so do persona names (`…gpt-oss-20b_historical_auditor`
+ * must yield `historical_auditor`, never `auditor`).
+ */
+function personaFromFilename(file: string, knownPersonas: string[]): string | null {
+  const stem = file.replace(/\.json$/, "").replace(/_run\d+$/, "");
+  const byLengthDesc = [...knownPersonas].sort((a, b) => b.length - a.length);
+  for (const persona of byLengthDesc) {
+    if (stem === persona || stem.endsWith(`_${persona}`)) return persona;
+  }
+  return null;
+}
+
+/**
+ * Load validated raw reviews + personas from a run's raw_reviews dir.
+ *
+ * Identity is NEVER taken from the model-declared `persona`/`model_id`
+ * fields — local models hallucinate both. It comes from the filename (and
+ * the harness-stamped `run_id`d traces), which only the harness writes.
+ */
 export function loadRawReviews(
   rawDir: string,
   pack: Pack,
+  opts: LoadRawReviewsOptions = {},
 ): { reviews: Record<string, unknown>[]; personas: string[] } {
+  const warn = opts.onWarning ?? (() => {});
   const reviews: Record<string, unknown>[] = [];
   const personas: string[] = [];
   if (!fs.existsSync(rawDir)) return { reviews, personas };
   for (const file of fs.readdirSync(rawDir).sort()) {
     if (!file.endsWith(".json")) continue;
     let review: Record<string, unknown>;
+    let stampedRunId: string | null = null;
+    let stampedPersona: string | null = null;
     try {
       const data = JSON.parse(fs.readFileSync(path.join(rawDir, file), "utf-8"));
+      // `run_id` is not in the review schema, so a model cannot smuggle one
+      // through validatedCall — its presence marks a harness-stamped trace
+      // whose persona/model_id fields were overwritten with tracked values.
+      if (data && typeof data === "object" && typeof data["run_id"] === "string") {
+        stampedRunId = data["run_id"];
+        stampedPersona = typeof data["persona"] === "string" ? data["persona"] : null;
+      }
       const parsed = pack.reviewSchema.safeParse(data);
       if (!parsed.success) continue;
       review = parsed.data;
     } catch {
       continue;
     }
-    let persona = String(review["persona"] ?? "");
-    if (!persona) {
-      const stem = file.replace(/\.json$/, "").split("_run")[0] ?? "";
-      persona = stem.split("_").pop() ?? "unknown";
+    if (opts.expectedRunId && stampedRunId && stampedRunId !== opts.expectedRunId) {
+      warn(
+        `FOREIGN TRACE: ${file} is stamped run_id=${stampedRunId}, not this ` +
+          `run's ${opts.expectedRunId} — skipped (orphan of a previous run).`,
+      );
+      continue;
     }
+
+    let persona: string | null = null;
+    if (opts.knownPersonas && opts.knownPersonas.length > 0) {
+      persona = personaFromFilename(file, opts.knownPersonas);
+      if (persona === null && stampedPersona && opts.knownPersonas.includes(stampedPersona)) {
+        persona = stampedPersona; // harness-written sidecar value (renamed file)
+      }
+      if (persona === null) {
+        warn(
+          `UNKNOWN PERSONA: ${file} matches none of this run's personas ` +
+            `(${opts.knownPersonas.join(", ")}) — skipped, NOT scored. A trace ` +
+            `from a different council or document may be polluting ${rawDir}.`,
+        );
+        continue;
+      }
+    } else if (stampedPersona) {
+      persona = stampedPersona;
+    } else {
+      // Legacy fallback (no metadata persona list, unstamped trace): last
+      // filename segment. Known-wrong for multi-word personas — say so.
+      const stem = file.replace(/\.json$/, "").replace(/_run\d+$/, "");
+      persona = stem.split("_").pop() ?? "unknown";
+      warn(
+        `UNVERIFIED PERSONA: ${file} has no harness stamp and no persona list ` +
+          `was available — guessed '${persona}' from the filename tail, which ` +
+          `truncates multi-word persona names.`,
+      );
+    }
+    // The model-declared persona is overwritten with the derived identity so
+    // nothing downstream can regroup reviews on a hallucinated value.
+    review["persona"] = persona;
     reviews.push(review);
     personas.push(persona);
   }
@@ -98,11 +176,21 @@ export function perPersonaVerdicts(
   return out;
 }
 
+/** run_metadata.yaml `config.personas` — the run's authoritative persona list. */
+export function metadataPersonas(metadata: Record<string, unknown>): string[] | undefined {
+  const config = metadata["config"];
+  if (!config || typeof config !== "object") return undefined;
+  const personas = (config as Record<string, unknown>)["personas"];
+  if (!Array.isArray(personas) || personas.length === 0) return undefined;
+  return personas.map(String);
+}
+
 /** Build the predictions row for a completed review run directory. */
 export function buildPredictionRow(args: {
   runDir: string;
   pack: Pack;
   hypothesis?: string;
+  onWarning?: (msg: string) => void;
 }): PredictionRow {
   const metadataPath = path.join(args.runDir, "run_metadata.yaml");
   const metadata = fs.existsSync(metadataPath)
@@ -111,6 +199,11 @@ export function buildPredictionRow(args: {
   const { reviews, personas } = loadRawReviews(
     path.join(args.runDir, "raw_reviews"),
     args.pack,
+    {
+      knownPersonas: metadataPersonas(metadata),
+      expectedRunId: typeof metadata["run_id"] === "string" ? metadata["run_id"] : null,
+      onWarning: args.onWarning,
+    },
   );
   // Same persona-exclusion semantics as the ship gate — the frozen
   // composite is the number the gate actually evaluated.

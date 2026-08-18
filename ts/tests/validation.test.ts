@@ -110,4 +110,29 @@ describe("validatedCall", () => {
     const client = fakeClient([new TypeError("bug")]);
     await expect(validatedCall(client, [], Schema)).rejects.toThrow(TypeError);
   });
+
+  it("reports WHY it returned null: provider vs validation (issue #5)", async () => {
+    const kinds: string[] = [];
+    const onFailure = (kind: string): void => {
+      kinds.push(kind);
+    };
+
+    await validatedCall(fakeClient([new ProviderError("fetch failed")]), [], Schema, {
+      onFailure,
+    });
+    expect(kinds).toEqual(["provider"]);
+
+    kinds.length = 0;
+    await validatedCall(fakeClient(["not json", "still not json"]), [], Schema, {
+      onFailure,
+    });
+    expect(kinds).toEqual(["validation"]);
+
+    // Success reports nothing.
+    kinds.length = 0;
+    await validatedCall(fakeClient(['{"verdict": "good", "score": 4}']), [], Schema, {
+      onFailure,
+    });
+    expect(kinds).toEqual([]);
+  });
 });
