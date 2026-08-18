@@ -38,6 +38,10 @@ htmlcov/
 runs/
 outputs/
 handoff/
+# quorable's own output: `review <file>` writes <file>-reviewed/, and a
+# directory target writes a synthetic combined primary next to the sources.
+*-reviewed/
+.quorable-combined.md
 
 # Claude Code local settings
 .claude/settings.local.json

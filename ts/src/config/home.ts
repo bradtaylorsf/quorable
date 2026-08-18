@@ -78,6 +78,19 @@ function parseEnvFile(content: string): Record<string, string> {
   return out;
 }
 
+/**
+ * Read one env var by name: process env first, then ~/.quorable/.env. Used
+ * for named endpoints' `api_key_env`, whose names are not known at compile
+ * time (TOGETHER_API_KEY, GROQ_API_KEY, …).
+ */
+export function readEnvVar(name: string, home = quorableHome()): string {
+  const fromProcess = process.env[name];
+  if (fromProcess) return fromProcess;
+  const envPath = homePaths(home).env;
+  if (!fs.existsSync(envPath)) return "";
+  return parseEnvFile(fs.readFileSync(envPath, "utf-8"))[name] ?? "";
+}
+
 /** Load stored provider keys from ~/.quorable/.env (absent file = empty). */
 export function loadStoredKeys(home = quorableHome()): ProviderKeys {
   const envPath = homePaths(home).env;

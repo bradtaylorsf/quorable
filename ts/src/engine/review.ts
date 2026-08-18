@@ -33,16 +33,18 @@ import { compareHeldOut, recordHoldoutUse, runStage3, verifyHeldOutExclusion, wr
 import { checkRegressions, loadRegistry, saveRegistry, updateRegistry, type RegressionResult } from "./regressions.js";
 import { generateCostSummary, generateSynthesisReport } from "./reports.js";
 import { mergeUnitReviews, runMapPass, splitByMap, unitReviewDocuments, UNIT_DISCOVERY_THRESHOLD_CHARS, type DocumentMap } from "./unitDiscovery.js";
-import { ModelClient, type ProviderSettings } from "../providers/registry.js";
+import { ModelClient, resolutionOf, type ProviderSettings } from "../providers/registry.js";
 import { panelVendorWarnings, type ChatMessage } from "../providers/types.js";
 import type { Pack } from "../pack/types.js";
 import type { QuorableConfig, RigorSettings } from "../config/schema.js";
-import { activeReviewers } from "../config/schema.js";
+import { activeReviewers, localBackendWarnings } from "../config/schema.js";
 
 export interface ReviewInjected {
   /** Stage-1: (job, messages) → validated review object or null. */
   stage1CallFn?: (job: ReviewJob, messages: ChatMessage[]) => Promise<Record<string, unknown> | null>;
   synthesisCallFn?: (messages: ChatMessage[]) => Promise<Record<string, unknown> | null>;
+  /** Stage-2 unstructured fallback: messages → prose markdown or null. */
+  synthesisFallbackFn?: (messages: ChatMessage[]) => Promise<string | null>;
   coldReadFn?: (messages: ChatMessage[]) => Promise<ColdRead | null>;
   coldMapFn?: (messages: ChatMessage[]) => Promise<{ mappings: { reaction_index: number; dimension: string | null }[] } | null>;
   mapPassFn?: (messages: ChatMessage[]) => Promise<DocumentMap | null>;
@@ -74,6 +76,8 @@ export interface ReviewOutcome {
   runId: string;
   shipCheck: ShipCheckResult;
   synthesis: Record<string, unknown> | null;
+  /** Prose synthesis when the structured call failed and fallback ran. */
+  synthesisMarkdown: string | null;
   results: ReviewResult[];
   coldRead: ColdRead | null;
   validationTasks: ValidationTask[];
@@ -160,8 +164,9 @@ export async function runReview(args: ReviewArgs): Promise<ReviewOutcome> {
     finish({
       outDir,
       runId,
-      shipCheck: { ok: false, reasons: [reason], composite: null, perDimension: {} },
+      shipCheck: { ok: false, reasons: [reason], warnings: [], composite: null, perDimension: {} },
       synthesis: null,
+      synthesisMarkdown: null,
       results: [],
       coldRead: null,
       validationTasks: [],
@@ -195,10 +200,14 @@ export async function runReview(args: ReviewArgs): Promise<ReviewOutcome> {
   const reviewers = activeReviewers(args.config).filter(
     (r) => r.id !== args.config.models.held_out.id,
   );
-  const panelWarnings = panelVendorWarnings(
-    reviewers.map((r) => r.id),
-    args.rigor.heldOut ? args.config.models.held_out.id : null,
-  );
+  const panelWarnings = [
+    ...panelVendorWarnings(
+      reviewers.map((r) => r.id),
+      args.rigor.heldOut ? args.config.models.held_out.id : null,
+      resolutionOf(args.providerSettings),
+    ),
+    ...localBackendWarnings(args.config),
+  ];
   for (const w of panelWarnings) log(`WARNING: ${w}`);
 
   // --- Rigor: persona limiting (quick = council's top 3) --------------------
@@ -260,6 +269,7 @@ export async function runReview(args: ReviewArgs): Promise<ReviewOutcome> {
     reviewerIds: reviewers.map((r) => r.id),
     synthesizerId: args.config.models.synthesizer.id,
     drafterId: null,
+    endpoints: Object.keys(args.providerSettings.endpoints ?? {}),
     runsPerPersona,
     personas,
     personaDocChars: (p) => (personaDocs[p] ?? []).map((d) => d.charCount),
@@ -454,8 +464,10 @@ export async function runReview(args: ReviewArgs): Promise<ReviewOutcome> {
     temperature: args.config.models.synthesizer.temperature,
     expectedReviews: jobs.length,
     agreementStats: args.rigor.agreementStats,
+    synthesisFallback: args.config.pipeline.synthesis_fallback,
     onWarning: log,
     callFn: injected.synthesisCallFn,
+    fallbackCallFn: injected.synthesisFallbackFn,
   });
   if (tracker.totalUsd > abortThreshold) {
     return abortedOutcome(
@@ -464,6 +476,9 @@ export async function runReview(args: ReviewArgs): Promise<ReviewOutcome> {
     );
   }
   const synthesis = stage2.synthesis;
+  const synthesisMarkdown = stage2.synthesisMarkdown;
+  // True only when the structured call failed AND prose was produced.
+  const synthesisFallbackUsed = synthesis === null && synthesisMarkdown !== null;
 
   // --- Mechanical gates -----------------------------------------------------
   const gateResults: Record<string, GateResult> = runGates(
@@ -531,6 +546,13 @@ export async function runReview(args: ReviewArgs): Promise<ReviewOutcome> {
 
   // --- Held-out validation at rigorous (M6.4) -------------------------------
   let heldOutComparison: HeldOutComparison | null = null;
+  if (args.rigor.heldOut && synthesis === null && synthesisFallbackUsed) {
+    log(
+      "SKIPPED held-out comparison: it diffs against the STRUCTURED synthesis, " +
+        "which this run does not have (markdown fallback). Re-run with a " +
+        "synthesizer that returns schema-valid JSON to get held-out validation.",
+    );
+  }
   if (args.rigor.heldOut && synthesis !== null) {
     verifyHeldOutExclusion({
       heldOutId: args.config.models.held_out.id,
@@ -581,6 +603,13 @@ export async function runReview(args: ReviewArgs): Promise<ReviewOutcome> {
 
   // --- Regressions (standard+) ----------------------------------------------
   let regressions: RegressionResult | null = null;
+  if (args.rigor.regressions && synthesis === null && synthesisFallbackUsed) {
+    log(
+      "SKIPPED regression check: it tracks weaknesses from the STRUCTURED " +
+        "synthesis, which this run does not have (markdown fallback). The " +
+        "regression registry is left untouched rather than recorded wrong.",
+    );
+  }
   if (args.rigor.regressions && synthesis !== null) {
     const registryPath = path.join(outDir, "regressions.yaml");
     const registry = loadRegistry(registryPath);
@@ -612,6 +641,7 @@ export async function runReview(args: ReviewArgs): Promise<ReviewOutcome> {
     gateResults,
     pack,
     personas: reviewPersonas,
+    synthesisFallbackUsed,
   });
   // M6 additions to the gate: unresolved validation tasks (rigorous) and
   // held-out sev-1 findings the panel missed entirely (rigorous).
@@ -628,6 +658,7 @@ export async function runReview(args: ReviewArgs): Promise<ReviewOutcome> {
   const finalCheck: ShipCheckResult = {
     ok: shipCheck.ok && extraReasons.length === 0,
     reasons: [...shipCheck.reasons, ...extraReasons],
+    warnings: shipCheck.warnings,
     composite: shipCheck.composite,
     perDimension: shipCheck.perDimension,
   };
@@ -638,6 +669,9 @@ export async function runReview(args: ReviewArgs): Promise<ReviewOutcome> {
   }
   const report = generateSynthesisReport({
     synthesis: synthesis ?? {},
+    synthesisMarkdown,
+    // Agreement is computed in code, so it survives a failed structured call.
+    agreement: stage2.agreement,
     shipCheck: finalCheck,
     personaCoverage: coverage,
     agreementFlags,
@@ -649,6 +683,13 @@ export async function runReview(args: ReviewArgs): Promise<ReviewOutcome> {
     priorSynthesis,
   });
   fs.writeFileSync(path.join(outDir, "synthesis_report.md"), report, "utf-8");
+  if (synthesisFallbackUsed) {
+    log(
+      "No synthesis.json written (unstructured fallback) — `quorable diff` " +
+        "cannot compare this run against another, and `quorable handoff` has " +
+        "no structured synthesis to freeze.",
+    );
+  }
 
   const metadata = {
     run_id: runId,
@@ -696,6 +737,7 @@ export async function runReview(args: ReviewArgs): Promise<ReviewOutcome> {
     runId,
     shipCheck: finalCheck,
     synthesis,
+    synthesisMarkdown,
     results,
     coldRead,
     validationTasks,

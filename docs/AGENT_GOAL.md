@@ -8,12 +8,14 @@ adversarial review councils against any document. Work in
 
 THE SPEC — read these first, in order:
 
-1. docs/GENERALIZATION_PLAN.md — the complete roadmap (M0–M10), all decisions
-   already made, and design detail in §5 (TS rewrite, long-doc unit discovery,
-   validation tasks, interactive picker). Follow it; don't re-litigate decisions.
-2. CONTRACT.md — the engine/pack contract and non-negotiables carried from the
+1. CONTRACT.md — the engine/pack contract and non-negotiables carried from the
    parent systems.
-3. The Python code in src/quorable/ — this is the executable spec, not the
+
+   (The roadmap that drove this — docs/GENERALIZATION_PLAN.md, M0–M10, with
+   design detail in §5 — was retired once M0–M9 landed. Source comments still
+   cite it as "plan M2", "plan §5.4", "Blocker 3"; recover it from git history
+   if you need the reasoning behind one of those.)
+2. The Python code in src/quorable/ — this is the executable spec, not the
    product. 176 passing tests (make test). Never break it; retire it to
    reference/ only when TS reaches parity.
 
@@ -49,8 +51,7 @@ HARD RULES:
   warn on single-vendor panels; ≥2 cross-vendor models per persona or say so.
 - Cost governor aborts, never degrades. Failures become result rows, never
   crashes. Injection guard on every prompt. No API keys in code or commits.
-- Commit in small, well-messaged increments per milestone. Update
-  GENERALIZATION_PLAN.md checkboxes/status as milestones land. Run the full
+- Commit in small, well-messaged increments per milestone. Run the full
   test suite (Python AND TS) before every commit.
 - Live API runs cost money: use OPENROUTER_API_KEY from env only if present,
   cap any live smoke test at $2, and never make live calls in CI/tests.

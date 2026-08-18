@@ -1,7 +1,7 @@
 {
   "name": "quorable",
   "version": "0.2.0",
-  "description": "Multi-model adversarial review councils for any document — scored synthesis with honest agreement statistics.",
+  "description": "Multi-model adversarial review councils for any document \u2014 scored synthesis with honest agreement statistics.",
   "keywords": [
     "review",
     "llm",
@@ -13,6 +13,14 @@
   ],
   "license": "MIT",
   "author": "Bradley Taylor",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bradtaylorsf/quorable.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bradtaylorsf/quorable/issues"
+  },
+  "homepage": "https://github.com/bradtaylorsf/quorable#readme",
   "type": "module",
   "engines": {
     "node": ">=20"

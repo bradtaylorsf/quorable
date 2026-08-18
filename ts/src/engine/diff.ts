@@ -35,6 +35,20 @@ export interface DiffResult {
 function loadSynthesis(runDir: string): Record<string, unknown> {
   const p = path.join(runDir, "synthesis.json");
   if (!fs.existsSync(p)) {
+    // A run whose synthesizer fell back to prose has no structured synthesis
+    // to diff. Say which run and why, rather than "No synthesis.json".
+    const report = path.join(runDir, "synthesis_report.md");
+    const fellBack =
+      fs.existsSync(report) &&
+      fs.readFileSync(report, "utf-8").includes("## Synthesis (unstructured fallback)");
+    if (fellBack) {
+      throw new Error(
+        `${runDir} has no synthesis.json: that run's synthesizer fell back to ` +
+          `unstructured markdown, so there is no structured synthesis to diff. ` +
+          `Re-run it with a synthesizer that returns schema-valid JSON ` +
+          `(pipeline.synthesis_fallback: none will fail loudly instead).`,
+      );
+    }
     throw new Error(`No synthesis.json in ${runDir}`);
   }
   return JSON.parse(fs.readFileSync(p, "utf-8")) as Record<string, unknown>;

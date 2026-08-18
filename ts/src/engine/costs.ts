@@ -8,6 +8,7 @@
  * it never degrades a run to stay under budget.
  */
 
+import { parseModelRef, type ModelRef } from "../providers/types.js";
 import { pythonRound } from "./pyformat.js";
 
 /** Rough estimate: 1 token ≈ 4 characters for English text. */
@@ -83,11 +84,38 @@ export async function refreshLivePricing(
   return true;
 }
 
-/** (input_per_1M, output_per_1M): live → static table → default. */
-export function getPricing(modelId: string): [number, number] {
+/**
+ * (input_per_1M, output_per_1M): live → static table → provider-aware
+ * fallback.
+ *
+ * A provider-qualified spec is priced on its bare model id, and models on a
+ * local/openai-compatible endpoint price at ZERO unless the table happens to
+ * know them — mirroring exactly what OpenAIProvider records at call time, so
+ * the pre-run estimate matches the bill. Without this, a local panel would
+ * estimate at the default hosted rate and show money it never spends.
+ */
+export function getPricing(
+  modelId: string,
+  endpoints: readonly string[] = [],
+): [number, number] {
   const live = livePricing.get(modelId);
   if (live) return live;
-  return MODEL_PRICING[modelId] ?? DEFAULT_PRICING;
+  const known = MODEL_PRICING[modelId];
+  if (known) return known;
+
+  let ref: ModelRef;
+  try {
+    ref = parseModelRef(modelId, { endpoints });
+  } catch {
+    return DEFAULT_PRICING;
+  }
+  if (ref.provider === "openai_compatible") {
+    return MODEL_PRICING[ref.model] ?? [0, 0];
+  }
+  if (ref.raw !== ref.model) {
+    return livePricing.get(ref.model) ?? MODEL_PRICING[ref.model] ?? DEFAULT_PRICING;
+  }
+  return DEFAULT_PRICING;
 }
 
 export function tokenCost(tokens: number, pricePer1M: number): number {
@@ -182,6 +210,8 @@ export interface EstimateInputs {
   personaOverlayChars: Record<string, number>;
   includeDrafter: boolean;
   iterations: number;
+  /** Configured endpoint names, so local specs price at zero. */
+  endpoints?: readonly string[];
 }
 
 /**
@@ -197,7 +227,7 @@ export function estimatePipelineCost(inputs: EstimateInputs): CostEstimate {
   const runsPerPersona = inputs.runsPerPersona;
 
   for (const modelId of inputs.reviewerIds) {
-    const [inputPrice, outputPrice] = getPricing(modelId);
+    const [inputPrice, outputPrice] = getPricing(modelId, inputs.endpoints ?? []);
     let totalInputTokens = 0;
     let numCalls = 0;
 
@@ -229,7 +259,10 @@ export function estimatePipelineCost(inputs: EstimateInputs): CostEstimate {
   }
 
   // --- Stage 2: synthesis ---
-  const [synthInputPrice, synthOutputPrice] = getPricing(inputs.synthesizerId);
+  const [synthInputPrice, synthOutputPrice] = getPricing(
+    inputs.synthesizerId,
+    inputs.endpoints ?? [],
+  );
   const stage1OutputChars =
     estimate.modelEstimates.reduce((acc, m) => acc + m.numCalls, 0) *
     ESTIMATED_OUTPUT_TOKENS_STAGE1 *
@@ -251,7 +284,10 @@ export function estimatePipelineCost(inputs: EstimateInputs): CostEstimate {
 
   // --- Drafter (one draft/revise call per iteration) ---
   if (inputs.includeDrafter && inputs.drafterId !== null) {
-    const [draftInputPrice, draftOutputPrice] = getPricing(inputs.drafterId);
+    const [draftInputPrice, draftOutputPrice] = getPricing(
+      inputs.drafterId,
+      inputs.endpoints ?? [],
+    );
     const docChars = inputs.allDocChars.reduce((a, b) => a + b, 0);
     const draftInputTokens = Math.floor(
       (docChars + inputs.systemPromptChars + 5000) / CHARS_PER_TOKEN,

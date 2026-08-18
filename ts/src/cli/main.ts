@@ -13,6 +13,7 @@ import path from "node:path";
 
 import { Command } from "commander";
 
+import { registerConfigCommands } from "./commands/config.js";
 import { registerManageCommands } from "./commands/manage.js";
 import { registerRunCommands } from "./commands/runs.js";
 import { allModelSpecs, resolveContext, type ReviewFlags } from "./context.js";
@@ -21,7 +22,7 @@ import { effectiveKeys, storeKey } from "../config/home.js";
 import { RIGOR_PRESETS, RIGOR_TIERS, type RigorTier } from "../config/schema.js";
 import { refreshLivePricing } from "../engine/costs.js";
 import { runReview, type ReviewOutcome } from "../engine/review.js";
-import { checkModelAvailability } from "../providers/registry.js";
+import { checkModelAvailability, resolutionOf } from "../providers/registry.js";
 
 const program = new Command();
 
@@ -40,6 +41,8 @@ interface ReviewCliOptions {
   persona?: string[];
   model?: string[];
   context?: string[];
+  config?: string;
+  profile?: string;
   out?: string;
   yes?: boolean;
   save?: boolean;
@@ -89,6 +92,8 @@ async function executeReview(
     rigor: opts.rigor,
     personas: opts.persona,
     models: opts.model,
+    ...(opts.config ? { config: opts.config } : {}),
+    ...(opts.profile ? { profile: opts.profile } : {}),
   };
 
   // Interactive picker: TTY, no explicit council, not suppressed by --yes.
@@ -99,6 +104,7 @@ async function executeReview(
       defaultCouncil: ctx.config.council,
       defaultRigor: ctx.config.rigor as RigorTier,
       defaultModels: ctx.config.models.reviewers.filter((r) => !r.held_out).map((r) => r.id),
+      resolution: resolutionOf(ctx.providerSettings),
     });
     if (picked.cancelled) {
       console.error("Cancelled.");
@@ -209,6 +215,8 @@ program
   .option("--persona <name>", "cherry-pick persona (repeatable)", collect, [])
   .option("--model <id>", "reviewer model id, provider-qualified ok (repeatable)", collect, [])
   .option("--context <dir>", "context directory, globbed into the review (repeatable)", collect, [])
+  .option("--config <path>", "explicit project config, bypassing quorable.yaml discovery")
+  .option("--profile <name>", "config profile to run on (e.g. lmstudio | ollama)")
   .option("--out <dir>", "output directory (default: <filename>-reviewed/)")
   .option("-y, --yes", "no picker, no confirmations (CI mode)")
   .option("--save", "write interactive choices to the project quorable.yaml")
@@ -225,6 +233,8 @@ program
   .option("--persona <name>", "cherry-pick persona (repeatable)", collect, [])
   .option("--model <id>", "reviewer model id (repeatable)", collect, [])
   .option("--context <dir>", "context directory (repeatable)", collect, [])
+  .option("--config <path>", "explicit project config, bypassing quorable.yaml discovery")
+  .option("--profile <name>", "config profile to run on (e.g. lmstudio | ollama)")
   .option("--out <dir>", "output directory")
   .option("-y, --yes", "no picker, no confirmations")
   .action(async (file: string, opts: ReviewCliOptions) => {
@@ -260,6 +270,7 @@ function resolveTarget(file: string): string {
   return combined;
 }
 
+registerConfigCommands(program);
 registerManageCommands(program);
 registerRunCommands(program);
 

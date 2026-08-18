@@ -10,7 +10,7 @@ import * as clack from "@clack/prompts";
 
 import { listCouncils, listPersonas, loadCouncil, type AssetRoots } from "../config/resolve.js";
 import { RIGOR_TIERS, type RigorTier } from "../config/schema.js";
-import { personaModelWarnings } from "../providers/types.js";
+import { personaModelWarnings, type ModelResolution } from "../providers/types.js";
 
 export interface PickerResult {
   council: string;
@@ -29,6 +29,8 @@ export async function runPicker(args: {
   defaultCouncil: string;
   defaultRigor: RigorTier;
   defaultModels: string[];
+  /** Endpoint names + declared vendors, so local panels are judged honestly. */
+  resolution?: ModelResolution;
 }): Promise<PickerResult> {
   const cancelled: PickerResult = {
     council: args.defaultCouncil,
@@ -108,6 +110,7 @@ export async function runPicker(args: {
   const effectiveModels = models ?? args.defaultModels;
   const warnings = personaModelWarnings(
     Object.fromEntries(effectivePersonas.map((p) => [p, effectiveModels])),
+    args.resolution ?? {},
   );
   const unique = [...new Set(warnings.map((w) => w.split(" — ")[1] ?? w))];
   if (unique.length > 0) {

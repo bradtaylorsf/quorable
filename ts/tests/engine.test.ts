@@ -573,3 +573,32 @@ describe("run diff", () => {
     ]);
   });
 });
+
+describe("diff on a run with no structured synthesis", () => {
+  it("explains the fallback instead of crashing on a missing file", () => {
+    const runDir = fs.mkdtempSync(path.join(os.tmpdir(), "quorable-fallback-run-"));
+    try {
+      fs.writeFileSync(
+        path.join(runDir, "synthesis_report.md"),
+        "# report\n\n## Synthesis (unstructured fallback)\n\nprose\n",
+        "utf-8",
+      );
+      const call = () => compareRuns({ runDirA: runDir, runDirB: runDir, pack: PACK });
+      expect(call).toThrow(/fell back to\s+unstructured markdown/);
+      expect(call).toThrow(/synthesis_fallback: none/);
+    } finally {
+      fs.rmSync(runDir, { recursive: true, force: true });
+    }
+  });
+
+  it("keeps the plain message when the run simply has no synthesis at all", () => {
+    const runDir = fs.mkdtempSync(path.join(os.tmpdir(), "quorable-empty-run-"));
+    try {
+      expect(() =>
+        compareRuns({ runDirA: runDir, runDirB: runDir, pack: PACK }),
+      ).toThrow(/No synthesis\.json in/);
+    } finally {
+      fs.rmSync(runDir, { recursive: true, force: true });
+    }
+  });
+});

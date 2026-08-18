@@ -483,3 +483,156 @@ describe("runReview — statistical honesty + M6", () => {
     expect(calls).toBeGreaterThan(0);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Stage-2 markdown fallback: a narrative for weak local synthesizers, with
+// every number still computed in code from the raw reviews.
+// ---------------------------------------------------------------------------
+
+const FALLBACK_PROSE = [
+  "## Overall assessment",
+  "The draft holds together but leans on assertion.",
+  "## Blocking findings",
+  "None the panel agreed on.",
+  "## Ranked fixes",
+  "Tighten the opening first.",
+  "## Disagreements",
+  "critic and praiser split on the close.",
+  "## What the panel may have missed",
+  "Nobody read it as a hostile reviewer would.",
+].join("\n\n");
+
+/** Config with the fallback enabled; everything else identical to baseArgs. */
+function fallbackArgs(overrides: Partial<ReviewArgs> = {}): ReviewArgs {
+  const base = baseArgs();
+  const config = ConfigSchema.parse({
+    models: {
+      reviewers: [
+        { id: "a/model-one", temperature: 0.2 },
+        { id: "b/model-two", temperature: 0.2 },
+      ],
+      synthesizer: { id: "a/model-one", temperature: 0.1 },
+      held_out: { id: "c/model-three", temperature: 0.2 },
+    },
+    pipeline: { synthesis_fallback: "markdown" },
+  });
+  return {
+    ...base,
+    config,
+    injected: {
+      ...base.injected,
+      // The synthesizer never returns schema-valid JSON.
+      synthesisCallFn: async () => null,
+      synthesisFallbackFn: async () => FALLBACK_PROSE,
+    },
+    ...overrides,
+  };
+}
+
+describe("runReview — Stage 2 markdown fallback", () => {
+  it("writes a report with the fallback section and no synthesis.json", async () => {
+    const outcome = await runReview(fallbackArgs());
+    const outDir = defaultOutDir(targetPath);
+
+    const report = fs.readFileSync(path.join(outDir, "synthesis_report.md"), "utf-8");
+    expect(report).toContain("## Synthesis (unstructured fallback)");
+    expect(report).toContain("Generated as prose because the synthesizer did not return");
+    expect(report).toContain("The draft holds together but leans on assertion.");
+    expect(report).toContain("## What the panel may have missed");
+
+    // Structured sections are omitted rather than printed empty — claiming
+    // "No consensus weaknesses identified" would be a false statement.
+    expect(report).not.toContain("No consensus weaknesses identified.");
+    expect(report).not.toContain("No fixes ranked.");
+
+    expect(outcome.synthesis).toBeNull();
+    expect(outcome.synthesisMarkdown).toBe(FALLBACK_PROSE);
+    expect(fs.existsSync(path.join(outDir, "synthesis.json"))).toBe(false);
+  });
+
+  it("does not blame the run for missing synthesis, but still says so", async () => {
+    const outcome = await runReview(fallbackArgs());
+    expect(outcome.shipCheck.reasons).not.toContain("no synthesis output");
+    expect(outcome.shipCheck.warnings.join(" ")).toContain("UNSTRUCTURED");
+    // The note reaches the human-readable report too.
+    const report = fs.readFileSync(
+      path.join(defaultOutDir(targetPath), "synthesis_report.md"),
+      "utf-8",
+    );
+    expect(report).toContain("UNSTRUCTURED");
+  });
+
+  it("scores are identical to the same run with a working synthesizer", async () => {
+    const withFallback = await runReview(fallbackArgs());
+    fs.rmSync(defaultOutDir(targetPath), { recursive: true, force: true });
+    const withSynthesis = await runReview(baseArgs());
+
+    expect(withFallback.shipCheck.composite).toBe(withSynthesis.shipCheck.composite);
+    expect(withFallback.shipCheck.perDimension).toEqual(withSynthesis.shipCheck.perDimension);
+    expect(withFallback.shipCheck.ok).toBe(withSynthesis.shipCheck.ok);
+    // Agreement is computed in code, so it survives the structured call failing.
+    const report = fs.readFileSync(
+      path.join(defaultOutDir(targetPath), "synthesis_report.md"),
+      "utf-8",
+    );
+    expect(report).toContain("## Inter-Rater Agreement Statistics");
+  });
+
+  it("keeps held-out and regressions skipped, and warns why", async () => {
+    const events: string[] = [];
+    const outcome = await runReview(
+      fallbackArgs({
+        rigor: RIGOR_PRESETS.rigorous,
+        onEvent: (m) => events.push(m),
+      }),
+    );
+    expect(outcome.heldOutComparison).toBeNull();
+    expect(outcome.regressions).toBeNull();
+
+    const log = events.join("\n");
+    expect(log).toContain("SKIPPED held-out comparison");
+    expect(log).toContain("SKIPPED regression check");
+    expect(log).toContain("`quorable diff` ");
+
+    // The registry must be left untouched rather than recorded wrong.
+    expect(fs.existsSync(path.join(defaultOutDir(targetPath), "regressions.yaml"))).toBe(false);
+  });
+
+  it("default config does not fall back — behaviour is unchanged", async () => {
+    let fallbackCalls = 0;
+    const base = baseArgs();
+    const outcome = await runReview({
+      ...base,
+      injected: {
+        ...base.injected,
+        synthesisCallFn: async () => null,
+        synthesisFallbackFn: async () => {
+          fallbackCalls++;
+          return FALLBACK_PROSE;
+        },
+      },
+    });
+    expect(fallbackCalls).toBe(0);
+    expect(outcome.synthesisMarkdown).toBeNull();
+    expect(outcome.shipCheck.reasons).toContain("no synthesis output");
+  });
+
+  it("a failed fallback call is not fatal and does not fake a narrative", async () => {
+    const outcome = await runReview(
+      fallbackArgs({
+        injected: {
+          ...baseArgs().injected,
+          synthesisCallFn: async () => null,
+          synthesisFallbackFn: async () => {
+            throw new Error("fetch failed");
+          },
+        },
+      }),
+    );
+    expect(outcome.synthesisMarkdown).toBeNull();
+    expect(outcome.aborted).toBe(false);
+    expect(outcome.shipCheck.composite).not.toBeNull();
+    // No prose means no fallback happened, so the gate blocks as before.
+    expect(outcome.shipCheck.reasons).toContain("no synthesis output");
+  });
+});

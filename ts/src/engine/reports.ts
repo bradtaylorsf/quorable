@@ -72,6 +72,18 @@ function formatAgreementTable(agreement: Record<string, number>): string {
 
 export interface ReportInputs {
   synthesis: Synthesis;
+  /**
+   * Prose synthesis from the Stage-2 markdown fallback. When set, it is
+   * spliced in where the structured sections would have gone, under a
+   * heading that says plainly what it is. Never parsed — display only.
+   */
+  synthesisMarkdown?: string | null;
+  /**
+   * Code-computed agreement statistics. Normally read off the synthesis
+   * object (they are patched into it); passed separately so they still
+   * appear when there is no structured synthesis to patch.
+   */
+  agreement?: Record<string, number> | null;
   shipCheck: ShipCheckResult | null;
   personaCoverage: Record<string, number> | null;
   agreementFlags: AgreementFlags | null;
@@ -81,6 +93,68 @@ export interface ReportInputs {
   validationTasks: ValidationTask[];
   panelWarnings: string[];
   priorSynthesis?: Synthesis | null;
+}
+
+/**
+ * The model-authored narrative sections, which exist only when the
+ * synthesizer returned schema-valid JSON. Nothing numeric here is trusted:
+ * reviewer counts were clamped and priority scores recomputed upstream.
+ */
+function pushStructuredSections(sections: string[], synthesis: Synthesis): void {
+  // --- Consensus weaknesses ---
+  const weaknesses = (synthesis["consensus_weaknesses"] ?? []) as Record<string, unknown>[];
+  sections.push("## Consensus Weaknesses\n");
+  if (weaknesses.length > 0) {
+    for (const severity of ["critical", "major", "minor"]) {
+      const group = weaknesses.filter((w) => w["severity"] === severity);
+      if (group.length === 0) continue;
+      sections.push(`### ${severity[0]!.toUpperCase()}${severity.slice(1)} Issues\n`);
+      for (const w of group) {
+        sections.push(
+          `- ${severityMarker(String(w["severity"]))} **${w["unit"] ?? ""}**: ` +
+            `${w["description"]} (${w["reviewer_count"] ?? "?"} reviewers)\n` +
+            `  - *Suggested fix:* ${w["suggested_fix"] ?? ""}\n`,
+        );
+      }
+    }
+  } else {
+    sections.push("No consensus weaknesses identified.\n");
+  }
+
+  // --- Contested issues ---
+  const contested = (synthesis["contested_issues"] ?? []) as Record<string, unknown>[];
+  sections.push("## Contested Issues\n");
+  if (contested.length > 0) {
+    for (const ci of contested) {
+      sections.push(`### ${ci["description"]}\n`);
+      sections.push(`**Position A:** ${ci["position_a"]}\n`);
+      sections.push(`- Models: ${(ci["models_supporting_a"] as string[])?.join(", ") ?? ""}\n`);
+      sections.push(`**Position B:** ${ci["position_b"]}\n`);
+      sections.push(`- Models: ${(ci["models_supporting_b"] as string[])?.join(", ") ?? ""}\n`);
+    }
+  } else {
+    sections.push("No contested issues identified.\n");
+  }
+
+  // --- Ranked fixes ---
+  const fixes = (synthesis["ranked_fixes"] ?? []) as Record<string, unknown>[];
+  sections.push("## Ranked Fixes (by priority)\n");
+  if (fixes.length > 0) {
+    sections.push(
+      "| # | Fix | Unit | Impact | Ease | Consensus | Priority |\n" +
+        "|---|-----|------|--------|------|-----------|----------|\n",
+    );
+    fixes.forEach((fix, i) => {
+      sections.push(
+        `| ${i + 1} | ${fix["description"]} | ${fix["unit"] ?? ""} | ` +
+          `${fix["impact"]}/5 | ${fix["ease"]}/5 | ` +
+          `${Math.round(Number(fix["consensus"] ?? 0) * 100)}% | ` +
+          `${Number(fix["priority_score"] ?? 0).toFixed(1)} |\n`,
+      );
+    });
+  } else {
+    sections.push("No fixes ranked.\n");
+  }
 }
 
 export function generateSynthesisReport(inputs: ReportInputs): string {
@@ -98,6 +172,9 @@ export function generateSynthesisReport(inputs: ReportInputs): string {
         ? "**SHIP** — all gates passed.\n"
         : "**NOT SHIPPABLE** — " + check.reasons.map((r) => `\n- ${r}`).join("") + "\n",
     );
+    for (const w of check.warnings ?? []) {
+      sections.push(`> **NOTE:** ${w}\n`);
+    }
     if (check.composite !== null) {
       sections.push(
         `Composite: **${check.composite.toFixed(2)}** | ` +
@@ -159,59 +236,26 @@ export function generateSynthesisReport(inputs: ReportInputs): string {
     }
   }
 
-  // --- Consensus weaknesses ---
-  const weaknesses = (synthesis["consensus_weaknesses"] ?? []) as Record<string, unknown>[];
-  sections.push("## Consensus Weaknesses\n");
-  if (weaknesses.length > 0) {
-    for (const severity of ["critical", "major", "minor"]) {
-      const group = weaknesses.filter((w) => w["severity"] === severity);
-      if (group.length === 0) continue;
-      sections.push(`### ${severity[0]!.toUpperCase()}${severity.slice(1)} Issues\n`);
-      for (const w of group) {
-        sections.push(
-          `- ${severityMarker(String(w["severity"]))} **${w["unit"] ?? ""}**: ` +
-            `${w["description"]} (${w["reviewer_count"] ?? "?"} reviewers)\n` +
-            `  - *Suggested fix:* ${w["suggested_fix"] ?? ""}\n`,
-        );
-      }
-    }
-  } else {
-    sections.push("No consensus weaknesses identified.\n");
-  }
-
-  // --- Contested issues ---
-  const contested = (synthesis["contested_issues"] ?? []) as Record<string, unknown>[];
-  sections.push("## Contested Issues\n");
-  if (contested.length > 0) {
-    for (const ci of contested) {
-      sections.push(`### ${ci["description"]}\n`);
-      sections.push(`**Position A:** ${ci["position_a"]}\n`);
-      sections.push(`- Models: ${(ci["models_supporting_a"] as string[])?.join(", ") ?? ""}\n`);
-      sections.push(`**Position B:** ${ci["position_b"]}\n`);
-      sections.push(`- Models: ${(ci["models_supporting_b"] as string[])?.join(", ") ?? ""}\n`);
-    }
-  } else {
-    sections.push("No contested issues identified.\n");
-  }
-
-  // --- Ranked fixes ---
-  const fixes = (synthesis["ranked_fixes"] ?? []) as Record<string, unknown>[];
-  sections.push("## Ranked Fixes (by priority)\n");
-  if (fixes.length > 0) {
+  // --- Unstructured fallback: prose in place of the structured sections ---
+  // Everything numeric on this page is still computed in code, so the
+  // sections that follow this block (agreement, differentiation, gates) are
+  // unaffected; only the model-authored narrative changes shape.
+  const fallbackMarkdown = inputs.synthesisMarkdown ?? null;
+  if (fallbackMarkdown !== null) {
+    sections.push("## Synthesis (unstructured fallback)\n");
     sections.push(
-      "| # | Fix | Unit | Impact | Ease | Consensus | Priority |\n" +
-        "|---|-----|------|--------|------|-----------|----------|\n",
+      "Generated as prose because the synthesizer did not return schema-valid " +
+        "JSON. Scores, gates and agreement statistics on this page are " +
+        "computed in code from the raw reviews and are unaffected.\n",
     );
-    fixes.forEach((fix, i) => {
-      sections.push(
-        `| ${i + 1} | ${fix["description"]} | ${fix["unit"] ?? ""} | ` +
-          `${fix["impact"]}/5 | ${fix["ease"]}/5 | ` +
-          `${Math.round(Number(fix["consensus"] ?? 0) * 100)}% | ` +
-          `${Number(fix["priority_score"] ?? 0).toFixed(1)} |\n`,
-      );
-    });
-  } else {
-    sections.push("No fixes ranked.\n");
+    sections.push(fallbackMarkdown + "\n");
+  }
+
+  // Structured narrative sections. Skipped wholesale on the fallback path:
+  // "No consensus weaknesses identified." would be a false statement when
+  // the truth is that the synthesizer never returned parseable output.
+  if (fallbackMarkdown === null) {
+    pushStructuredSections(sections, synthesis);
   }
 
   // --- Unique arguments ---
@@ -227,7 +271,9 @@ export function generateSynthesisReport(inputs: ReportInputs): string {
   }
 
   // --- Agreement statistics + two-sided flags (M6.2) ---
-  const agreement = (synthesis["inter_rater_agreement"] ?? {}) as Record<string, number>;
+  const agreement = (synthesis["inter_rater_agreement"] ??
+    inputs.agreement ??
+    {}) as Record<string, number>;
   sections.push("## Inter-Rater Agreement Statistics\n");
   sections.push(formatAgreementTable(agreement) + "\n");
   if (inputs.agreementFlags) {

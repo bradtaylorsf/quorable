@@ -101,7 +101,10 @@ export function computeScores(
 
 export interface ShipCheckResult {
   ok: boolean;
+  /** Blocking reasons. Non-empty means NOT SHIPPABLE. */
   reasons: string[];
+  /** Non-blocking notes the run must still state plainly. */
+  warnings: string[];
   composite: number | null;
   perDimension: Record<string, number>;
 }
@@ -116,13 +119,31 @@ export function checkShipGates(args: {
   gateResults: Record<string, GateResult>;
   pack: ScoringPackView;
   personas?: string[] | null;
+  /**
+   * True when the synthesizer produced no schema-valid JSON but the markdown
+   * fallback did produce a narrative. Humans got a report, so the missing
+   * structured synthesis stops being a blocking reason and becomes a
+   * warning — it is never silently dropped. Absent/false reproduces the
+   * original gate exactly, which is what the parity fixtures pin.
+   */
+  synthesisFallbackUsed?: boolean;
 }): ShipCheckResult {
   const { synthesis, reviews, gateResults, pack, personas } = args;
   const reasons: string[] = [];
+  const warnings: string[] = [];
   const { composite, perDimension } = computeScores(reviews, pack, personas);
 
   if (synthesis === null) {
-    reasons.push("no synthesis output");
+    if (args.synthesisFallbackUsed === true) {
+      warnings.push(
+        "synthesis is UNSTRUCTURED: the synthesizer returned no schema-valid " +
+          "JSON, so the narrative is prose from a fallback call. Scores, " +
+          "gates and agreement statistics here are computed in code from the " +
+          "raw reviews and are unaffected.",
+      );
+    } else {
+      reasons.push("no synthesis output");
+    }
   }
 
   const failedGates = Object.entries(gateResults)
@@ -163,7 +184,7 @@ export function checkShipGates(args: {
     }
   }
 
-  return { ok: reasons.length === 0, reasons, composite, perDimension };
+  return { ok: reasons.length === 0, reasons, warnings, composite, perDimension };
 }
 
 /**

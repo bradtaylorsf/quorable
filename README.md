@@ -84,14 +84,19 @@ quorable keys set|list|delete            # provider keys (~/.quorable/.env, 600)
 quorable persona list|show|new           # the persona library
 quorable council list|show|new|add|remove
 quorable init                            # scaffold a project quorable.yaml
+
+quorable config show                     # effective config + which layers set it
+quorable config get|set|unset <key>      # edit a layer (--project for this repo)
+quorable config models <ids...>          # set the reviewer panel
+quorable config endpoint add|list|remove # named OpenAI-compatible endpoints
+quorable config profile list|use|show    # pick one backend per job
 ```
 
 Model ids are provider-qualified: `openrouter:x-ai/grok-4.3` (bare ids mean
 OpenRouter), `anthropic:claude-…`, `openai:gpt-…`, `local:llama-3.3-70b`
-(any OpenAI-compatible endpoint — Ollama, LM Studio, vLLM, Together — via
-`providers.local_base_url`). Local models are free; the panel warns loudly
-when all reviewers share one vendor, because agreement statistics assume
-independent raters.
+(the built-in `providers.local_base_url` endpoint), or `<endpoint>:<model>`
+for anything you name yourself. An unrecognized prefix is an error, never a
+silent fallthrough to a paid OpenRouter call.
 
 ## Configuration
 
@@ -99,8 +104,155 @@ Layered, later wins:
 
 ```
 packaged defaults → ~/.quorable/config.yaml → ./quorable.yaml (nearest
-ancestor) → env (QUORABLE_COUNCIL, QUORABLE_RIGOR) → flags
+ancestor, else nearest to the cwd) → env → flags
 ```
+
+`quorable config show` prints the result and the file behind each layer.
+Env overrides: `QUORABLE_COUNCIL`, `QUORABLE_RUBRIC`, `QUORABLE_RIGOR`,
+`QUORABLE_MODELS` (comma-separated), `QUORABLE_SYNTHESIZER`,
+`QUORABLE_HELD_OUT`, `QUORABLE_LOCAL_BASE_URL`, `QUORABLE_PROFILE`,
+`QUORABLE_CONFIG` (an explicit config path, same as `--config`).
+
+### Local and other providers
+
+Name any OpenAI-compatible endpoint and address it as a model prefix. This
+covers local servers (Ollama, LM Studio, llama.cpp, vLLM) and hosted APIs
+(Together, Groq, Fireworks, DeepSeek) with no code change:
+
+```yaml
+providers:
+  endpoints:
+    lmstudio:
+      base_url: http://localhost:1234/v1
+      vendor_from_model_id: true        # ids look like google/gemma-4-26b
+    ollama:
+      base_url: http://localhost:11434/v1
+    together:
+      base_url: https://api.together.xyz/v1
+      api_key_env: TOGETHER_API_KEY     # process env, then ~/.quorable/.env
+      vendor_from_model_id: true
+
+models:
+  reviewers:
+    - id: lmstudio:google/gemma-4-26b-a4b
+    - id: lmstudio:openai/gpt-oss-20b
+    - id: lmstudio:qwen/qwen3.5-9b
+```
+
+Or from the CLI, which validates before it writes:
+
+```bash
+quorable config endpoint add lmstudio http://localhost:1234/v1 --vendor-from-model-id
+quorable config models lmstudio:google/gemma-4-26b-a4b lmstudio:qwen/qwen3.5-9b
+```
+
+Local models are free, and the pre-run estimate prices them at $0.00 rather
+than at the default hosted rate.
+
+**Vendor buckets are the honesty mechanism.** κ/ICC assume independent
+raters, so local models default to ONE shared `local` bucket — self-hosted
+variants of the same family share blind spots, and a panel of them would
+report high agreement that is really correlated error. When your local
+models genuinely are different weight families, say so explicitly, either
+per endpoint (`vendor_from_model_id`) or per model:
+
+```yaml
+models:
+  reviewers:
+    - {id: ollama:qwen2.5:latest, vendor: qwen}
+    - {id: ollama:llama3.3:70b,   vendor: meta}
+```
+
+The panel still warns loudly when reviewers collapse to one vendor, or when
+the held-out model shares a vendor with any reviewer.
+
+### Profiles: one backend per job
+
+Two local servers on one machine compete for the same memory and evict each
+other's models mid-run — which shows up as `HTTP 400: Model unloaded` and a
+panel that silently thins out. So a job picks **one** backend:
+
+```yaml
+profile: lmstudio          # the active one
+
+profiles:
+  lmstudio:
+    providers:
+      endpoints:
+        lmstudio: {base_url: "http://localhost:1234/v1", vendor_from_model_id: true}
+    models:
+      reviewers:
+        - id: lmstudio:google/gemma-4-26b-a4b
+        - id: lmstudio:openai/gpt-oss-20b
+        - id: lmstudio:qwen/qwen3.5-9b
+      synthesizer: {id: lmstudio:google/gemma-4-26b-a4b}
+  ollama:
+    providers:
+      endpoints:
+        ollama: {base_url: "http://localhost:11434/v1"}
+    models:
+      reviewers: [{id: "ollama:qwen2.5:latest"}]
+      synthesizer: {id: "ollama:qwen2.5:latest"}
+```
+
+```bash
+quorable config profile list          # which exist, which is active
+quorable config profile use ollama    # switch globally
+quorable config profile use ollama --project   # ...or for this project only
+quorable review draft.md --profile ollama      # ...or just this run
+```
+
+Only the active profile's endpoints are defined, so a stray `ollama:` model id
+cannot resolve while `lmstudio` is active — it fails with a named error rather
+than quietly reaching a server the rest of the run isn't using. If you define
+both backends at the top level instead of in profiles, a run whose models
+straddle two localhost endpoints warns.
+
+A profile is a plain partial config, so it can carry anything — rigor,
+pipeline settings, councils — not just models. A layer's own explicit keys
+still beat the profile it selected.
+
+### When a local synthesizer can't do strict JSON
+
+Stage 2 hands the synthesizer every Stage-1 review at once and demands
+schema-valid JSON back. Small local models often fail that call even when
+they review perfectly well. By default the run then has no narrative:
+
+```yaml
+pipeline:
+  synthesis_fallback: markdown   # default: none
+```
+
+With `markdown`, one further unvalidated call asks for prose under fixed
+headings, and the report carries it under `## Synthesis (unstructured
+fallback)`.
+
+This is safe because **synthesis never produces a number**. Scores, gates and
+agreement statistics are computed in code from the raw Stage-1 reviews, and
+reviewer-stage validation stays strict — it is never relaxed by this setting.
+What you give up on the fallback path is the structured artifact: no
+`synthesis.json`, so held-out comparison and the regression check are skipped
+(with a warning), and `quorable diff` cannot compare that run. The report
+states plainly that its narrative is unstructured.
+
+### Per-project overrides
+
+`quorable.yaml` (or `.quorable.yaml`) in the document's directory or any
+ancestor overrides your global defaults for that project only — cheap local
+models by default, frontier models where the stakes justify them:
+
+```yaml
+# ~/clients/acme/quorable.yaml — this project pays for the good models
+models:
+  reviewers:
+    - id: anthropic/claude-sonnet-4.6
+    - id: openai/gpt-5.4
+    - id: google/gemini-3.5-flash
+  synthesizer: {id: anthropic/claude-sonnet-4.6, temperature: 0.1}
+rigor: rigorous
+```
+
+`--config <path>` points at a config file directly, bypassing discovery.
 
 Councils name **personas only**; models stay a config concern. A rubric is
 a YAML file — dimensions, scales, weights, verdict categories, mechanical
@@ -150,9 +302,9 @@ Fleiss' κ, ICC, composites, gate results — and both test suites verify
 against them, so the two engines cannot silently diverge
 (`tools/extract_parity_fixtures.py` regenerates).
 
-Design documents: [`CONTRACT.md`](CONTRACT.md) (engine/pack contract),
-[`docs/GENERALIZATION_PLAN.md`](docs/GENERALIZATION_PLAN.md) (roadmap and
-decisions). Live API tests never run in CI; a smoke test costs real money
-and is opt-in.
+Design document: [`CONTRACT.md`](CONTRACT.md) (the engine/pack contract).
+The build plans that produced M0–M9 have been retired now that the work has
+landed; they remain in git history. Live API tests never run in CI; a smoke
+test costs real money and is opt-in.
 
 MIT.

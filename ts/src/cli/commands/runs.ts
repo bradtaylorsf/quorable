@@ -265,6 +265,7 @@ export function registerRunCommands(program: Command): void {
       const finalCheck = {
         ok: shipCheck.ok && extra.length === 0,
         reasons: [...shipCheck.reasons, ...extra],
+        warnings: shipCheck.warnings,
         composite: shipCheck.composite,
         perDimension: shipCheck.perDimension,
       };

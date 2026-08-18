@@ -155,6 +155,45 @@ Makefile in each project wraps these, parent-style (`run-ask`, `run-persona P=`,
   good the drifted version reads. In the loop this is a `blocking_findings`
   ship-gate, never an averaged score.
 
+## Stage-2 synthesis fallback (TS-only)
+
+`pipeline.synthesis_fallback: none | markdown` (default `none`).
+
+When the SYNTHESIZER returns no schema-valid JSON, `markdown` makes one
+further **unvalidated** call asking for prose under fixed headings, and the
+report carries it under `## Synthesis (unstructured fallback)`. This exists
+because weak local synthesizers routinely fail strict JSON on a call whose
+input is every Stage-1 review at once.
+
+It costs nothing in integrity, and the reason is structural: **scores, gates
+and agreement statistics never come from synthesis.** `checkShipGates`
+computes from the raw reviews via `computeScores`, mechanical gates run
+against the document text, and agreement is computed in code and patched
+over the LLM output. Synthesis is the narrative layer only.
+
+Rules that hold on this path:
+
+- **Stage 1 is never relaxed.** Reviews stay strict JSON. Every score, gate
+  and statistic derives from them; that is the guarantee the tool rests on.
+- The prose is never parsed, and the model is instructed to emit no numbers,
+  because any it produced would contradict the computed ones.
+- `synthesis` stays `null` — no partial object is fabricated.
+- `synthesis.json` is not written. Held-out comparison and the regression
+  check keep their `synthesis !== null` guards and warn when skipped;
+  `quorable diff` fails with an explanation rather than a missing-file crash.
+- "no synthesis output" stops being a blocking ship reason (humans did get a
+  report) and becomes a `ShipCheckResult.warnings` entry, stated plainly in
+  the report. With the fallback off, or when the fallback call itself fails,
+  it remains blocking exactly as before.
+
+**This is TS-only.** The Python engine (`src/quorable/engine/loop.py:185`)
+keeps the original unconditional `"no synthesis output"` reason. Python is
+the executable spec for *numeric* behaviour — the parity fixtures pin κ, ICC,
+composites and gate results — and this feature adds no arithmetic. It is an
+operational affordance for the shipping TS CLI's local-model path, so
+duplicating it in the spec would add divergence surface for no parity value.
+If Python ever ships again, port it then.
+
 ## Testing
 
 Port the parent's test layout (`tests/test_<module>.py`, fixtures dir, no-network

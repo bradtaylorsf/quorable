@@ -15,7 +15,13 @@ import {
   type AssetRoots,
   type Council,
 } from "../config/resolve.js";
-import { RIGOR_PRESETS, type QuorableConfig, type RigorSettings, type RigorTier } from "../config/schema.js";
+import {
+  RIGOR_PRESETS,
+  vendorOverrides,
+  type QuorableConfig,
+  type RigorSettings,
+  type RigorTier,
+} from "../config/schema.js";
 import { loadPackFromRubricFile } from "../pack/rubric.js";
 import { PackError, type Pack } from "../pack/types.js";
 import type { ProviderSettings } from "../providers/registry.js";
@@ -28,6 +34,10 @@ export interface ReviewFlags {
   models?: string[];
   out?: string;
   context?: string[];
+  /** Explicit project config path, bypassing discovery. */
+  config?: string;
+  /** Profile to select for this run (e.g. which local backend). */
+  profile?: string;
 }
 
 export interface ResolvedContext {
@@ -46,6 +56,7 @@ export interface ResolvedContext {
 export function resolveContext(targetPath: string | null, flags: ReviewFlags): ResolvedContext {
   const home = quorableHome();
   const configFlags: Record<string, unknown> = {};
+  if (flags.profile) configFlags["profile"] = flags.profile;
   if (flags.council) configFlags["council"] = flags.council;
   if (flags.rigor) configFlags["rigor"] = flags.rigor;
   if (flags.rubric) configFlags["rubric"] = flags.rubric;
@@ -58,6 +69,8 @@ export function resolveContext(targetPath: string | null, flags: ReviewFlags): R
 
   const { config, sources } = loadConfig({
     projectDir: targetPath ? path.dirname(path.resolve(targetPath)) : process.cwd(),
+    fallbackDir: process.cwd(),
+    configPath: flags.config ?? null,
     flags: configFlags,
     home,
   });
@@ -81,6 +94,9 @@ export function resolveContext(targetPath: string | null, flags: ReviewFlags): R
   const providerSettings: ProviderSettings = {
     keys: effectiveKeys(home),
     localBaseUrl: config.providers.local_base_url ?? undefined,
+    endpoints: config.providers.endpoints,
+    vendors: vendorOverrides(config),
+    home,
     timeoutSeconds: config.pipeline.timeout_seconds,
     retryAttempts: config.pipeline.retry_attempts,
   };
