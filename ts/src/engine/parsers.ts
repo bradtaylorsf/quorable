@@ -47,22 +47,32 @@ function enforceCharLimit(
 // ---------------------------------------------------------------------------
 
 async function parsePdf(filePath: string): Promise<[string, number]> {
-  // Dynamic import: mupdf WASM is heavy; only load when a PDF is actually parsed.
-  const mupdf = await import("mupdf");
-  const data = fs.readFileSync(filePath);
-  const doc = mupdf.Document.openDocument(data, "application/pdf");
-  const pageCount = doc.countPages();
+  // Dynamic import: pdf.js is heavy; only load it when a PDF is actually
+  // parsed. The legacy build is the one that runs under Node without a
+  // worker or a DOM.
+  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  const data = new Uint8Array(fs.readFileSync(filePath));
+  // verbosity 0: a repairable PDF is not the user's problem to read about,
+  // and a broken one still rejects below.
+  const loadingTask = pdfjs.getDocument({ data, useSystemFonts: true, verbosity: 0 });
+  const doc = await loadingTask.promise;
+
+  const pageCount = doc.numPages;
   const pages: string[] = [];
-  for (let i = 0; i < pageCount; i++) {
-    const page = doc.loadPage(i);
-    const structured = JSON.parse(page.toStructuredText().asJSON()) as {
-      blocks?: { lines?: { text?: string }[] }[];
-    };
-    const text = (structured.blocks ?? [])
-      .map((b) => (b.lines ?? []).map((l) => l.text ?? "").join("\n"))
-      .join("\n");
-    pages.push(`[p.${i + 1}]\n${text}`);
+  for (let i = 1; i <= pageCount; i++) {
+    const page = await doc.getPage(i);
+    const content = await page.getTextContent();
+    // Items carry their own intra-line spacing; hasEOL is the line break.
+    let text = "";
+    for (const item of content.items) {
+      if (!("str" in item)) continue;
+      text += item.str;
+      if (item.hasEOL) text += "\n";
+    }
+    pages.push(`[p.${i}]\n${text.trimEnd()}`);
+    page.cleanup();
   }
+  await loadingTask.destroy();
   return [pages.join("\n\n"), pageCount];
 }
 

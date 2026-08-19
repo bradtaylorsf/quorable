@@ -179,6 +179,83 @@ describe("parsers", () => {
     ).rejects.toThrow(PrimaryDocTooLargeError);
   });
 
+  /**
+   * A minimal, uncompressed PDF with known text — built here rather than
+   * checked in as a binary, so the assertions below sit next to the bytes
+   * they are asserting about.
+   */
+  function buildPdf(pages: string[][]): Buffer {
+    const objs = new Map<number, string>();
+    const kids = pages.map((_, i) => `${5 + 2 * i} 0 R`).join(" ");
+    objs.set(1, "<< /Type /Catalog /Pages 2 0 R >>");
+    objs.set(2, `<< /Type /Pages /Kids [${kids}] /Count ${pages.length} >>`);
+    objs.set(3, "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>");
+    objs.set(4, "<< >>");
+    pages.forEach((lines, i) => {
+      const pageId = 5 + 2 * i;
+      const contentId = 6 + 2 * i;
+      objs.set(
+        pageId,
+        `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] ` +
+          `/Resources << /Font << /F1 3 0 R >> >> /Contents ${contentId} 0 R >>`,
+      );
+      const body =
+        "BT /F1 12 Tf 72 720 Td 14 TL\n" +
+        lines.map((l, j) => `(${l}) Tj\n` + (j < lines.length - 1 ? "T*\n" : "")).join("") +
+        "ET\n";
+      objs.set(contentId, `<< /Length ${body.length} >>\nstream\n${body}endstream`);
+    });
+
+    const chunks: Buffer[] = [Buffer.from("%PDF-1.4\n", "latin1")];
+    let length = chunks[0]!.length;
+    const offsets = new Map<number, number>();
+    for (const num of [...objs.keys()].sort((a, b) => a - b)) {
+      offsets.set(num, length);
+      const chunk = Buffer.from(`${num} 0 obj\n${objs.get(num)!}\nendobj\n`, "latin1");
+      chunks.push(chunk);
+      length += chunk.length;
+    }
+    const xrefAt = length;
+    const count = Math.max(...objs.keys()) + 1;
+    let xref = `xref\n0 ${count}\n0000000000 65535 f \n`;
+    for (let n = 1; n < count; n++) {
+      xref += `${String(offsets.get(n)!).padStart(10, "0")} 00000 n \n`;
+    }
+    xref += `trailer\n<< /Size ${count} /Root 1 0 R >>\nstartxref\n${xrefAt}\n%%EOF\n`;
+    chunks.push(Buffer.from(xref, "latin1"));
+    return Buffer.concat(chunks);
+  }
+
+  it("extracts PDF text page by page, with page markers", async () => {
+    const p = path.join(tmpDir, "doc.pdf");
+    fs.writeFileSync(
+      p,
+      buildPdf([
+        ["Page one heading", "The quick brown fox reviews the document."],
+        ["Page two heading", "Second page body text for extraction tests."],
+      ]),
+    );
+    const entries = autoManifest(p, [], { primaryName: "primary_document" });
+    const doc = await parseDocument(entries[0]!, { primaryDocName: "primary_document" });
+
+    expect(doc.content).toContain("[p.1]");
+    expect(doc.content).toContain("[p.2]");
+    expect(doc.content).toContain("The quick brown fox reviews the document.");
+    expect(doc.content).toContain("Second page body text for extraction tests.");
+    // Page order is preserved — reviewers cite by page.
+    expect(doc.content.indexOf("[p.1]")).toBeLessThan(doc.content.indexOf("[p.2]"));
+    expect(doc.pageCount).toBe(2);
+  });
+
+  it("a PDF with no extractable text yields empty pages, not a crash", async () => {
+    const p = path.join(tmpDir, "blank.pdf");
+    fs.writeFileSync(p, buildPdf([[]]));
+    const entries = autoManifest(p, [], { primaryName: "primary_document" });
+    const doc = await parseDocument(entries[0]!, { primaryDocName: "primary_document" });
+    expect(doc.content).toContain("[p.1]");
+    expect(doc.pageCount).toBe(1);
+  });
+
   it("prepareDocuments skips broken non-primary docs with a warning", async () => {
     const target = path.join(tmpDir, "doc.md");
     fs.writeFileSync(target, "fine");

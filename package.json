@@ -23,7 +23,7 @@
   "homepage": "https://github.com/bradtaylorsf/quorable#readme",
   "type": "module",
   "engines": {
-    "node": ">=20"
+    "node": ">=22.13.0"
   },
   "bin": {
     "quorable": "./dist/cli/main.js"
@@ -46,8 +46,8 @@
   "dependencies": {
     "@clack/prompts": "^0.11.0",
     "commander": "^14.0.0",
-    "mupdf": "^1.26.4",
     "p-retry": "^7.1.0",
+    "pdfjs-dist": "^6.2.108",
     "yaml": "^2.8.0",
     "zod": "^4.1.5"
   },

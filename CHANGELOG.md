@@ -6,8 +6,23 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+- **PDF parsing moved from mupdf to pdf.js.** mupdf is AGPL-3.0-or-later,
+  which put a copyleft dependency inside an MIT package — enough to fail a
+  dependency scanner at most companies. `pdfjs-dist` is Apache-2.0, and the
+  dependency tree is now MIT/Apache/ISC/BSD throughout. Extraction output is
+  unchanged: per-page text under `[p.N]` markers.
+- **Node 22.13+ is now required** (was 20+). pdf.js sets that floor, and its
+  Node-20-compatible line is stranded below a high-severity advisory
+  (GHSA-hq66-cqwq-w95j, arbitrary JS execution on opening a malicious PDF —
+  precisely this tool's threat model). Node 20 reached EOL in April 2026.
+  CI drops the Node 20 job.
+
 ### Added
-- CI on GitHub Actions: typecheck, build and test across Node 20/22/24, the
+- First real PDF coverage: two tests that build a minimal PDF with known
+  text and assert extraction, page markers and page order. Previously only
+  the broken-PDF path was tested.
+- CI on GitHub Actions: typecheck, build and test across Node 22 and 24, the
   Python reference suite, and an `npm pack` contents check.
 - `CONTRIBUTING.md`, `SECURITY.md`, `.env.example`, and this changelog.
 - `docs/operations.md` — cost traps, local-seat reliability, rubric gate

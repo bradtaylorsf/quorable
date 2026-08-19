@@ -25,7 +25,8 @@ npm install && npm run build && npm test    # TypeScript engine + CLI
 make install && make test                   # Python reference engine
 ```
 
-Node 20+ is required. The Python side is uv-managed.
+Node 22.13+ is required (pdf.js sets the floor, and Node 20 is EOL).
+The Python side is uv-managed.
 
 ## Before you open a PR
 
@@ -33,7 +34,7 @@ Node 20+ is required. The Python side is uv-managed.
 npm run typecheck && npm run build && npm test && make test
 ```
 
-CI runs exactly this across Node 20/22/24. Live API tests never run in CI —
+CI runs exactly this across Node 22 and 24. Live API tests never run in CI —
 a smoke test costs real money and is opt-in via `RUN_LIVE_TESTS=1`.
 
 ## Design rules that are not up for negotiation

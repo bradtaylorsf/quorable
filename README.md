@@ -319,4 +319,12 @@ via `RUN_LIVE_TESTS=1`.
 The build plans that produced M0–M9 have been retired now that the work has
 landed; they remain in git history.
 
-MIT.
+## Licensing
+
+quorable is MIT, and so is its dependency tree in effect — every runtime and
+build dependency is MIT, Apache-2.0, ISC or BSD. There is no copyleft
+anywhere in it, deliberately: a review tool that cannot be installed because
+of its licence is not a review tool. PDF support is pdf.js (Apache-2.0).
+
+Node 22.13+ is required.
+

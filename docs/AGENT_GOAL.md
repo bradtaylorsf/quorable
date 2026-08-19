@@ -29,7 +29,7 @@ WHAT TO BUILD (sequencing per the plan):
 
 - TS workspace in this same repo (package.json beside pyproject.toml). Node 20+,
   strict TS, zod, commander + @clack/prompts, p-retry, official mupdf WASM
-  package for PDFs. Vitest.
+  package for PDFs (since replaced by pdf.js — mupdf is AGPL). Vitest.
 - Port the engine core generalized-from-day-one: provider abstraction
   (openrouter / anthropic / openai / openai-compatible for local models),
   generic YAML rubric packs (no per-domain code), auto-manifest from --context
