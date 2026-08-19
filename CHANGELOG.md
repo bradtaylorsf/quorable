@@ -14,6 +14,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   syntax, and known limits.
 
 ### Fixed
+- **The pre-run cost estimate now covers the calls that are actually made.**
+  On a document over 60,000 characters the engine fans every Stage-1 job out
+  across the discovered units, but the estimate — and therefore the cost
+  confirmation prompt — was computed from the un-fanned job list, so a run
+  could be approved at a fraction of what it went on to spend. The estimate
+  now takes the real unit count and the cold reader's two calls. (#12)
+- `tools/estimate.mjs` priced named local endpoints at the default hosted
+  rate because it never passed its configured endpoint names to
+  `getPricing()`. A local panel now estimates at $0.00, as the engine
+  already did.
 - Project-level `.quorable/{personas,councils,rubrics}` are now actually
   loaded. `resolve.ts` documented the search root but no CLI path passed it,
   so per-project assets silently never resolved and councils referencing

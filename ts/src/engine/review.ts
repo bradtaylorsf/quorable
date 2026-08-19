@@ -324,6 +324,32 @@ export async function runReview(args: ReviewArgs): Promise<ReviewOutcome> {
     personaDocs[persona] = assembleForPersona(persona, entries, documents);
   }
 
+  // The estimate must describe the calls that will actually be made. On a
+  // long document every job fans out across the discovered units, and each
+  // of those calls sees one unit's payload in place of the whole primary —
+  // so both the count and the per-call prompt change. Estimating from the
+  // un-fanned job list understates the run by roughly the unit count, and
+  // this is the number the user confirms before the money is spent.
+  const unitFanOut =
+    discoveredMap && discoveredUnits
+      ? (() => {
+          const units = discoveredUnits;
+          // Unit payloads do not vary by persona; build them once.
+          const unitDocChars = units.map((_, i) =>
+            unitReviewDocuments(discoveredMap, units, i).map((d) => d.charCount),
+          );
+          return {
+            unitCount: units.length,
+            perUnitDocChars: (persona: string, unitIndex: number) => [
+              ...(personaDocs[persona] ?? [])
+                .filter((d) => d.name !== pack.primaryDocName)
+                .map((d) => d.charCount),
+              ...(unitDocChars[unitIndex] ?? []),
+            ],
+          };
+        })()
+      : null;
+
   const estimate = estimatePipelineCost({
     reviewerIds: reviewers.map((r) => r.id),
     synthesizerId: args.config.models.synthesizer.id,
@@ -339,9 +365,17 @@ export async function runReview(args: ReviewArgs): Promise<ReviewOutcome> {
     ),
     includeDrafter: false,
     iterations: 1,
+    unitFanOut,
+    // The cold reader runs at every rigor tier: one read plus one mapping call.
+    coldRead: { promptChars: args.coldReaderPrompt.length + primary.charCount + 2000 },
   });
   const perLoop = estimatePerLoopUsd(estimate);
-  log(`Estimated cost: $${perLoop.toFixed(2)} (${jobs.length} review calls + synthesis)`);
+  const reviewCalls = jobs.length * (unitFanOut?.unitCount ?? 1);
+  log(
+    `Estimated cost: $${perLoop.toFixed(2)} (${reviewCalls} review calls` +
+      (unitFanOut ? ` — ${jobs.length} jobs × ${unitFanOut.unitCount} units` : "") +
+      ` + cold read + synthesis)`,
+  );
   if (args.confirmCost) {
     const proceed = await args.confirmCost(estimate, perLoop);
     if (!proceed) return abortedOutcome("aborted by user at cost confirmation");

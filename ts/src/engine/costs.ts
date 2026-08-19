@@ -195,6 +195,36 @@ export function estimatePromptChars(
   );
 }
 
+/** Cold-read reaction→dimension mapping is a short call; its own constant. */
+export const ESTIMATED_OUTPUT_TOKENS_COLD_MAP = 500;
+
+/**
+ * Long-document unit fan-out. When the primary exceeds
+ * UNIT_DISCOVERY_THRESHOLD_CHARS the engine runs every Stage-1 job once per
+ * discovered unit, and each of those calls sees one unit's payload in place
+ * of the whole primary — so both the call count and the per-call prompt
+ * differ from the whole-document path.
+ */
+export interface UnitFanOut {
+  /** Number of discovered units. Every Stage-1 job runs once per unit. */
+  unitCount: number;
+  /**
+   * Document char counts for the exact (persona, unit) call the engine will
+   * make — the persona's non-primary documents plus the unit payload.
+   */
+  perUnitDocChars: (persona: string, unitIndex: number) => number[];
+}
+
+/**
+ * The cold reader, which runs at every rigor tier: one read call over the
+ * primary document, plus one cheap call mapping its reactions onto rubric
+ * dimensions.
+ */
+export interface ColdReadEstimate {
+  /** Chars of the cold-reader prompt plus the document it reads. */
+  promptChars: number;
+}
+
 export interface EstimateInputs {
   /** Reviewer model ids, held-out already excluded. */
   reviewerIds: string[];
@@ -212,12 +242,26 @@ export interface EstimateInputs {
   iterations: number;
   /** Configured endpoint names, so local specs price at zero. */
   endpoints?: readonly string[];
+  /**
+   * Unit fan-out, when the primary triggered unit discovery. Omit it and
+   * the estimate is byte-identical to before this field existed, which is
+   * what keeps the shared parity fixtures valid.
+   */
+  unitFanOut?: UnitFanOut | null;
+  /** The cold reader's two calls. Omit and neither is counted. */
+  coldRead?: ColdReadEstimate | null;
 }
 
 /**
  * Estimate one iteration's cost before running: Stage 1 reviews
- * (models × personas × runs) + one synthesis call + optionally one drafter
- * call. `iterations` records the loop multiplier for per-loop reporting.
+ * (models × personas × runs × units) + the cold reader's two calls + one
+ * synthesis call + optionally one drafter call. `iterations` records the
+ * loop multiplier for per-loop reporting.
+ *
+ * The unit multiplier matters: on a long document the engine fans every
+ * Stage-1 job out across the discovered units, so an estimate computed from
+ * the un-fanned job list understates the run by roughly that factor — and
+ * this number is what the user confirms before the money is spent.
  */
 export function estimatePipelineCost(inputs: EstimateInputs): CostEstimate {
   const estimate: CostEstimate = {
@@ -232,16 +276,22 @@ export function estimatePipelineCost(inputs: EstimateInputs): CostEstimate {
     let numCalls = 0;
 
     for (const persona of inputs.personas) {
-      const docChars = inputs.personaDocChars(persona);
       const overlayChars = inputs.personaOverlayChars[persona] ?? 1000;
-      const promptChars = estimatePromptChars(
-        docChars,
-        inputs.systemPromptChars,
-        overlayChars,
-      );
-      const inputTokens = Math.floor(promptChars / CHARS_PER_TOKEN);
-      totalInputTokens += inputTokens * runsPerPersona;
-      numCalls += runsPerPersona;
+      // One pass per unit when the document fanned out; one otherwise.
+      const unitCount = inputs.unitFanOut ? Math.max(1, inputs.unitFanOut.unitCount) : 1;
+      for (let unitIndex = 0; unitIndex < unitCount; unitIndex++) {
+        const docChars = inputs.unitFanOut
+          ? inputs.unitFanOut.perUnitDocChars(persona, unitIndex)
+          : inputs.personaDocChars(persona);
+        const promptChars = estimatePromptChars(
+          docChars,
+          inputs.systemPromptChars,
+          overlayChars,
+        );
+        const inputTokens = Math.floor(promptChars / CHARS_PER_TOKEN);
+        totalInputTokens += inputTokens * runsPerPersona;
+        numCalls += runsPerPersona;
+      }
     }
 
     const avgInput = numCalls ? Math.floor(totalInputTokens / numCalls) : 0;
@@ -258,15 +308,51 @@ export function estimatePipelineCost(inputs: EstimateInputs): CostEstimate {
     });
   }
 
+  // Stage-1 output is what Stage 2 reads. Snapshot the count here, before
+  // the cold-read entries below join modelEstimates — the synthesizer is
+  // handed the reviews, not the cold read.
+  const stage1Calls = estimate.modelEstimates.reduce((acc, m) => acc + m.numCalls, 0);
+
+  // --- Cold reader (runs at every rigor tier, on the synthesizer) ---
+  if (inputs.coldRead) {
+    const [coldInputPrice, coldOutputPrice] = getPricing(
+      inputs.synthesizerId,
+      inputs.endpoints ?? [],
+    );
+    const coldInputTokens = Math.floor(inputs.coldRead.promptChars / CHARS_PER_TOKEN);
+    estimate.modelEstimates.push({
+      modelId: inputs.synthesizerId,
+      numCalls: 1,
+      inputTokensPerCall: coldInputTokens,
+      outputTokensPerCall: ESTIMATED_OUTPUT_TOKENS_STAGE1,
+      inputCostUsd: pythonRound(tokenCost(coldInputTokens, coldInputPrice), 4),
+      outputCostUsd: pythonRound(
+        tokenCost(ESTIMATED_OUTPUT_TOKENS_STAGE1, coldOutputPrice),
+        4,
+      ),
+    });
+    // ...and the short call mapping its reactions onto rubric dimensions.
+    const mapInputTokens = ESTIMATED_OUTPUT_TOKENS_STAGE1 + 500;
+    estimate.modelEstimates.push({
+      modelId: inputs.synthesizerId,
+      numCalls: 1,
+      inputTokensPerCall: mapInputTokens,
+      outputTokensPerCall: ESTIMATED_OUTPUT_TOKENS_COLD_MAP,
+      inputCostUsd: pythonRound(tokenCost(mapInputTokens, coldInputPrice), 4),
+      outputCostUsd: pythonRound(
+        tokenCost(ESTIMATED_OUTPUT_TOKENS_COLD_MAP, coldOutputPrice),
+        4,
+      ),
+    });
+  }
+
   // --- Stage 2: synthesis ---
   const [synthInputPrice, synthOutputPrice] = getPricing(
     inputs.synthesizerId,
     inputs.endpoints ?? [],
   );
   const stage1OutputChars =
-    estimate.modelEstimates.reduce((acc, m) => acc + m.numCalls, 0) *
-    ESTIMATED_OUTPUT_TOKENS_STAGE1 *
-    CHARS_PER_TOKEN;
+    stage1Calls * ESTIMATED_OUTPUT_TOKENS_STAGE1 * CHARS_PER_TOKEN;
   const synthInputChars = stage1OutputChars + inputs.systemPromptChars + 5000;
   const synthInputTokens = Math.floor(synthInputChars / CHARS_PER_TOKEN);
 

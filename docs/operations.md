@@ -12,34 +12,30 @@ node tools/estimate.mjs <target> --context <dir>
 
 Zero API calls. It walks the same `autoManifest` → `prepareDocuments` →
 `estimatePipelineCost` path the engine uses, so it agrees with the number
-`quorable review` prints at the confirmation prompt — including where that
-number is wrong. Two known gaps, both tracked as issues:
+`quorable review` prints at the confirmation prompt.
 
-**1. The unit-discovery multiplier.** When the primary document exceeds
-`UNIT_DISCOVERY_THRESHOLD_CHARS` (60,000), `runReview` fires a map pass and
-fans **every** job out across the discovered units — 48 review calls becomes
-48 × *units*. The estimate and the cost-confirmation prompt are both computed
-from the un-fanned job list, so quorable can print a number several times too
-low and then spend the real one. This is the single biggest cost trap in the
-tool, and it is invisible until the bill arrives.
+Both cover the whole run: Stage-1 reviews (models × personas × runs × units),
+the cold reader's two calls, and synthesis. Local and OpenAI-compatible models
+price at $0.00.
 
-*Until it is fixed: keep the primary under 60,000 characters and route the
-long material in as `--context` instead.*
+**The one number neither can know is the unit count.** When the primary
+exceeds `UNIT_DISCOVERY_THRESHOLD_CHARS` (60,000), a map pass splits it into
+3–12 units and **every** job then runs once per unit — 24 review calls becomes
+24 × *units*. `quorable review` runs the map pass before it estimates, so its
+figure uses the real count and the confirmation prompt is accurate.
+`tools/estimate.mjs` makes no API calls, so it assumes 7 units and says so.
 
-**2. The cold reader is not in the estimate.** It runs at every rigor tier
-and `estimatePipelineCost` has no term for it. One extra call, so the error
-is small — but it is always in the same direction.
-
-Local and OpenAI-compatible models are priced at $0.00 in the estimate,
-which is correct — `getPricing()` returns `[0, 0]` for them rather than
-falling through to `DEFAULT_PRICING`.
+Either way, crossing 60,000 characters multiplies the bill. Keeping the
+primary under the threshold and routing long material in as `--context` is
+still the cheapest lever you have.
 
 ## Holding the cost down
 
 In descending order of effect:
 
 1. **Keep the primary under 60,000 characters.** See above. Worth several×
-   on its own.
+   on its own — it is the difference between one call per job and one per
+   job per unit.
 2. **Keep the corpus tight.** Every tier-2 context document rides along on
    every Stage-1 call. Corpus chars × personas × models × runs is the whole
    input bill.

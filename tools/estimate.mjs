@@ -3,8 +3,11 @@
  *
  * Reproduces exactly what runReview() computes and logs before it spends
  * anything: same autoManifest, same prepareDocuments, same
- * estimatePipelineCost. Adds the cold-reader call, which the engine's own
- * estimate omits (it is not in estimatePipelineCost).
+ * estimatePipelineCost, same cold-reader and unit-fan-out terms.
+ *
+ * The one thing it cannot know without spending money is how many units the
+ * map pass will discover on a long document, so it assumes ASSUMED_UNITS.
+ * The engine uses the real count.
  *
  * Usage: node estimate.mjs <target> [--context dir]... [--council name]
  *                          [--rigor tier] [--model id]...
@@ -23,7 +26,6 @@ const {
   estimatePerLoopUsd,
   modelEstimateTotal,
   getPricing,
-  tokenCost,
   refreshLivePricing,
   CHARS_PER_TOKEN,
   ESTIMATED_OUTPUT_TOKENS_STAGE1,
@@ -68,6 +70,11 @@ const jobs = buildJobList({
 const personaDocs = {};
 for (const p of personas) personaDocs[p] = assembleForPersona(p, entries, documents);
 
+// A long primary triggers the map pass, after which every job runs once per
+// discovered unit. The real count needs an API call; the map pass picks 3-12.
+const willFanOut = primary.charCount > UNIT_DISCOVERY_THRESHOLD_CHARS;
+const ASSUMED_UNITS = 7;
+
 const estimate = estimatePipelineCost({
   reviewerIds: reviewers.map((r) => r.id),
   synthesizerId: ctx.config.models.synthesizer.id,
@@ -82,32 +89,22 @@ const estimate = estimatePipelineCost({
   ),
   includeDrafter: false,
   iterations: 1,
+  endpoints: Object.keys(ctx.providerSettings?.endpoints ?? {}),
+  coldRead: { promptChars: primary.charCount + ctx.prompts.coldReader.length + 2000 },
+  unitFanOut: willFanOut
+    ? {
+        unitCount: ASSUMED_UNITS,
+        // Each unit call drops the primary and carries one unit's payload:
+        // the unit text plus a whole-document summary and neighbour synopses.
+        perUnitDocChars: (p) => [
+          ...(personaDocs[p] ?? [])
+            .filter((d) => d.name !== ctx.pack.primaryDocName)
+            .map((d) => d.charCount),
+          Math.ceil(primary.charCount / ASSUMED_UNITS) + 4000,
+        ],
+      }
+    : null,
 });
-
-// --- corrections the engine's own estimate does not make --------------------
-// BUG 1: getPricing() has no case for local/openai_compatible specs, so they
-//        fall through to DEFAULT_PRICING ($1/$5). The cost TRACKER is correct
-//        (recordCall uses response.costUsd, measured $0), so this inflates the
-//        estimate only — conservative, but it can trip confirmCost falsely.
-const isLocal = (id) => /^(local|openai[-_]compatible):/i.test(id);
-for (const m of estimate.modelEstimates) {
-  if (isLocal(m.modelId)) {
-    m.inputCostUsd = 0;
-    m.outputCostUsd = 0;
-  }
-}
-// BUG 2: when the primary exceeds UNIT_DISCOVERY_THRESHOLD_CHARS, runReview
-//        fans every job out across the discovered units (jobs x units) but
-//        computes the estimate from `jobs` alone. The printed estimate is then
-//        low by the unit count. This is what made the 2026-08-16 pulse cost
-//        $18.61 against a 9-call estimate.
-const willFanOut = primary.charCount > UNIT_DISCOVERY_THRESHOLD_CHARS;
-const ASSUMED_UNITS = 7; // map pass picks 3-12; the pulse got 7
-
-// --- cold reader: real cost, absent from estimatePipelineCost ---------------
-const [cIn, cOut] = getPricing(ctx.config.models.synthesizer.id);
-const coldInTok = Math.floor((primary.charCount + ctx.prompts.coldReader.length + 2000) / CHARS_PER_TOKEN);
-const coldUsd = tokenCost(coldInTok, cIn) + tokenCost(3000, cOut);
 
 // --- report -----------------------------------------------------------------
 const f = (n, w = 10) => `$${n.toFixed(4)}`.padStart(w);
@@ -147,31 +144,28 @@ console.log("");
 console.log(`PANEL   ${reviewers.length} models x ${personas.length} personas x ${ctx.rigor.runsPerPersona} run(s) = ${jobs.length} stage-1 calls`);
 console.log("-".repeat(78));
 console.log(`  ${"model".padEnd(30)} ${"calls".padStart(5)} ${"in/call".padStart(9)} ${"in $".padStart(9)} ${"out $".padStart(9)} ${"total".padStart(10)}`);
-for (const m of estimate.modelEstimates) {
-  const [pi, po] = getPricing(m.modelId);
-  const label = m.numCalls === 1 && m.modelId === ctx.config.models.synthesizer.id ? " (synthesis)" : "";
+// Push order is: one entry per reviewer, then cold read, cold map, synthesis.
+// Label positionally — several of them share the synthesizer's model id.
+const endpointNames = Object.keys(ctx.providerSettings?.endpoints ?? {});
+const tailLabels = [" (cold read)", " (cold map)", " (synthesis)"];
+for (const [i, m] of estimate.modelEstimates.entries()) {
+  const [pi, po] = getPricing(m.modelId, endpointNames);
+  const label = i >= reviewers.length ? (tailLabels[i - reviewers.length] ?? "") : "";
   console.log(
     `  ${(m.modelId + label).padEnd(30)} ${String(m.numCalls).padStart(5)} ` +
       `${(Math.round(m.inputTokensPerCall / 1000) + "k").padStart(9)} ` +
       `${f(m.inputCostUsd, 9)} ${f(m.outputCostUsd, 9)} ${f(modelEstimateTotal(m))}   [$${pi}/$${po} per 1M]`,
   );
 }
-console.log(`  ${"cold reader (+1 call)".padEnd(30)} ${String(1).padStart(5)} ${(Math.round(coldInTok / 1000) + "k").padStart(9)} ${"".padStart(9)} ${"".padStart(9)} ${f(coldUsd)}`);
 console.log("-".repeat(78));
-console.log(`  ${"engine estimate".padEnd(30)} ${String(jobs.length + 1).padStart(5)} ${"".padStart(29)} ${f(engineTotal)}`);
-console.log(`  ${"+ cold reader".padEnd(30)} ${String(1).padStart(5)} ${"".padStart(29)} ${f(coldUsd)}`);
-const base = engineTotal + coldUsd;
-console.log(`  ${"TOTAL PER RUN".padEnd(30)} ${String(jobs.length + 2).padStart(5)} ${"".padStart(29)} ${f(base)}`);
+const totalCalls = estimate.modelEstimates.reduce((a, m) => a + m.numCalls, 0);
+console.log(`  ${"TOTAL PER RUN".padEnd(30)} ${String(totalCalls).padStart(5)} ${"".padStart(29)} ${f(engineTotal)}`);
 if (willFanOut) {
-  const stage1 = estimate.modelEstimates
-    .filter((m) => m.numCalls > 1)
-    .reduce((a, m) => a + modelEstimateTotal(m), 0);
-  const fanned = base + stage1 * (ASSUMED_UNITS - 1);
   console.log("");
-  console.log(`  ** UNIT FAN-OUT NOT IN THE ENGINE ESTIMATE ABOVE **`);
   console.log(
-    `  ${"REAL TOTAL (x" + ASSUMED_UNITS + " units)"} ≈ ${f(fanned)} across ` +
-      `~${jobs.length * ASSUMED_UNITS + 3} calls — retarget a smaller primary.`,
+    `  ** MAP PASS FIRES ** the figure above assumes ${ASSUMED_UNITS} units; the real ` +
+      `count is 3-12,\n  so the true cost scales with it. Retargeting a smaller ` +
+      `primary is the cheapest lever.`,
   );
 }
 console.log("");

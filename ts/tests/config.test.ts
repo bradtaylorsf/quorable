@@ -467,6 +467,98 @@ describe("local models cost nothing to estimate", () => {
   });
 });
 
+describe("cost estimate covers the calls that will actually be made", () => {
+  /** The same panel, described two ways: whole-document and unit-fanned. */
+  const base = {
+    reviewerIds: ["anthropic/claude-sonnet-5", "openai/gpt-5.5"],
+    // Distinct from every reviewer, so reviewer and synthesis entries are
+    // separable by model id rather than by position.
+    synthesizerId: "x-ai/grok-4.3",
+    drafterId: null,
+    runsPerPersona: 2,
+    personas: ["skeptical_expert", "clarity_editor"],
+    personaDocChars: () => [80_000, 5_000],
+    allDocChars: [80_000, 5_000],
+    systemPromptChars: 4000,
+    personaOverlayChars: { skeptical_expert: 1200, clarity_editor: 1100 },
+    includeDrafter: false,
+    iterations: 1,
+  };
+
+  const stage1Calls = (e: ReturnType<typeof estimatePipelineCost>): number =>
+    e.modelEstimates
+      .filter((m) => base.reviewerIds.includes(m.modelId))
+      .reduce((a, m) => a + m.numCalls, 0);
+
+  it("omitting unitFanOut and coldRead leaves the estimate untouched", () => {
+    // The parity fixtures are shared with the Python engine, which has
+    // neither concept. Both fields must be inert when absent.
+    const without = estimatePipelineCost(base);
+    const explicitNulls = estimatePipelineCost({
+      ...base,
+      unitFanOut: null,
+      coldRead: null,
+    });
+    expect(explicitNulls).toEqual(without);
+  });
+
+  it("fans the Stage-1 call count out across discovered units", () => {
+    const whole = estimatePipelineCost(base);
+    const fanned = estimatePipelineCost({
+      ...base,
+      unitFanOut: {
+        unitCount: 7,
+        // Each call sees one unit plus the context docs, not the whole primary.
+        perUnitDocChars: () => [5_000, 12_000],
+      },
+    });
+
+    // 2 models × 2 personas × 2 runs = 8 whole-document calls, ×7 units = 56.
+    expect(stage1Calls(whole)).toBe(8);
+    expect(stage1Calls(fanned)).toBe(56);
+  });
+
+  it("a fanned run estimates materially higher than the un-fanned job list", () => {
+    // This is the actual defect: the confirmation prompt was computed from
+    // the un-fanned list while the engine ran the fanned one, so the user
+    // approved a fraction of what was about to be spent.
+    const whole = estimatePipelineCost(base);
+    const fanned = estimatePipelineCost({
+      ...base,
+      unitFanOut: { unitCount: 7, perUnitDocChars: () => [5_000, 12_000] },
+    });
+    expect(estimateTotalUsd(fanned)).toBeGreaterThan(estimateTotalUsd(whole) * 2);
+  });
+
+  it("counts the cold reader's two calls without inflating synthesis input", () => {
+    const withoutCold = estimatePipelineCost(base);
+    const withCold = estimatePipelineCost({ ...base, coldRead: { promptChars: 90_000 } });
+
+    const totalCalls = (e: ReturnType<typeof estimatePipelineCost>): number =>
+      e.modelEstimates.reduce((a, m) => a + m.numCalls, 0);
+    // One read call + one reaction-mapping call.
+    expect(totalCalls(withCold)).toBe(totalCalls(withoutCold) + 2);
+    expect(estimateTotalUsd(withCold)).toBeGreaterThan(estimateTotalUsd(withoutCold));
+
+    // The synthesizer is handed the reviews, not the cold read: its own
+    // entry must be identical either way.
+    const synthesisEntry = (e: ReturnType<typeof estimatePipelineCost>) =>
+      e.modelEstimates.at(-1);
+    expect(synthesisEntry(withCold)).toEqual(synthesisEntry(withoutCold));
+  });
+
+  it("treats a unitCount of 0 or 1 as the whole-document path", () => {
+    const whole = estimatePipelineCost(base);
+    for (const unitCount of [0, 1]) {
+      const degenerate = estimatePipelineCost({
+        ...base,
+        unitFanOut: { unitCount, perUnitDocChars: () => [80_000, 5_000] },
+      });
+      expect(stage1Calls(degenerate)).toBe(stage1Calls(whole));
+    }
+  });
+});
+
 describe("pipeline.synthesis_fallback", () => {
   it("defaults to none — today's behaviour is the default", () => {
     const { config } = loadConfig({ home, env: {} });
