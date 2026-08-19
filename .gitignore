@@ -2,6 +2,8 @@
 .env
 .env.*
 !.env.example
+*.pem
+*.key
 
 # Python
 __pycache__/
@@ -9,7 +11,6 @@ __pycache__/
 *$py.class
 *.so
 build/
-dist/
 wheels/
 *.egg-info/
 *.egg
@@ -19,6 +20,7 @@ ENV/
 
 # Node / TypeScript
 node_modules/
+dist/
 *.tsbuildinfo
 
 # Testing and coverage
@@ -33,6 +35,13 @@ htmlcov/
 .vscode/
 *.swp
 .DS_Store
+
+# Git worktrees
+.worktrees/
+
+# Large binaries that have no business in the tree
+*.gguf
+*.safetensors
 
 # Generated pipeline runs — work product; never commit
 runs/
