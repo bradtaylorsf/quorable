@@ -1,26 +1,33 @@
 # quorable — engine/pack contract (v0.1)
 
+> **Scope note.** This contract was written against the Python reference
+> engine in `src/quorable/`, which is why it names `.py` modules throughout.
+> The shipped TypeScript engine in `ts/src/` implements the same contract —
+> the module names differ, the non-negotiables do not. Where the two are
+> deliberately different it is marked, as in the Stage-2 fallback section.
+
 quorable is a multi-model adversarial review-and-revision harness for writing,
-extracted from `the legal-argument reference implementation` (the engine) and organized on the
-`a grant-proposal system` context-map pattern (the content layout). It is
-"Show Sidekick for writing": the harness ships as a CLI + Python library; each
+generalized out of two earlier single-domain review systems: one built for
+legal argument (which contributed the engine) and one built for grant
+proposals (which contributed the context-map content layout). Each
 **project** (a folder in a user repo) owns its domain — personas, rubric,
 prompts, gates, golden set — and the engine stays domain-blind.
 
-Consumers planned: `ideology/shorts-agent/` (first), then re-homing the legal
-and grant systems as packs.
+The design bet is that both of those systems, and any future one, should be
+expressible as packs rather than forks.
 
 ## The split
 
-**Engine (this repo, `src/quorable/engine/`)** — forked from
-`the legal-argument reference implementation`, genericized, never edited per-domain:
+**Engine (`src/quorable/engine/`, ported to `ts/src/engine/`)** — forked from
+the legal-argument system's review package, genericized, never edited
+per-domain:
 
 | Module | Origin | Change on fork |
 |---|---|---|
 | `client.py` | as-is | none (OpenRouter async client, tenacity retries, CostTracker) |
 | `validation.py` | as-is | none (validated_call: fence-strip, sanitize, pydantic, 1 retry) |
 | `costs.py` | as-is | none (live pricing refresh, chars/4 estimation) |
-| `parsers.py` | genericized | `a domain-specific draft-name constant` → `pack.primary_doc_name`; keep never-truncate-primary rule |
+| `parsers.py` | genericized | domain-specific draft-name constant → `pack.primary_doc_name`; keep never-truncate-primary rule |
 | `manifest.py` | genericized | hardcoded legal section keys → free-form sections; keep `ManifestEntry`, tiers, `send_to` routing |
 | `assembly.py` | as-is | doc-name comments only |
 | `pipeline.py` | genericized | `classify_document_type` markers → `pack.doc_type_markers`; `_check_sac_committed` → `_check_primary_committed`; keep fan-out, semaphore, cost governor, run dirs |
@@ -148,7 +155,7 @@ Makefile in each project wraps these, parent-style (`run-ask`, `run-persona P=`,
 - Failures become result rows, never crashes; persona dropout surfaced loudly.
 - Golden recall run after ANY prompt/persona/gate change; negative control
   false-positives fail the command.
-- The red-team persona rule (verbatim from a grant-proposal system): every attack must
+- The red-team persona rule (carried over verbatim): every attack must
   cite a location and state what would neutralize it.
 - The product-truth guard generalizes: each pack names a truth source (canon,
   case context, product spec); drift from it is severity-1 regardless of how

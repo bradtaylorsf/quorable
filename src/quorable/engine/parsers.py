@@ -1,6 +1,6 @@
 """Document parsers: PDF, Markdown, YAML → Document model.
 
-Forked from the reference implementation's parsers module and genericized: the hardcoded a domain-specific draft-name constant
+Forked from the reference implementation's parsers module and genericized: the hardcoded domain-specific draft-name constant
 became the pack-supplied `primary_doc_name` parameter. The never-truncate-
 primary rule is kept: the primary document fails loudly at the character cap;
 everything else truncates with a marker.

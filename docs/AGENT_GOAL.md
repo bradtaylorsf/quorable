@@ -2,6 +2,12 @@
 
 *The mission prompt for the implementation agent. Written 2026-08-12.*
 
+> **Historical.** This is the brief the TS engine was built from, kept because it
+> records why the design is shaped the way it is. It is not maintained, and paths
+> and counts in it are as of the day it was written. For how the tool works today
+> see the [README](../README.md); for how to work on it see
+> [CONTRIBUTING.md](../CONTRIBUTING.md).
+
 Build quorable: a TypeScript CLI, published-ready for npm, that runs multi-model
 adversarial review councils against any document. Work in
 ~/Documents/GitHub/quorable (git repo, main branch).
@@ -16,7 +22,7 @@ THE SPEC — read these first, in order:
    cite it as "plan M2", "plan §5.4", "Blocker 3"; recover it from git history
    if you need the reasoning behind one of those.)
 2. The Python code in src/quorable/ — this is the executable spec, not the
-   product. 176 passing tests (make test). Never break it; retire it to
+   product. 178 passing tests (make test). Never break it; retire it to
    reference/ only when TS reaches parity.
 
 WHAT TO BUILD (sequencing per the plan):

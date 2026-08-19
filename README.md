@@ -296,15 +296,27 @@ npm install && npm run build && npm test    # TypeScript engine + CLI
 make install && make test                   # Python reference engine
 ```
 
-The Python package in `src/quorable/` is the executable spec the TS engine
-was ported from. `fixtures/parity/*.json` pin the numeric behavior —
-Fleiss' κ, ICC, composites, gate results — and both test suites verify
-against them, so the two engines cannot silently diverge
-(`tools/extract_parity_fixtures.py` regenerates).
+`fixtures/parity/*.json` pin the numeric behavior — Fleiss' κ, ICC,
+composites, gate results — and both suites verify against them, so the two
+engines cannot silently diverge (`tools/extract_parity_fixtures.py`
+regenerates).
 
-Design document: [`CONTRACT.md`](CONTRACT.md) (the engine/pack contract).
+The Python package in `src/quorable/` is not shipped — it is the executable
+spec the TS engine was ported from, and it stays in the repo so the parity
+fixtures have two independent implementations to check.
+
+Live API tests never run in CI; a smoke test costs real money and is opt-in
+via `RUN_LIVE_TESTS=1`.
+
+| Document | What is in it |
+|---|---|
+| [`CONTRACT.md`](CONTRACT.md) | The engine/pack contract — the non-negotiables. |
+| [`docs/operations.md`](docs/operations.md) | Cost traps, local-seat reliability, rubric gate syntax, known limits. **Read before spending money.** |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Setup, the parity gate, and the design rules a PR must not break. |
+| [`SECURITY.md`](SECURITY.md) | Where your documents and keys go, and how to report a vulnerability. |
+| [`CHANGELOG.md`](CHANGELOG.md) | What changed, per release. |
+
 The build plans that produced M0–M9 have been retired now that the work has
-landed; they remain in git history. Live API tests never run in CI; a smoke
-test costs real money and is opt-in.
+landed; they remain in git history.
 
 MIT.
