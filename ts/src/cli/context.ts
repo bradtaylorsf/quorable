@@ -76,6 +76,13 @@ export function resolveContext(targetPath: string | null, flags: ReviewFlags): R
   });
 
   const roots: AssetRoots = { home };
+  // Project-owned assets: `.quorable/{personas,councils,rubrics}` beside the
+  // discovered project config outranks the user library and packaged assets
+  // (the search order resolve.ts documents).
+  const projectConfigPath = sources.find((s) => s.layer === "project")?.path;
+  if (projectConfigPath) {
+    roots.extra = [path.join(path.dirname(projectConfigPath), ".quorable")];
+  }
   const council = loadCouncil(config.council, roots);
   const personas = config.personas.length > 0 ? config.personas : council.personas;
   const personaOverlays = Object.fromEntries(

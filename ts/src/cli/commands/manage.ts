@@ -17,6 +17,7 @@ import {
   quorableHome,
   storeKey,
 } from "../../config/home.js";
+import { findProjectConfig } from "../../config/layering.js";
 import {
   councilPath,
   listCouncils,
@@ -25,6 +26,7 @@ import {
   loadCouncil,
   personaPath,
   loadPersonaOverlay,
+  type AssetRoots,
 } from "../../config/resolve.js";
 import type { ProviderKeys } from "../../providers/registry.js";
 
@@ -33,6 +35,25 @@ const PROVIDERS = ["openrouter", "anthropic", "openai", "openai_compatible"] as 
 function fail(message: string): never {
   console.error(message);
   process.exit(1);
+}
+
+/** Asset roots including the nearest project's `.quorable/`, if any. */
+function cwdRoots(): AssetRoots {
+  const projectConfig = findProjectConfig(process.cwd());
+  return projectConfig
+    ? { extra: [path.join(path.dirname(projectConfig), ".quorable")] }
+    : {};
+}
+
+function sourceLabel(p: string, roots: AssetRoots): string {
+  if ((roots.extra ?? []).some((r) => p.startsWith(r + path.sep))) return "(project)";
+  return p.startsWith(quorableHome()) ? "(user)" : "(packaged)";
+}
+
+/** User and project files are editable; packaged assets are not. */
+function editablePath(p: string | null, roots: AssetRoots): boolean {
+  if (!p) return false;
+  return sourceLabel(p, roots) !== "(packaged)";
 }
 
 export function registerManageCommands(program: Command): void {
@@ -101,10 +122,10 @@ export function registerManageCommands(program: Command): void {
     .command("list")
     .description("List available personas")
     .action(() => {
-      for (const name of listPersonas()) {
-        const p = personaPath(name)!;
-        const packaged = !p.startsWith(quorableHome());
-        console.log(`${name.padEnd(22)} ${packaged ? "(packaged)" : "(user)"}  ${p}`);
+      const roots = cwdRoots();
+      for (const name of listPersonas(roots)) {
+        const p = personaPath(name, roots)!;
+        console.log(`${name.padEnd(22)} ${sourceLabel(p, roots)}  ${p}`);
       }
     });
 
@@ -112,7 +133,7 @@ export function registerManageCommands(program: Command): void {
     .command("show <name>")
     .description("Print a persona overlay")
     .action((name: string) => {
-      console.log(loadPersonaOverlay(name));
+      console.log(loadPersonaOverlay(name, cwdRoots()));
     });
 
   persona
@@ -139,8 +160,9 @@ export function registerManageCommands(program: Command): void {
     .command("list")
     .description("List available councils")
     .action(() => {
-      for (const name of listCouncils()) {
-        const c = loadCouncil(name);
+      const roots = cwdRoots();
+      for (const name of listCouncils(roots)) {
+        const c = loadCouncil(name, roots);
         console.log(`${name.padEnd(18)} rubric=${c.rubric.padEnd(16)} [${c.personas.join(", ")}]`);
       }
     });
@@ -149,12 +171,13 @@ export function registerManageCommands(program: Command): void {
     .command("show <name>")
     .description("Show a council: personas, rubric, source file")
     .action((name: string) => {
-      const c = loadCouncil(name);
+      const roots = cwdRoots();
+      const c = loadCouncil(name, roots);
       console.log(`name:     ${c.name}`);
       console.log(`about:    ${c.description}`);
       console.log(`rubric:   ${c.rubric}`);
       console.log(`personas: ${c.personas.join(", ")}`);
-      console.log(`file:     ${councilPath(name)}`);
+      console.log(`file:     ${councilPath(name, roots)}`);
     });
 
   council
@@ -164,16 +187,17 @@ export function registerManageCommands(program: Command): void {
     .option("--rubric <name>", "rubric name", "document")
     .action((name: string, opts: { personas: string; rubric: string }) => {
       ensureHome();
+      const roots = cwdRoots();
       const personas = opts.personas.split(",").map((s) => s.trim()).filter(Boolean);
       if (personas.length === 0) {
-        fail(`--personas is required. Available: ${listPersonas().join(", ")}`);
+        fail(`--personas is required. Available: ${listPersonas(roots).join(", ")}`);
       }
-      const missing = personas.filter((p) => !personaPath(p));
+      const missing = personas.filter((p) => !personaPath(p, roots));
       if (missing.length > 0) {
-        fail(`Unknown persona(s): ${missing.join(", ")}. Available: ${listPersonas().join(", ")}`);
+        fail(`Unknown persona(s): ${missing.join(", ")}. Available: ${listPersonas(roots).join(", ")}`);
       }
-      if (!listRubrics().includes(opts.rubric)) {
-        fail(`Unknown rubric '${opts.rubric}'. Available: ${listRubrics().join(", ")}`);
+      if (!listRubrics(roots).includes(opts.rubric)) {
+        fail(`Unknown rubric '${opts.rubric}'. Available: ${listRubrics(roots).join(", ")}`);
       }
       const dest = path.join(homePaths().councils, `${name}.yaml`);
       if (fs.existsSync(dest)) fail(`${dest} already exists.`);
@@ -189,15 +213,16 @@ export function registerManageCommands(program: Command): void {
     .command("add <name> <persona>")
     .description("Add a persona to a user council")
     .action((name: string, personaName: string) => {
-      const p = councilPath(name);
-      if (!p || !p.startsWith(quorableHome())) {
+      const roots = cwdRoots();
+      const p = councilPath(name, roots);
+      if (!p || !editablePath(p, roots)) {
         fail(
           `Council '${name}' is packaged or missing — create a user copy first: ` +
             `quorable council new ${name}-custom --personas ...`,
         );
       }
-      if (!personaPath(personaName)) fail(`Unknown persona '${personaName}'.`);
-      const c = loadCouncil(name);
+      if (!personaPath(personaName, roots)) fail(`Unknown persona '${personaName}'.`);
+      const c = loadCouncil(name, roots);
       if (c.personas.includes(personaName)) fail(`${personaName} is already in ${name}.`);
       const updated = { ...c, personas: [...c.personas, personaName] };
       fs.writeFileSync(
@@ -212,11 +237,12 @@ export function registerManageCommands(program: Command): void {
     .command("remove <name> <persona>")
     .description("Remove a persona from a user council")
     .action((name: string, personaName: string) => {
-      const p = councilPath(name);
-      if (!p || !p.startsWith(quorableHome())) {
-        fail(`Council '${name}' is packaged or missing — only user councils can be edited.`);
+      const roots = cwdRoots();
+      const p = councilPath(name, roots);
+      if (!p || !editablePath(p, roots)) {
+        fail(`Council '${name}' is packaged or missing — only user or project councils can be edited.`);
       }
-      const c = loadCouncil(name);
+      const c = loadCouncil(name, roots);
       if (!c.personas.includes(personaName)) fail(`${personaName} is not in ${name}.`);
       const personas = c.personas.filter((x) => x !== personaName);
       if (personas.length === 0) fail("A council needs at least one persona.");
