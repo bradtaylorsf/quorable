@@ -104,7 +104,8 @@ into a `Record<string, GateResult>` keyed by that name — so a second entry
 **silently overwrites the first**. No warning, no error, and `gates.json`
 shows a single passing gate. The same collision applies to any repeated gate
 type, including `term_lint` and unscoped `word_count`. Merge every pattern
-into one list. Tracked as an issue.
+into one list. Tracked as
+[issue #1](https://github.com/bradtaylorsf/quorable/issues/1).
 
 **`quorable render` does not re-run gates.** It reads `gates.json` off disk
 and recomputes only the ship verdict. After fixing a rubric's gates you must

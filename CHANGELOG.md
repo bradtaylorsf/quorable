@@ -34,7 +34,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   across the discovered units, but the estimate — and therefore the cost
   confirmation prompt — was computed from the un-fanned job list, so a run
   could be approved at a fraction of what it went on to spend. The estimate
-  now takes the real unit count and the cold reader's two calls. (#12)
+  now takes the real unit count and the cold reader's two calls.
 - `tools/estimate.mjs` priced named local endpoints at the default hosted
   rate because it never passed its configured endpoint names to
   `getPricing()`. A local panel now estimates at $0.00, as the engine
