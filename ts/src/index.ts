@@ -4,6 +4,10 @@
  */
 
 export * from "./engine/agreement.js";
+export * from "./engine/agentHarness.js";
+export * from "./engine/investigation.js";
+export * from "./engine/readiness.js";
+export * from "./engine/revisionLoop.js";
 export * from "./engine/assembly.js";
 export * from "./engine/coldReader.js";
 export * from "./engine/costs.js";

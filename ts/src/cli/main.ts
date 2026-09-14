@@ -16,6 +16,8 @@ import { Command } from "commander";
 import { registerConfigCommands } from "./commands/config.js";
 import { registerManageCommands } from "./commands/manage.js";
 import { registerRunCommands } from "./commands/runs.js";
+import { registerInvestigationCommand } from "./commands/investigate.js";
+import { registerRevisionCommand } from "./commands/revise.js";
 import { allModelSpecs, resolveContext, type ReviewFlags } from "./context.js";
 import { confirmCostInteractive, firstRunKeyWizard, isInteractive, runPicker } from "./picker.js";
 import { effectiveKeys, storeKey } from "../config/home.js";
@@ -273,6 +275,8 @@ function resolveTarget(file: string): string {
 registerConfigCommands(program);
 registerManageCommands(program);
 registerRunCommands(program);
+registerInvestigationCommand(program);
+registerRevisionCommand(program);
 
 program.parseAsync(process.argv).catch((exc: unknown) => {
   console.error(exc instanceof Error ? exc.message : String(exc));

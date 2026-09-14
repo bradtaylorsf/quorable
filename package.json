@@ -41,6 +41,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:agents:live": "node tools/smoke_agent_loop.mjs",
     "prepublishOnly": "npm run typecheck && npm run build && npm run test"
   },
   "dependencies": {

@@ -16,6 +16,37 @@ key (one key, every vendor — stored in `~/.quorable/.env`, chmod 600), lets
 you pick a council interactively, estimates the cost, and writes everything
 to `draft-reviewed/` next to the file.
 
+For reviews that need to investigate the workspace and verify evidence,
+use the **agent council** path (requires authenticated Codex or Claude Code):
+
+```bash
+quorable investigate draft.md --workspace . --context ./reference \
+  --agent codex --agent claude --synthesizer claude \
+  --criteria 'Verify claims, feasibility, and acceptance criteria.'
+```
+
+Each persona gets a fresh agent session; reviewers run concurrently, then
+an agent synthesizes their Markdown reports. Repeat `--synthesizer` to get
+multiple synthesis perspectives and a final reconciliation. Add `--dry-run`
+to inspect assignments first. This path provides advisory recommendations;
+successful execution is not a ship verdict. See
+[agent councils and architecture review](docs/agent-councils.md) for usage,
+limitations, and the roadmap toward bounded review/revision loops.
+
+To revise automatically with evidence-linked blockers and enforced readiness:
+
+```bash
+quorable revise draft.md --context reference.md \
+  --criteria 'Match the reference, name accountable owners, and specify acceptance checks.' \
+  --agent codex --agent claude --max-revisions 3 --out ./runs/draft
+quorable readiness ./runs/draft
+```
+
+The loop saves new candidates without overwriting the source, verifies
+findings in separate agent invocations, and enforces job/time limits.
+See [revision loops](docs/revision-loops.md) for policy, stop conditions,
+evidence records, and current limits.
+
 ## Why councils
 
 A single model reviewing a document tells you what one model thinks. A
@@ -73,6 +104,11 @@ quorable review <file|dir>    # the main event (interactive picker on a TTY)
     --persona <name> --model <id> --out <dir> --yes --save
 
 quorable panel <file>         # panel + synthesis only, no ship verdict
+quorable investigate <file>   # agent investigations + Markdown synthesis
+    --agent codex|claude       # repeatable; each runs every selected persona
+    --workspace <dir> --context <path> --criteria <text>
+    --synthesizer codex|claude --final-synthesizer codex|claude
+    --concurrency 3 --timeout 600 --dry-run
 quorable validate <run-dir>   # held-out validation on an existing run
 quorable golden [--dir d]     # seeded-defect recall; non-zero exit on miss
 quorable render <run-dir>     # re-evaluate gates after resolving validation tasks
@@ -327,4 +363,3 @@ anywhere in it, deliberately: a review tool that cannot be installed because
 of its licence is not a review tool. PDF support is pdf.js (Apache-2.0).
 
 Node 22.13+ is required.
-

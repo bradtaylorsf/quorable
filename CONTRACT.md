@@ -18,6 +18,24 @@ expressible as packs rather than forks.
 
 ## The split
 
+### Investigative mode (TypeScript extension)
+
+`quorable investigate` is a separate advisory workflow. Agent sessions
+investigate workspace evidence and return Markdown; synthesis is also an
+agent session. The Stage-1 strict JSON requirements below continue to apply
+to the scored `review`/`panel` pipeline. Investigation reports do not feed
+those scores or ship gates. Code owns execution status and a YAML manifest;
+readiness remains unassessed by code. See
+[`docs/agent-councils.md`](docs/agent-councils.md) for the execution contract,
+limitations, and planned decision-record/revision-loop work.
+
+`quorable revise` now implements a separate bounded investigative loop.
+Small YAML decision records accompany Markdown; evidence hashes and
+disposition histories are supplied by code. `quorable readiness` rechecks
+the resulting policy decision against current sources and artifacts.
+This does not change the scored API pipeline or its numeric parity contract.
+See [`docs/revision-loops.md`](docs/revision-loops.md) for the current contract.
+
 **Engine (`src/quorable/engine/`, ported to `ts/src/engine/`)** — forked from
 the legal-argument system's review package, genericized, never edited
 per-domain:

@@ -19,6 +19,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   CI drops the Node 20 job.
 
 ### Added
+- `quorable revise` and `quorable readiness`: bounded revision loops,
+  frozen evidence, stable finding registry, separate verifier invocations,
+  mechanical gates, final evaluation, and source/artifact freshness checks.
+- Real Codex/Claude CLI smoke fixture and opt-in integration test.
+- `quorable investigate`: bounded concurrent Codex/Claude Code persona
+  sessions, Markdown reviews, agent synthesis, optional parallel synthesis
+  perspectives and final reconciliation, dry-run assignments, incremental
+  execution metadata, cancellation and timeouts. Recommendations are
+  advisory; no automatic ship verdict is inferred from prose.
+- `docs/agent-councils.md`: architecture evaluation, usage, current limits,
+  and a roadmap for evidence-backed decision records and bounded loops.
 - First real PDF coverage: two tests that build a minimal PDF with known
   text and assert extraction, page markers and page order. Previously only
   the broken-PDF path was tested.
