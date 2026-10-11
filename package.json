@@ -1,6 +1,6 @@
 {
   "name": "quorable",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Multi-model adversarial review councils for any document — scored synthesis with honest agreement statistics.",
   "keywords": [
     "review",
