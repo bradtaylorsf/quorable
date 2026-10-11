@@ -6,6 +6,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-10-10
+
 ### Changed
 - **PDF parsing moved from mupdf to pdf.js.** mupdf is AGPL-3.0-or-later,
   which put a copyleft dependency inside an MIT package — enough to fail a
@@ -138,6 +140,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Initial TypeScript engine and CLI, ported from the Python reference engine
 at full numeric parity against `fixtures/parity/`.
 
-[Unreleased]: https://github.com/bradtaylorsf/quorable/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/bradtaylorsf/quorable/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/bradtaylorsf/quorable/releases/tag/v0.3.0
 [0.2.0]: https://github.com/bradtaylorsf/quorable/releases/tag/v0.2.0
 [0.1.0]: https://github.com/bradtaylorsf/quorable/releases/tag/v0.1.0
