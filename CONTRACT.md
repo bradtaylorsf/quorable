@@ -29,9 +29,14 @@ readiness remains unassessed by code. See
 [`docs/agent-councils.md`](docs/agent-councils.md) for the execution contract,
 limitations, and planned decision-record/revision-loop work.
 
-`quorable revise` now implements a separate bounded investigative loop.
-Small YAML decision records accompany Markdown; evidence hashes and
-disposition histories are supplied by code. `quorable readiness` rechecks
+`quorable revise` now implements a separate bounded investigative loop over
+a text file or a whole directory. Small YAML decision records accompany
+Markdown; evidence hashes, tree hashes, version commits and disposition
+histories are supplied by code; the revision author is a write-capable agent
+session confined to a disposable copy. Metric gates are numbers extracted by
+code from commands, with thresholds, sample counts, and a declared stop
+policy (plateau, regression handling, budgets) that every agent is shown;
+a metric at threshold is one readiness requirement, never the whole verdict. `quorable readiness` rechecks
 the resulting policy decision against current sources and artifacts.
 This does not change the scored API pipeline or its numeric parity contract.
 See [`docs/revision-loops.md`](docs/revision-loops.md) for the current contract.

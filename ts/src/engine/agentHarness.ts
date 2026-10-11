@@ -3,11 +3,21 @@ import { spawn } from "node:child_process";
 
 export type Harness = "codex" | "claude";
 export interface AgentSpec { harness: Harness; model?: string }
+/**
+ * "read": investigate only — read/search tools, no edits, no shell for Claude,
+ * read-only sandbox for Codex. "write": a normal coding session confined to
+ * cwd — edit/write/shell for Claude (permission allowlist, no OS sandbox),
+ * workspace-write sandbox for Codex. Nothing ever passes a permission-bypass flag.
+ */
+export type AgentPolicy = "read" | "write";
 export interface AgentRequest {
   agent: AgentSpec;
   cwd: string;
   prompt: string;
   timeoutMs: number;
+  policy?: AgentPolicy;
+  /** Extra directories the agent may read (Claude `--add-dir`); Codex reads freely inside its sandbox. */
+  readDirs?: string[];
   signal?: AbortSignal;
   onTrace?: (text: string) => void;
 }
@@ -29,14 +39,22 @@ export function parseAgentSpec(value: string): AgentSpec {
   return { harness, ...(model ? { model } : {}) };
 }
 
-export function harnessCommand(agent: AgentSpec): { command: string; args: string[] } {
+const CLAUDE_TOOLS: Record<AgentPolicy, string> = {
+  read: "Read,Glob,Grep,WebSearch,WebFetch",
+  write: "Read,Glob,Grep,Edit,Write,Bash,WebSearch,WebFetch",
+};
+
+export function harnessCommand(
+  agent: AgentSpec, policy: AgentPolicy = "read", readDirs: string[] = [],
+): { command: string; args: string[] } {
   const args = agent.harness === "codex"
-    ? ["exec", "--sandbox", "read-only", "--ephemeral", "--skip-git-repo-check",
-       "--color", "never", "-c", "approval_policy=\"never\""]
+    ? ["exec", "--sandbox", policy === "write" ? "workspace-write" : "read-only", "--ephemeral",
+       "--skip-git-repo-check", "--color", "never", "-c", "approval_policy=\"never\""]
     : ["--print", "--output-format", "text", "--no-session-persistence",
-       "--permission-mode", "dontAsk", "--tools", "Read,Glob,Grep,WebSearch,WebFetch",
-       "--allowedTools", "Read,Glob,Grep,WebSearch,WebFetch",
+       "--permission-mode", "dontAsk", "--tools", CLAUDE_TOOLS[policy],
+       "--allowedTools", CLAUDE_TOOLS[policy],
        "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}'];
+  if (agent.harness === "claude" && readDirs.length) args.push("--add-dir", ...readDirs);
   if (agent.model) args.push("--model", agent.model);
   if (agent.harness === "codex") args.push("-");
   const executable = process.env[agent.harness === "codex" ? "QUORABLE_CODEX_BIN" : "QUORABLE_CLAUDE_BIN"];
@@ -46,7 +64,7 @@ export function harnessCommand(agent: AgentSpec): { command: string; args: strin
 /** No shell interpolation. Kill the process group on POSIX, including tool children. */
 export function runAgentProcess(
   request: AgentRequest,
-  command = harnessCommand(request.agent),
+  command = harnessCommand(request.agent, request.policy ?? "read", request.readDirs ?? []),
 ): Promise<AgentResponse> {
   if (!Number.isSafeInteger(request.timeoutMs) || request.timeoutMs <= 0 || request.timeoutMs > 2_147_483_647) {
     return Promise.reject(new Error("timeoutMs must be a positive integer <= 2147483647."));

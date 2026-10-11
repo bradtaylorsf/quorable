@@ -1,0 +1,66 @@
+# Example revision policy for `quorable revise --policy <file>`.
+# Everything that decides what "done" means lives here; CLI flags add to the
+# lists and override the scalars. This file is loaded by the test suite, so
+# it stays valid.
+
+criteria: >-
+  Make the retry logic in src/http/retry.ts correct under concurrent callers
+  without changing the public API. All tests and the type check must pass.
+
+# Inside a directory target, the text file that text gates (word count,
+# banned patterns) apply to. Omit when the rubric has no text gates.
+# primary: README.md
+
+# Extra names to skip when copying the target (node_modules, dist, build,
+# coverage, .git and similar are skipped by default).
+exclude: [fixtures-large]
+
+# Run once in the fresh copy before round 0.
+setup:
+  - name: deps
+    run: [npm, ci]
+    timeout_seconds: 900
+
+# Pass/fail commands, run inside the candidate every round. Exit 0 passes.
+checks:
+  - name: tests
+    run: [npm, test]
+  - name: types
+    run: [npx, tsc, --noEmit]
+
+# Numbers with thresholds. Each round the command runs `runs` times and the
+# samples are aggregated; `min_delta` is both "how much better counts as
+# progress" and "how much worse counts as a regression". Set it at or above
+# the measurement's noise.
+metrics:
+  - name: coverage
+    run: [npx, vitest, run, --coverage, --coverage.reporter=json-summary]
+    extract: {file: coverage/coverage-summary.json, json: total.lines.pct}
+    goal: maximize
+    threshold: 85
+    min_delta: 0.5
+  - name: p95_ms
+    run: [node, bench/retry.js]
+    extract: {regex: "p95=([0-9.]+)ms"}
+    goal: minimize
+    threshold: 120
+    runs: 5
+    aggregate: median
+    min_delta: 5
+
+# Commands run first each round that turn the candidate into reviewable
+# evidence: write into $QUORABLE_DERIVE_OUT (outside the candidate). Text
+# files there are quotable by reviewers and readable by metrics through
+# $QUORABLE_DERIVED_DIR/<name>/.
+derive:
+  - name: api-surface
+    run: [node, scripts/print-public-api.js]
+
+stop:
+  require: [blocking, major]   # finding severities that block readiness (blocking is always included)
+  max_revisions: 5             # revision attempts, accepted or reverted
+  max_investigations: 2        # targeted verification waves per round
+  max_jobs: 60                 # agent invocations in total, including format repairs
+  max_elapsed_seconds: 3600    # whole-run deadline
+  plateau_rounds: 2            # stop after this many attempts in a row without meaningful progress
+  on_regression: revert        # continue | revert | stop

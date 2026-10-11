@@ -42,8 +42,37 @@ quorable revise draft.md --context reference.md \
 quorable readiness ./runs/draft
 ```
 
-The loop saves new candidates without overwriting the source, verifies
-findings in separate agent invocations, and enforces job/time limits.
+The target can be a whole directory — a repository, a project, a folder of
+derived evidence. The reviser is then an ordinary coding session confined to
+a disposable copy, and the project's own checks become part of readiness:
+
+```bash
+quorable revise ./my-service --council code-review \
+  --criteria 'Fix the flaky retry without changing the public API.' \
+  --setup deps='npm ci' --check tests='npm test' --check types='npx tsc --noEmit' \
+  --reviser codex --out ../runs/my-service
+```
+
+Add metric gates to loop toward a number, and stop rules to say when to
+give up:
+
+```bash
+quorable revise ./my-service --council code-review --criteria '…' \
+  --check tests='npm test' \
+  --metric 'coverage >= 85 ~0.5: node scripts/coverage-pct.js' \
+  --metric 'p95_ms <= 120 x5 ~5: node bench/retry.js' \
+  --on-regression revert --plateau-rounds 2 --max-revisions 6
+```
+
+Each metric runs `x` times per round and is judged on the median; an
+attempt that makes a metric worse by more than `~` is reverted before any
+reviewer sees it; two attempts in a row without a meaningful gain end the
+run as stalled. Put the same thing in a policy file with `--policy`
+([annotated example](docs/examples/revise-policy.yaml)), and check what
+will happen with `--dry-run`.
+
+The loop never modifies the source, verifies findings in separate agent
+invocations, hashes every version in code, and enforces job/time limits.
 See [revision loops](docs/revision-loops.md) for policy, stop conditions,
 evidence records, and current limits.
 
@@ -98,17 +127,31 @@ Every review also audits itself:
 ```
 quorable review <file|dir>    # the main event (interactive picker on a TTY)
     --council <name>          # blog-post | grant-proposal | screenplay |
-                              # legal-pleading | general-doc (default) | yours
+                              # legal-pleading | code-review | general-doc (default) | yours
     --rigor quick|standard|rigorous
     --context <dir>           # glob a folder of reference docs into the review
     --persona <name> --model <id> --out <dir> --yes --save
 
 quorable panel <file>         # panel + synthesis only, no ship verdict
-quorable investigate <file>   # agent investigations + Markdown synthesis
+quorable investigate <file|dir>  # agent investigations + Markdown synthesis
     --agent codex|claude       # repeatable; each runs every selected persona
     --workspace <dir> --context <path> --criteria <text>
     --synthesizer codex|claude --final-synthesizer codex|claude
     --concurrency 3 --timeout 600 --dry-run
+quorable revise <file|dir>    # bounded review → fix-in-place → verify loop
+    --policy <file.yaml>       # criteria, setup, checks, metrics, derive, stop rules in one file
+    --criteria <text>          # what "ready" means (here or in the policy)
+    --check name=command       # pass/fail command run in the candidate each round
+    --metric 'cov >= 85 x3 ~0.5: cmd'   # number with a threshold; x = runs, ~ = min_delta
+    --derive name=command      # per-round evidence (e.g. transcribe a render) into $QUORABLE_DERIVE_OUT
+    --setup name=command       # one-time prep in the copy (e.g. deps='npm ci')
+    --primary <relpath>        # the text file for text gates, in a directory
+    --exclude <name>           # skip more names when copying (node_modules etc. by default)
+    --reviser codex|claude     # the write session (Codex: OS sandbox; default)
+    --on-regression continue|revert|stop  --plateau-rounds 2  --require major
+    --max-revisions 3 --max-jobs 40 --max-elapsed 1200
+    --dry-run                  # print the merged policy and stop rules; start nothing
+quorable readiness <run-dir>  # recheck a revise run against current hashes
 quorable validate <run-dir>   # held-out validation on an existing run
 quorable golden [--dir d]     # seeded-defect recall; non-zero exit on miss
 quorable render <run-dir>     # re-evaluate gates after resolving validation tasks

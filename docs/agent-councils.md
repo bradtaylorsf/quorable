@@ -1,9 +1,11 @@
 # Investigative agent councils
 
 The bounded controller described in the roadmap below is now available as
-`quorable revise`, with `quorable readiness` for freshness rechecks. See
+`quorable revise`, with `quorable readiness` for freshness rechecks, and it
+works on directories (repositories, projects) as well as documents. See
 [revision loops](revision-loops.md) for the implemented contract. The
-`investigate` command documented here remains advisory.
+`investigate` command documented here remains advisory; it accepts a file or
+a directory as its target.
 
 Quorable's best thesis is that independent, accountable investigations can
 surface consequential mistakes that a single reviewer misses. The product

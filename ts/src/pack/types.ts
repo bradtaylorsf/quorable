@@ -9,6 +9,8 @@ import type { z } from "zod";
 
 import type { KeywordRule } from "../engine/agreement.js";
 import type { Gate } from "../engine/gates.js";
+import type { CommandCheck } from "../engine/checks.js";
+import type { MetricSpec } from "../engine/metrics.js";
 import type { ShipGatesConfig } from "../engine/scoring.js";
 
 export interface Pack {
@@ -26,6 +28,10 @@ export interface Pack {
   primaryDocName: string;
   docTypeMarkers: Record<string, string[]>;
   mechanicalGates: Gate[];
+  /** Command checks (`checks:` in the rubric) run inside a candidate directory by revision loops. */
+  mechanicalChecks?: CommandCheck[];
+  /** Metric gates (`metrics:` in the rubric): numbers with thresholds, measured inside a candidate. */
+  mechanicalMetrics?: MetricSpec[];
   shipGates: ShipGatesConfig;
   drafterEnabled: boolean;
   heldOutRecommendedDocs: string[];

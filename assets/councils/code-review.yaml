@@ -1,0 +1,12 @@
+# A council for repositories and other directory artifacts. Pair it with
+# `quorable revise <dir> --check tests=npm test` so readiness rests on the
+# project's own checks as well as the reviewers' findings. No text gates:
+# a repository has no single primary document unless you name one.
+name: code-review
+description: Code review — correctness, safety, maintainability, and the adversary who reads your diff.
+personas:
+  - correctness_reviewer
+  - security_reviewer
+  - maintainability_reviewer
+  - red_team
+rubric: code

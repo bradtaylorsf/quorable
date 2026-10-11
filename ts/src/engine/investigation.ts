@@ -1,13 +1,16 @@
 /** Markdown-first council: investigate independently, then synthesize with tools. */
 import fs from "node:fs";
 import path from "node:path";
-import { createHash } from "node:crypto";
 import { stringify } from "yaml";
 import { runAgentProcess, type AgentRunner, type AgentSpec, type AgentResponse } from "./agentHarness.js";
+import { sha256Path } from "./tree.js";
 
 export interface InvestigationArgs {
+  /** A file, or a directory (a repository, a project) to investigate as a whole. */
   target: string;
   workspace: string;
+  /** Names excluded when hashing a directory target (defaults to dependency/build output). */
+  excludes?: string[];
   contextPaths: string[];
   outDir: string;
   personas: Record<string, string>;
@@ -60,17 +63,16 @@ Recommend ready, revise, or needs evidence, with reasons and limitations. This i
 const SYNTHESIS = `Act as an investigative synthesis editor. Read EVERY successful assigned report, then inspect the primary document and underlying sources to adjudicate consequential disagreements. Treat reviewer recommendations as claims to check. Do not count repeated assertions as independent corroboration. Preserve minority findings and identify missing perspectives. Reference findings by report ID plus finding ID. Never silently drop a blocking finding: explain whether each is supported, refuted, or unresolved with evidence.
 Return Markdown sections: Assessment; Evidence and coverage; Blocking findings; Ranked fixes; Disagreements and adjudication; Open questions; Next-agent handoff; Readiness recommendation. The handoff must specify actions, affected locations, evidence needed, and acceptance checks. Recommend ready, revise, or needs evidence; this remains advisory. Missing/failed reviews are not approval. Do not invent scores, agreement statistics, or a code-enforced ship verdict.`;
 
-function hash(file: string): string {
-  return createHash("sha256").update(fs.readFileSync(file)).digest("hex");
-}
 
 export async function runInvestigation(args: InvestigationArgs): Promise<InvestigationOutcome> {
   if (!Number.isSafeInteger(args.maxConcurrency) || args.maxConcurrency < 1) throw new Error("Concurrency must be a positive integer.");
   if (!Number.isSafeInteger(args.timeoutMs) || args.timeoutMs < 1 || args.timeoutMs > 2_147_483_647) throw new Error("Invalid agent timeout.");
   const target = fs.realpathSync(args.target);
   const workspace = fs.realpathSync(args.workspace);
-  if (!fs.statSync(target).isFile()) throw new Error("Investigation target must be a file.");
+  const targetStat = fs.statSync(target);
+  if (!targetStat.isFile() && !targetStat.isDirectory()) throw new Error("Investigation target must be a file or a directory.");
   if (!fs.statSync(workspace).isDirectory()) throw new Error("Workspace must be a directory.");
+  const hash = (): string => sha256Path(target, args.excludes);
   const context = args.contextPaths.map((p) => fs.realpathSync(p));
   if (!Object.keys(args.personas).length || !args.reviewers.length || !args.synthesizers.length) throw new Error("At least one persona, reviewer, and synthesizer is required.");
   const outDir = path.resolve(args.outDir);
@@ -78,12 +80,12 @@ export async function runInvestigation(args: InvestigationArgs): Promise<Investi
   fs.mkdirSync(path.dirname(outDir), { recursive: true });
   fs.mkdirSync(outDir);
   for (const dir of ["prompts", "reviews", "synthesis", "traces"]) fs.mkdirSync(path.join(outDir, dir));
-  const sha256 = hash(target);
+  const sha256 = hash();
   const startedAt = new Date().toISOString();
   const jobs: Job[] = [];
   const emit = args.onEvent ?? (() => {});
   const runner = args.runner ?? runAgentProcess;
-  const brief = `${RULES}\n\nPrimary document: ${JSON.stringify(target)}\nWorkspace: ${JSON.stringify(workspace)}\nReference paths (inspect selectively):\n${context.map((p) => `- ${JSON.stringify(p)}`).join("\n") || "(none)"}\n\nReview criteria:\n${args.criteria}`;
+  const brief = `${RULES}\n\n${targetStat.isDirectory() ? "Primary artifact (directory, inspect its files)" : "Primary document"}: ${JSON.stringify(target)}\nWorkspace: ${JSON.stringify(workspace)}\nReference paths (inspect selectively):\n${context.map((p) => `- ${JSON.stringify(p)}`).join("\n") || "(none)"}\n\nReview criteria:\n${args.criteria}`;
   fs.writeFileSync(path.join(outDir, "brief.md"), brief + "\n");
   const reportPath = (job: Pick<Job, "role" | "id">): string => path.join(outDir, job.role === "review" ? "reviews" : "synthesis", `${job.id}.md`);
   const persist = (status: string): void => {
@@ -153,7 +155,7 @@ export async function runInvestigation(args: InvestigationArgs): Promise<Investi
     if (args.dryRun || syntheses.some((s) => s.response?.status === "completed")) await runBatch([final]);
   }
   let unchanged = false;
-  try { unchanged = hash(target) === sha256; } catch { /* removed during review */ }
+  try { unchanged = hash() === sha256; } catch { /* removed during review */ }
   const complete = unchanged && reviews.every((j) => j.response?.status === "completed") &&
     syntheses.every((j) => j.response?.status === "completed") && final?.response?.status === "completed";
   const status = args.dryRun ? "planned" : complete ? "completed" : "incomplete";

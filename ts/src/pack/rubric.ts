@@ -17,6 +17,15 @@
  *   - word_count: {max: 2000}
  *   - banned_elements: ["as an AI", "in today's fast-paced"]
  *   - term_lint: {Quorable: [quorable, Qorable]}
+ * checks:                      # commands run inside a candidate directory (revision loops)
+ *   - name: tests
+ *     run: [npm, test]
+ *     timeout_seconds: 900
+ * metrics:                     # numbers with thresholds (revision loops); see docs/revision-loops.md
+ *   - name: coverage
+ *     run: [npm, run, -s, coverage]
+ *     goal: maximize
+ *     threshold: 85
  * ship:
  *   composite_min: 7.0
  *   dimension_min: 5
@@ -31,6 +40,9 @@ import { parse as parseYaml } from "yaml";
 import { z } from "zod";
 
 import { bannedElementsGate, termLintGate, wordCountGate, type Gate } from "../engine/gates.js";
+import type { CommandCheck } from "../engine/checks.js";
+import type { MetricSpec } from "../engine/metrics.js";
+import { CheckEntrySchema, MetricEntrySchema, toCheck, toMetric } from "../config/revisionPolicy.js";
 import { BLOCKING_BUILTINS } from "../engine/scoring.js";
 import { PackError, type Pack } from "./types.js";
 
@@ -63,6 +75,8 @@ const RubricSchema = z.object({
     categories: z.array(z.string().min(1)).min(2),
   }),
   gates: z.array(GateEntrySchema).default([]),
+  checks: z.array(CheckEntrySchema).default([]),
+  metrics: z.array(MetricEntrySchema).default([]),
   ship: z.object({
     composite_min: z.number(),
     dimension_min: z.number(),
@@ -217,8 +231,18 @@ function buildGates(rubric: Rubric): Gate[] {
   return gates;
 }
 
+function buildMeasures(rubric: Rubric, label: string): { checks: CommandCheck[]; metrics: MetricSpec[] } {
+  let checks: CommandCheck[]; let metrics: MetricSpec[];
+  try { checks = rubric.checks.map(toCheck); metrics = rubric.metrics.map(toMetric); }
+  catch (exc) { throw new PackError(`${label}: ${exc instanceof Error ? exc.message : exc}`); }
+  const names = [...checks, ...metrics].map((c) => c.name);
+  if (new Set(names).size !== names.length) throw new PackError(`${label}: check and metric names must be unique`);
+  return { checks, metrics };
+}
+
 /** A rubric YAML becomes a working Pack — no per-domain code. */
 export function buildPackFromRubric(rubric: Rubric): Pack {
+  const measures = buildMeasures(rubric, rubric.name);
   const dimensionWeights = Object.fromEntries(
     Object.entries(rubric.dimensions).map(([d, spec]) => [d, spec.weight]),
   );
@@ -242,6 +266,8 @@ export function buildPackFromRubric(rubric: Rubric): Pack {
     primaryDocName: "primary_document",
     docTypeMarkers: {},
     mechanicalGates: buildGates(rubric),
+    mechanicalChecks: measures.checks,
+    mechanicalMetrics: measures.metrics,
     shipGates: {
       compositeMin: rubric.ship.composite_min,
       dimensionMin: rubric.ship.dimension_min,

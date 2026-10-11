@@ -117,6 +117,17 @@ describe("harness subprocess adapters", () => {
     expect(() => parseAgentSpec("codex:")).toThrow();
     expect(parseAgentSpec("claude:some-model")).toEqual({ harness: "claude", model: "some-model" });
   });
+  it("gives write sessions a confined coding toolset and never a bypass flag", () => {
+    const codex = harnessCommand({ harness: "codex" }, "write");
+    expect(codex.args).toContain("workspace-write"); expect(codex.args).not.toContain("read-only");
+    expect(codex.args.join(" ")).not.toContain("dangerously");
+    const claude = harnessCommand({ harness: "claude", model: "opus" }, "write", ["/tmp/refs", "/tmp/checks"]);
+    const joined = claude.args.join(" ");
+    expect(joined).toContain("Read,Glob,Grep,Edit,Write,Bash"); expect(claude.args).toContain("dontAsk");
+    expect(claude.args.slice(claude.args.indexOf("--add-dir") + 1, claude.args.indexOf("--add-dir") + 3)).toEqual(["/tmp/refs", "/tmp/checks"]);
+    expect(joined).not.toContain("dangerously"); expect(claude.args).toContain("--model");
+    expect(harnessCommand({ harness: "claude" }, "read", ["/tmp/refs"]).args.join(" ")).not.toContain("Edit");
+  });
   it("uses read-only Codex and a limited Claude tool set", () => {
     const codex = harnessCommand({ harness: "codex" });
     expect(codex.args).toContain("read-only"); expect(codex.args).toContain('approval_policy="never"');
