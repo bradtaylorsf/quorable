@@ -25,6 +25,7 @@ import { RIGOR_PRESETS, RIGOR_TIERS, type RigorTier } from "../config/schema.js"
 import { refreshLivePricing } from "../engine/costs.js";
 import { runReview, type ReviewOutcome } from "../engine/review.js";
 import { checkModelAvailability, resolutionOf } from "../providers/registry.js";
+import { packageVersion } from "../version.js";
 
 const program = new Command();
 
@@ -34,7 +35,7 @@ program
     "Multi-model adversarial review councils for any document — scored " +
       "synthesis with honest agreement statistics.",
   )
-  .version("0.2.0");
+  .version(packageVersion());
 
 interface ReviewCliOptions {
   council?: string;

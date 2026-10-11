@@ -3,6 +3,7 @@
  * programmatic use (e.g. a calling agent resolving validation tasks).
  */
 
+export * from "./version.js";
 export * from "./engine/agreement.js";
 export * from "./engine/agentHarness.js";
 export * from "./engine/investigation.js";
