@@ -1,0 +1,34 @@
+# Rubric for code and other directory artifacts. Deliberately no text gates;
+# add `checks:` here in a project-level copy (`.quorable/rubrics/code.yaml`)
+# or pass `--check name=command` so the project's own tests, type checks and
+# linters decide the mechanical part of readiness.
+name: code
+description: Review rubric for repositories, scripts, and other code artifacts.
+units: [interface, implementation, tests]
+dimensions:
+  correctness:
+    weight: 1.5
+    scale: [1, 10]
+    description: Does it do what it claims for the inputs it will actually see, including edge cases and failure paths?
+  safety:
+    weight: 1.5
+    scale: [1, 10]
+    description: Can untrusted input, concurrency, or a failed dependency make it do harm, leak data, or lie about success?
+  maintainability:
+    weight: 1.0
+    scale: [1, 10]
+    description: Will the next engineer understand it, change it safely, and find the behavior where they expect it?
+  verification:
+    weight: 1.0
+    scale: [1, 10]
+    description: Do the tests and checks actually exercise the claims, or only the happy path?
+verdict:
+  field: verdict
+  categories: [ship, revise, rethink]
+gates: []
+checks: []
+ship:
+  composite_min: 7.0
+  dimension_min: 5
+  blocking: severity_1_findings
+  composite_exclude_personas: [red_team]

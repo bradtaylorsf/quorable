@@ -50,6 +50,8 @@ handoff/
 # quorable's own output: `review <file>` writes <file>-reviewed/, and a
 # directory target writes a synthetic combined primary next to the sources.
 *-reviewed/
+*-investigated-*/
+*-revised-*/
 .quorable-combined.md
 
 # Claude Code local settings

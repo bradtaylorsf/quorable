@@ -1,0 +1,11 @@
+name: rollout-smoke
+units: [rollout]
+dimensions:
+  consistency: {weight: 1, scale: [1, 10]}
+verdict: {field: verdict, categories: [ship, revise]}
+gates:
+  - word_count: {max: 249}
+ship:
+  composite_min: 7
+  dimension_min: 5
+  blocking: severity_1_findings
