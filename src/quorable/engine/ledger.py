@@ -26,6 +26,7 @@ from typing import Any
 
 import yaml
 
+from quorable.engine.diff import iter_dirs_newest_first
 from quorable.engine.loop import compute_scores
 
 logger = logging.getLogger(__name__)
@@ -39,11 +40,7 @@ class LedgerFrozenError(Exception):
 
 def latest_iter_dir(run_dir: Path) -> Path | None:
     """Return the latest iter_N subdirectory holding a synthesis, if any."""
-    iter_dirs = sorted(
-        (d for d in run_dir.iterdir() if d.is_dir() and d.name.startswith("iter_")),
-        key=lambda d: d.name,
-        reverse=True,
-    )
+    iter_dirs = iter_dirs_newest_first(run_dir)
     for d in iter_dirs:
         if (d / "synthesis.json").exists() or any(d.glob("script_v*.md")):
             return d
