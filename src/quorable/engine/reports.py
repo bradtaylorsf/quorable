@@ -17,6 +17,7 @@ from typing import Any
 from pydantic import BaseModel
 
 from quorable.engine.client import CostTracker
+from quorable.engine.diff import iter_dirs_newest_first
 
 logger = logging.getLogger(__name__)
 
@@ -322,11 +323,7 @@ def load_prior_synthesis(
     for run_dir in candidates:
         synthesis_path = run_dir / "synthesis.json"
         if not synthesis_path.exists():
-            iter_dirs = sorted(
-                (d for d in run_dir.iterdir() if d.is_dir() and d.name.startswith("iter_")),
-                key=lambda d: d.name,
-                reverse=True,
-            )
+            iter_dirs = iter_dirs_newest_first(run_dir)
             for iter_dir in iter_dirs:
                 if (iter_dir / "synthesis.json").exists():
                     synthesis_path = iter_dir / "synthesis.json"

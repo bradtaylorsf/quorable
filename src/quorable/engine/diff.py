@@ -71,6 +71,19 @@ def _resolve_run_dir(run_ref: str, outputs_dir: Path) -> Path:
     )
 
 
+def iter_dirs_newest_first(run_dir: Path) -> list[Path]:
+    """iter_N subdirectories of a run, highest N first (numeric, so 10 > 9)."""
+    def _num(d: Path) -> int:
+        suffix = d.name.removeprefix("iter_")
+        return int(suffix) if suffix.isdigit() else -1
+
+    return sorted(
+        (d for d in run_dir.iterdir() if d.is_dir() and d.name.startswith("iter_")),
+        key=_num,
+        reverse=True,
+    )
+
+
 def _synthesis_dir(run_dir: Path) -> Path:
     """Return the directory holding synthesis.json for a run.
 
@@ -79,11 +92,7 @@ def _synthesis_dir(run_dir: Path) -> Path:
     """
     if (run_dir / "synthesis.json").exists():
         return run_dir
-    iter_dirs = sorted(
-        (d for d in run_dir.iterdir() if d.is_dir() and d.name.startswith("iter_")),
-        key=lambda d: d.name,
-        reverse=True,
-    )
+    iter_dirs = iter_dirs_newest_first(run_dir)
     for iter_dir in iter_dirs:
         if (iter_dir / "synthesis.json").exists():
             return iter_dir
